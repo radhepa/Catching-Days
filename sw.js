@@ -5,10 +5,11 @@
    when you're offline — or the connection is so slow that waiting is pointless —
    the last good copy is served. Fonts are cached on first use. Requests to other
    origins (the sync API in particular) are never touched. */
-const CACHE = 'focus-v1';
+const CACHE = 'focus-v2';
 const SHELL = [
   './',
   './radhe-labs-focus.html',
+  './pond.js',
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',

@@ -77,7 +77,7 @@ test('install caches the shell and survives a missing file', async () => {
     fetchImpl: async u => (u.includes('sync.js') ? resp('', { ok: false }) : resp('ok:' + u)),
   });
   await fire('install').waited;
-  const cached = [...stores.get('focus-v1').keys()];
+  const cached = [...stores.get('focus-v2').keys()];
   assert.ok(cached.some(u => u.endsWith('radhe-labs-focus.html')));
   assert.ok(cached.some(u => u.endsWith('manifest.webmanifest')));
   assert.ok(!cached.some(u => u.endsWith('sync.js')), 'failed file is skipped, not fatal');
@@ -85,9 +85,9 @@ test('install caches the shell and survives a missing file', async () => {
 
 test('activate removes old cache versions', async () => {
   const { fire, stores, cacheApi } = boot();
-  await cacheApi.open('focus-v0'); await cacheApi.open('focus-v1');
+  await cacheApi.open('focus-v0'); await cacheApi.open('focus-v1'); await cacheApi.open('focus-v2');
   await fire('activate').waited;
-  assert.deepEqual([...stores.keys()], ['focus-v1']);
+  assert.deepEqual([...stores.keys()], ['focus-v2']);
 });
 
 test('online: serves the network copy and refreshes the cache', async () => {
