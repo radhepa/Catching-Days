@@ -10,7 +10,7 @@
 
   var DEVICE = /iPhone|iPod/.test(navigator.userAgent) ? 'iPhone' : /iPad/.test(navigator.userAgent) ? 'iPad'
     : /Android/.test(navigator.userAgent) ? 'Android' : 'Laptop';
-  var DISMISS_KEY = 'radhelabs.sync.bannerDismissed';
+  var DISMISS_KEY = 'catchingdays.sync.bannerDismissed';
   var DOCS_URL = 'https://github.com/radhepa/Catching-Days/blob/main/docs/sync.md';
 
   var store = {
@@ -48,7 +48,7 @@
     storage: store,
     now: function () { return Date.now(); },
     deviceName: DEVICE,
-    apiBase: store.get('radhelabs.sync.api') || undefined,   // optional override (GitHub Enterprise, or a test server)
+    apiBase: store.get('catchingdays.sync.api') || undefined,   // optional override (GitHub Enterprise, or a test server)
     getLocal: function () { return { content: Core.contentOf(db), savedAt: db.savedAt || 0 }; },
     applyContent: applyToApp,
     onState: function (s) {

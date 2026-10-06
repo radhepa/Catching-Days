@@ -1993,8 +1993,30 @@ button.set-row:hover{background:#ebe3d4}
 <script src="rain.js?v=2"></script>
 <script>
 /* ═══════════════ store ═══════════════ */
+/* One-time move from the old storage names (radhelabs.*) to catchingdays.*.
+   Copies each value across, checks the copy, and only then removes the old key,
+   so nothing is lost if storage is full or the page closes half way. */
+(function(){
+  const MOVES=[['radhelabs.focus.v2','catchingdays.app.v2'],
+    ['radhelabs.focus.v2.unreadable','catchingdays.app.v2.unreadable'],
+    ['radhelabs.sync.cfg','catchingdays.sync.cfg'],
+    ['radhelabs.sync.base','catchingdays.sync.base'],
+    ['radhelabs.sync.bannerDismissed','catchingdays.sync.bannerDismissed'],
+    ['radhelabs.sync.api','catchingdays.sync.api']];
+  try{
+    for(const [from,to] of MOVES){
+      const v=localStorage.getItem(from);
+      if(v===null) continue;
+      if(localStorage.getItem(to)===null){
+        localStorage.setItem(to,v);
+        if(localStorage.getItem(to)!==v) continue;
+      }
+      localStorage.removeItem(from);
+    }
+  }catch(e){}
+})();
 const clone=o=>typeof structuredClone==='function'?structuredClone(o):JSON.parse(JSON.stringify(o));
-const KEY='radhelabs.focus.v2';
+const KEY='catchingdays.app.v2';
 /* Journal entry types. 'daily' is special: its mood colors the calendar cell.
    'study' is what auto-generated session write-ups get tagged with. Both are
    builtin and can't be deleted; everything else is the user's to manage. */
@@ -2225,9 +2247,9 @@ function ensureStudy(d){
 function storageProbe(){
   const file = location.protocol==='file:';
   let write=false;
-  try{ localStorage.setItem('__rl_probe','ok');
-       write = localStorage.getItem('__rl_probe')==='ok';
-       localStorage.removeItem('__rl_probe'); }catch(e){}
+  try{ localStorage.setItem('__cd_probe','ok');
+       write = localStorage.getItem('__cd_probe')==='ok';
+       localStorage.removeItem('__cd_probe'); }catch(e){}
   return {file, write};
 }
 const HEALTH=storageProbe();

@@ -275,7 +275,7 @@ test('disconnect forgets the token and stops syncing', async () => {
   await laptop.engine.connect(...CONNECT);
   laptop.engine.disconnect();
   assert.equal(laptop.engine.getState().connected, false);
-  assert.equal(laptop.store.has('radhelabs.sync.cfg'), false);
+  assert.equal(laptop.store.has('catchingdays.sync.cfg'), false);
   const gets = gh.gets;
   await laptop.engine.syncNow('poll');
   assert.equal(gh.gets, gets, 'no requests once disconnected');

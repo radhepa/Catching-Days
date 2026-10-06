@@ -176,7 +176,7 @@
        onState(state)    -> void
      } */
   function createEngine(env) {
-    var K = { cfg: 'radhelabs.sync.cfg', base: 'radhelabs.sync.base' };
+    var K = { cfg: 'catchingdays.sync.cfg', base: 'catchingdays.sync.base' };
     var PATH = 'focus-data.json';
     var API = env.apiBase || 'https://api.github.com';
     var cfg = readJSON(K.cfg);
