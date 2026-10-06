@@ -1,0 +1,341 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="td-art td-mv td-tabi" width="240" height="240" viewBox="-68 -118 136 136" focusable="false"><style>
+.td-art{display:block;overflow:visible}
+.td-art .td-body,.td-art .td-breathe,.td-art .td-throat,.td-art .td-look,.td-art .td-blink,.td-art .td-gaze,
+.td-art .td-sway,.td-art .td-glint,.td-art .td-ring,.td-art .td-splash{transform-box:view-box;transform-origin:0 0}
+.td-art .td-look{transition:transform .35s cubic-bezier(.3,1.4,.5,1)}
+.td-mv .td-breathe{animation:td-breathe 4.6s ease-in-out infinite}
+.td-mv .td-throat{animation:td-throat 2.3s ease-in-out infinite}
+.td-mv .td-blink{animation:td-blink 7.3s ease-in-out infinite}
+.td-mv .td-gaze{animation:td-gaze 13s ease-in-out infinite}
+.td-mv .td-sway{animation:td-sway 6.2s ease-in-out infinite}
+.td-mv .td-glint{animation:td-glint 5.4s ease-in-out infinite}
+.td-mv .td-ring{animation:td-ring 5.2s ease-out infinite}
+.td-mv .td-ring.two{animation-delay:-2.6s}
+@keyframes td-breathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.012,1.024)}}
+@keyframes td-throat{0%,100%{transform:scale(1,1)}50%{transform:scale(1.05,1.16)}}
+@keyframes td-blink{0%,91%,96%,100%{transform:scaleY(1)}93%,94%{transform:scaleY(1.92)}}
+@keyframes td-gaze{0%,36%,92%,100%{transform:translate(0,0)}40%,56%{transform:translate(-1.5px,.2px)}60%,76%{transform:translate(1.3px,.3px)}80%{transform:translate(0,0)}}
+@keyframes td-sway{0%,100%{transform:rotate(-1.3deg)}50%{transform:rotate(1.5deg)}}
+@keyframes td-glint{0%,70%,100%{transform:scale(1);opacity:.9}80%{transform:scale(1.9);opacity:1}88%{transform:scale(1);opacity:.7}}
+@keyframes td-ring{0%{transform:scale(.82);opacity:0}25%{opacity:1}100%{transform:scale(1.22);opacity:0}}
+/* hover / keyboard focus: she looks up at you (the lids lift) */
+:hover>.td-art .td-look,:focus-visible>.td-art .td-look{transform:scaleY(.72)}
+/* a tap: squash, hop, land, and a croak */
+.td-mv.td-hop .td-body{animation:td-hop .86s cubic-bezier(.3,.7,.4,1)}
+.td-mv.td-hop .td-throat{animation:td-croak .86s ease-out}
+.td-mv.td-hop .td-splash{animation:td-splash .9s ease-out .5s both}
+.td-mv.td-hop .td-splash.two{animation-delay:.64s}
+@keyframes td-hop{0%{transform:none}14%{transform:scale(1.08,.88)}42%{transform:translateY(-10px) scale(.95,1.08)}66%{transform:translateY(0) scale(1.07,.9)}82%{transform:scale(.985,1.025)}100%{transform:none}}
+@keyframes td-croak{0%,18%{transform:scale(1,1)}44%{transform:scale(1.5,2.25)}60%{transform:scale(1.46,2.15)}80%{transform:scale(.96,.92)}100%{transform:scale(1,1)}}
+@keyframes td-splash{0%{transform:scale(.7);opacity:.85}100%{transform:scale(1.35);opacity:0}}
+/* while she talks (the dialogue portrait): the throat flutters with the words */
+.td-mv.td-talking .td-throat{animation:td-throat .42s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){
+  .td-art *{animation:none!important}
+  .td-art .td-look{transition:none}
+}
+
+.td-cast .td-hat,.td-cast .td-drip,.td-cast .td-fling,.td-cast .td-brush,.td-cast .td-specs,.td-cast .td-ink,
+.td-cast .td-snail,.td-cast .td-horns,.td-cast .td-gourd,.td-cast .td-nod,.td-cast .td-fly,.td-cast .td-glow,
+.td-cast .td-jar,.td-cast .td-out,.td-cast .td-shell{transform-box:view-box;transform-origin:0 0}
+/* each eye knows how far its lid has to travel to close (--bk) */
+.td-mv .td-cast .td-blink{animation-name:td-blinkv}
+@keyframes td-blinkv{0%,91%,96%,100%{transform:scaleY(1)}93%,94%{transform:scaleY(var(--bk,1.92))}}
+
+/* ── Ame: rain off the brim; hover tips the hat; a tap is a wet-dog shake ── */
+.td-ame .td-fling{opacity:0}
+.td-ame .td-hat{transition:transform .45s cubic-bezier(.3,1.4,.5,1)}
+:hover>.td-ame .td-hat,:focus-visible>.td-ame .td-hat{transform:translateY(-3px) rotate(-6deg)}
+.td-mv .td-ame .td-drip{animation:td-drip 3.4s ease-in infinite}
+.td-mv .td-ame .td-drip.d2{animation-duration:4.1s;animation-delay:-1.3s}
+.td-mv .td-ame .td-drip.d3{animation-duration:3.7s;animation-delay:-2.6s}
+@keyframes td-drip{0%{transform:scale(.2);opacity:0}25%{transform:scale(1);opacity:.95}55%{transform:translateY(0) scale(1);opacity:.95}
+  80%{transform:translateY(16px) scale(.9,1.1);opacity:.85}88%,100%{transform:translateY(22px) scale(.8);opacity:0}}
+.td-mv.td-hop .td-ame .td-body{animation:td-shake .9s ease-in-out}
+.td-mv.td-hop .td-ame .td-hat{animation:td-hatwob .9s ease-in-out}
+.td-mv.td-hop .td-ame .td-throat{animation:td-throat 2.3s ease-in-out infinite}
+.td-mv.td-hop .td-ame .td-fling{animation:td-fling .8s ease-out .12s both}
+.td-ame .td-fling.f1{--dx:-15px}.td-ame .td-fling.f2{--dx:-8px}.td-ame .td-fling.f3{--dx:8px}.td-ame .td-fling.f4{--dx:15px}
+@keyframes td-shake{0%,100%{transform:none}12%{transform:rotate(-3.5deg)}26%{transform:rotate(3.5deg)}40%{transform:rotate(-3deg)}
+  54%{transform:rotate(2.4deg)}68%{transform:rotate(-1.4deg)}82%{transform:rotate(.6deg)}}
+@keyframes td-hatwob{0%,100%{transform:none}15%{transform:rotate(6deg) translateY(-2px)}30%{transform:rotate(-6deg) translateY(-3px)}
+  45%{transform:rotate(4deg)}62%{transform:rotate(-2deg)}}
+@keyframes td-fling{0%{transform:translate(0,0);opacity:0}15%{opacity:1}50%{transform:translate(var(--dx),-7px)}100%{transform:translate(calc(var(--dx) * 1.7),16px);opacity:0}}
+
+/* ── Sumi: the brush sways, light crosses his spectacles; a tap is a bow and a flourish ── */
+.td-sumi .td-ink{opacity:0}
+.td-mv .td-sumi .td-brush{animation:td-brushsway 6.8s ease-in-out infinite}
+.td-mv .td-sumi .td-specs{animation:td-specs 6.5s ease-in-out infinite}
+@keyframes td-brushsway{0%,100%{transform:rotate(-1.2deg)}50%{transform:rotate(1.4deg)}}
+@keyframes td-specs{0%,70%,100%{transform:translateX(0);opacity:.5}78%{transform:translateX(3px);opacity:1}86%{transform:translateX(-1px);opacity:.5}}
+.td-mv.td-hop .td-sumi .td-body{animation:td-bow 1s cubic-bezier(.4,0,.3,1)}
+.td-mv.td-hop .td-sumi .td-brush{animation:td-flourish 1s ease-in-out}
+.td-mv.td-hop .td-sumi .td-ink{animation:td-inkflick .9s ease-out .3s both}
+.td-mv.td-hop .td-sumi .td-throat{animation:td-throat 2.3s ease-in-out infinite}
+@keyframes td-bow{0%,100%{transform:none}30%,52%{transform:translateY(2.5px) scale(1.03,.9)}75%{transform:translateY(-1px) scale(.99,1.02)}}
+@keyframes td-flourish{0%,100%{transform:none}35%{transform:rotate(-9deg)}60%{transform:rotate(5deg)}80%{transform:rotate(-2deg)}}
+@keyframes td-inkflick{0%{transform:translate(0,0) scale(.6);opacity:0}15%{opacity:1}60%{transform:translate(7px,-6px) scale(1)}100%{transform:translate(12px,8px) scale(.7);opacity:0}}
+
+/* ── Tabi: Dango's eyestalks wave, the gourd swings; a tap is two quick steps and Dango hides ── */
+.td-mv .td-tabi .td-horns{animation:td-horns 2.8s ease-in-out infinite}
+.td-mv .td-tabi .td-gourd{animation:td-gourd 4.4s ease-in-out infinite}
+.td-mv .td-tabi .td-snail{animation:td-creep 9s ease-in-out infinite}
+@keyframes td-horns{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(7deg)}}
+@keyframes td-gourd{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+@keyframes td-creep{0%,100%{transform:translateX(0)}50%{transform:translateX(1.8px)}}
+.td-mv.td-hop .td-tabi .td-body{animation:td-steps .9s ease-in-out}
+.td-mv.td-hop .td-tabi .td-out{animation:td-tuck 1.7s ease-in-out}
+@keyframes td-steps{0%,100%{transform:none}15%{transform:translateY(-5px) rotate(-3deg)}30%{transform:none}50%{transform:translateY(-5px) rotate(3deg)}65%{transform:none}80%{transform:scale(1.03,.97)}}
+@keyframes td-tuck{0%,100%{transform:scale(1);opacity:1}14%,72%{transform:scale(0);opacity:0}}
+
+/* ── Hotaru: dozes and catches himself, fireflies drift; a tap wakes him with a start ── */
+.td-hotaru .td-out{opacity:0}
+.td-mv .td-hotaru .td-nod{animation:td-nod 8.5s ease-in-out infinite}
+.td-mv .td-hotaru .td-glow{animation:td-glow 3.4s ease-in-out infinite}
+.td-mv .td-hotaru .td-fly.f1{animation:td-fly1 3.2s ease-in-out infinite}
+.td-mv .td-hotaru .td-fly.f2{animation:td-fly2 4.1s ease-in-out infinite}
+.td-mv .td-hotaru .td-fly.f3{animation:td-fly3 3.6s ease-in-out infinite}
+:hover>.td-hotaru .td-look,:focus-visible>.td-hotaru .td-look{transform:scaleY(.55)}
+@keyframes td-nod{0%,40%{transform:translateY(0)}72%{transform:translateY(1.8px)}76%{transform:translateY(-.8px)}82%,100%{transform:translateY(0)}}
+@keyframes td-glow{0%,100%{transform:scale(.92);opacity:.8}50%{transform:scale(1.06);opacity:1}}
+@keyframes td-fly1{0%,100%{transform:translate(0,0);opacity:.6}33%{transform:translate(2.6px,-3px);opacity:1}66%{transform:translate(-1.4px,-1px);opacity:.8}}
+@keyframes td-fly2{0%,100%{transform:translate(0,0);opacity:1}40%{transform:translate(-3px,2.4px);opacity:.55}70%{transform:translate(1px,4px);opacity:.9}}
+@keyframes td-fly3{0%,100%{transform:translate(0,0);opacity:.8}50%{transform:translate(2px,-4px);opacity:1}}
+.td-mv.td-hop .td-hotaru .td-body{animation:td-startle .8s cubic-bezier(.3,.7,.4,1)}
+.td-hop .td-hotaru .td-look{transform:scaleY(.3);transition-duration:.12s}
+.td-mv.td-hop .td-hotaru .td-out{animation:td-burst 1.4s ease-out both}
+.td-mv.td-hop .td-hotaru .td-jar{animation:td-jar .6s ease-in-out}
+.td-mv.td-hop .td-hotaru .td-glow{animation:td-glowup 1s ease-out}
+.td-hotaru .td-out.o1{--bx:-10px;--by:-12px}.td-hotaru .td-out.o2{--bx:2px;--by:-18px}.td-hotaru .td-out.o3{--bx:11px;--by:-10px}
+@keyframes td-startle{0%{transform:none}18%{transform:translateY(-7px) scale(.96,1.06)}45%{transform:translateY(0) scale(1.05,.94)}65%{transform:scale(.99,1.01)}100%{transform:none}}
+@keyframes td-burst{0%{transform:translate(0,6px) scale(.4);opacity:0}15%{opacity:1}60%{transform:translate(var(--bx),var(--by)) scale(1);opacity:1}100%{transform:translate(calc(var(--bx) * 1.3),calc(var(--by) * 1.4));opacity:0}}
+@keyframes td-jar{0%,100%{transform:none}25%{transform:rotate(-8deg)}50%{transform:rotate(6deg)}75%{transform:rotate(-3deg)}}
+@keyframes td-glowup{0%{transform:scale(1)}30%{transform:scale(1.35)}100%{transform:scale(1)}}
+
+
+.tcp .tcp-turn,.tcp .tcp-star,.tcp .tcp-wag,.tcp .tcp-flute,.tcp .tcp-fing,.tcp .tcp-thread,.tcp .tcp-note,
+.tcp .tcp-soil,.tcp .tcp-stem,.tcp .tcp-unfold,.tcp .tcp-leaf,.tcp .tcp-dew,
+.tcp .tcp-land,.tcp .tcp-tilt,.tcp .tcp-jostle,.tcp .tcp-rock,.tcp .tcp-sail,.tcp .tcp-glyph{transform-box:view-box;transform-origin:0 0}
+/* Neri */
+.td-mv .tcp-neri .td-cast .td-throat{animation:tcp-n-throat 7.2s ease-in-out infinite}
+.td-mv .tcp-neri .td-cast .td-blink{animation:tcp-n-blink 7.2s ease-in-out infinite}
+.td-mv .tcp-neri .td-cast .td-gaze{animation:tcp-n-gaze 7.2s ease-in-out infinite}
+.td-mv .tcp-neri .tcp-wag{animation:tcp-n-wag 7.2s ease-in-out infinite}
+.td-mv .tcp-neri .tcp-turn{animation:tcp-n-turn 7.2s ease-in-out infinite}
+.td-mv .tcp-neri .tcp-sheen{animation:tcp-n-sheen 7.2s ease-in-out infinite}
+.td-mv .tcp-neri .tcp-star{animation:tcp-n-star 7.2s ease-out infinite}
+@keyframes tcp-n-throat{0%,20%,26%{transform:scale(1,1)}4%,10%,17%{transform:scale(1.05,1.18)}7%,13.5%{transform:scale(1,1)}40%,70%{transform:scale(1.03,1.1)}55%,85%,100%{transform:scale(1,1)}}
+@keyframes tcp-n-blink{0%,26%,31%,85%,90%,100%{transform:scaleY(1)}28%,29%,87%,88%{transform:scaleY(var(--bk,1.92))}}
+@keyframes tcp-n-gaze{0%,32%,70%,100%{transform:translate(0,0)}38%,62%{transform:translate(.4px,1.4px)}}
+@keyframes tcp-n-wag{0%,25%,100%{transform:rotate(0)}4%{transform:rotate(-10deg)}8%{transform:rotate(5deg)}12%{transform:rotate(-9deg)}16%{transform:rotate(4deg)}21%{transform:rotate(-2deg)}}
+@keyframes tcp-n-turn{0%,32%,80%,100%{transform:none}45%,64%{transform:translateX(-10.2px) scaleX(1.1)}}
+@keyframes tcp-n-sheen{0%,44%,67%,100%{opacity:0}50%{opacity:.9}56%{opacity:.35}61%{opacity:.75}}
+@keyframes tcp-n-star{0%,47%,60%,100%{transform:scale(0) rotate(0);opacity:0}51%{transform:scale(1.25) rotate(40deg);opacity:1}55%{transform:scale(.75) rotate(80deg);opacity:.85}}
+/* Oto */
+.td-mv .tcp-oto .tcp-blush{animation:tcp-o-blush .9s ease .3s both}
+.td-mv .tcp-oto .td-cast .td-body{animation:tcp-o-startle 6.8s ease-in-out infinite}
+.td-mv .tcp-oto .td-cast .td-throat{animation:tcp-o-throat 6.8s ease-in-out infinite}
+.td-mv .tcp-oto .td-cast .td-blink{animation:tcp-o-blink 6.8s ease-in-out infinite}
+.td-mv .tcp-oto .td-cast .td-gaze{animation:tcp-o-gaze 6.8s ease-in-out infinite}
+.td-mv .tcp-oto .tcp-flute{animation:tcp-o-sway 3.4s ease-in-out infinite}
+.td-mv .tcp-oto .tcp-fing.f1{animation:tcp-o-fing1 6.8s ease-in-out infinite}
+.td-mv .tcp-oto .tcp-fing.f2{animation:tcp-o-fing2 6.8s ease-in-out infinite}
+.td-mv .tcp-oto .tcp-thread{animation:tcp-o-thread 1.9s ease-in-out infinite}
+.td-mv .tcp-oto .tcp-note{animation:tcp-o-note 6.8s linear infinite backwards}
+.td-mv .tcp-oto .tcp-note.n1{animation-delay:2.4s}
+.td-mv .tcp-oto .tcp-note.n2{animation-delay:3.2s;--nx:-1}
+.td-mv .tcp-oto .tcp-note.n3{animation-delay:4.03s}
+.td-mv .tcp-oto .tcp-note.n4{animation:tcp-o-squeak 6.8s linear 5.03s infinite backwards}
+@keyframes tcp-o-blush{from{opacity:0}to{opacity:1}}
+@keyframes tcp-o-startle{0%,73.5%,85%,100%{transform:none}76%{transform:translateY(-2.2px) scale(.97,1.05)}79%{transform:scale(1.03,.96)}82%{transform:scale(.995,1.01)}}
+@keyframes tcp-o-throat{0%,16%,34.5%,40%,46.5%,52%,58.5%,64%,73%,80%,100%{transform:scale(1,1)}8%{transform:scale(1.03,1.08)}36.5%,48.5%,60.5%{transform:scale(1.12,1.38)}75%{transform:scale(1.2,1.55)}}
+@keyframes tcp-o-blink{0%,30%,74.5%,82%,85%,88%,100%{transform:scaleY(1)}34%,73%{transform:scaleY(calc(1 + (var(--bk,1.92) - 1) * .5))}83.5%,86.5%{transform:scaleY(var(--bk,1.92))}}
+@keyframes tcp-o-gaze{0%,8%,30%,80%,100%{transform:translate(0,0)}13%,25%{transform:translate(-1.7px,.9px)}36%,72%{transform:translate(0,.5px)}75%{transform:translate(.3px,-.5px)}}
+@keyframes tcp-o-sway{0%,100%{transform:rotate(0)}25%{transform:rotate(-1.2deg)}75%{transform:rotate(1.1deg)}}
+@keyframes tcp-o-fing1{0%,34%,39%,46%,51%,58%,63%,100%{transform:translateY(0)}36.5%,48.5%,60.5%{transform:translateY(-1.1px)}}
+@keyframes tcp-o-fing2{0%,40%,45%,52%,57%,64%,69%,100%{transform:translateY(0)}42.5%,54.5%,66.5%{transform:translateY(-1.1px)}}
+@keyframes tcp-o-thread{0%,100%{transform:rotate(0)}30%{transform:rotate(14deg)}75%{transform:rotate(-9deg)}}
+@keyframes tcp-o-note{0%{transform:translate(0,0) scale(.3) rotate(0);opacity:0}3%{transform:translate(1px,-3px) scale(.9) rotate(calc(var(--nx,1) * 6deg));opacity:1}8%{transform:translate(calc(var(--nx,1) * 3px + 4px),-10px) scale(1) rotate(calc(var(--nx,1) * -7deg))}13%{transform:translate(4px,-17px) scale(1) rotate(calc(var(--nx,1) * 6deg));opacity:.95}18%{transform:translate(calc(var(--nx,1) * 2px + 7px),-23px) scale(.95) rotate(0);opacity:0}100%{transform:translate(7px,-23px) scale(.95);opacity:0}}
+@keyframes tcp-o-squeak{0%{transform:translate(0,0) scale(.3) rotate(0);opacity:0}2.5%{transform:translate(2px,-4px) scale(1.4) rotate(-20deg);opacity:1}5%{transform:translate(3px,-6px) scale(1.05) rotate(16deg)}7.5%{transform:translate(4px,-8px) scale(1.15) rotate(-10deg)}10%{transform:translate(5px,-11px) scale(1.05) rotate(6deg);opacity:1}17%{transform:translate(8px,-20px) scale(1) rotate(0);opacity:0}100%{transform:translate(8px,-20px);opacity:0}}
+/* Kuri: once, when he wakes, a seedling comes up (it stays while he's awake);
+   then an 8 s loop: his seeing eye checks on it, a slow heavy blink, a small nod */
+.td-mv .tcp-kuri .tcp-sprout{animation:tcp-k-show .3s ease forwards}
+.td-mv .tcp-kuri .tcp-soil{animation:tcp-k-soil .55s cubic-bezier(.3,1.4,.5,1) both}
+.td-mv .tcp-kuri .tcp-stem{animation:tcp-k-stem 1.2s cubic-bezier(.25,.8,.3,1) .35s both}
+.td-mv .tcp-kuri .tcp-unfold.l1{animation:tcp-k-unfold1 .9s cubic-bezier(.3,1.3,.5,1) 1.15s both}
+.td-mv .tcp-kuri .tcp-unfold.l2{animation:tcp-k-unfold2 .9s cubic-bezier(.3,1.3,.5,1) 1.3s both}
+.td-mv .tcp-kuri .tcp-leaf.l1{animation:tcp-k-leaf 4.2s ease-in-out 2.2s infinite}
+.td-mv .tcp-kuri .tcp-leaf.l2{animation:tcp-k-leaf 4.2s ease-in-out 2.7s infinite}
+.td-mv .tcp-kuri .tcp-dew{animation:tcp-k-dew 8s ease-in-out 2.3s infinite}
+.td-mv .tcp-kuri .td-cast .td-breathe{animation:td-breathe 6.2s ease-in-out infinite}
+.td-mv .tcp-kuri .td-cast .td-throat{animation:td-throat 3.6s ease-in-out infinite}
+.td-mv .tcp-kuri .td-cast .td-gaze{animation:tcp-k-gaze 8s ease-in-out infinite}
+.td-mv .tcp-kuri .td-cast .td-blink{animation:tcp-k-blink 8s ease-in-out infinite}
+.td-mv .tcp-kuri .td-cast .td-body{animation:tcp-k-nod 8s ease-in-out infinite}
+@keyframes tcp-k-show{from{opacity:0}to{opacity:1}}
+@keyframes tcp-k-soil{from{transform:scale(.2)}to{transform:none}}
+@keyframes tcp-k-stem{0%{transform:scaleY(0)}75%{transform:scaleY(1.06)}100%{transform:none}}
+@keyframes tcp-k-unfold1{from{transform:scale(0) rotate(35deg)}to{transform:none}}
+@keyframes tcp-k-unfold2{from{transform:scale(0) rotate(-35deg)}to{transform:none}}
+@keyframes tcp-k-leaf{0%,100%{transform:rotate(0)}30%{transform:rotate(-5deg)}70%{transform:rotate(3deg)}}
+@keyframes tcp-k-dew{0%,30%,40%,100%{transform:scale(1)}34%{transform:scale(1.8)}}
+@keyframes tcp-k-gaze{0%,8%,44%,66%,86%,100%{transform:translate(0,0)}14%,38%{transform:translate(.5px,1.8px)}72%,80%{transform:translate(.4px,1.6px)}}
+@keyframes tcp-k-blink{0%,48%,58%,100%{transform:scaleY(1)}51.5%,54.5%{transform:scaleY(var(--bk,1.92))}}
+@keyframes tcp-k-nod{0%,59%,73%,100%{transform:none}63%{transform:translateY(1.2px) scale(1.012,.972)}67%{transform:translateY(.2px) scale(1.002,.995)}}
+/* Mame: once, when he wakes, a "!" and an excited hop that jostles the boat;
+   then a 6 s loop: he watches the boat rock, looks back up with his head
+   tilted, and a "?" rises while his throat chatters */
+.td-mv .tcp-mame .td-cast .td-body{animation:tcp-m-hop .9s cubic-bezier(.3,.7,.4,1) .12s both}
+.td-mv .tcp-mame .tcp-land{animation:tcp-m-land .9s ease-out .7s forwards}
+.td-mv .tcp-mame .tcp-jostle{animation:tcp-m-jostle .8s ease-out .68s both}
+.td-mv .tcp-mame .tcp-glyph.g1{animation:tcp-m-bang 1.3s ease-out .05s forwards}
+.td-mv .tcp-mame .tcp-glyph.g2{animation:tcp-m-ask 6s ease-out 3.6s infinite backwards}
+.td-mv .tcp-mame .td-cast .td-breathe{animation:td-breathe 3.4s ease-in-out infinite}
+.td-mv .tcp-mame .tcp-tilt{animation:tcp-m-tilt 6s ease-in-out infinite}
+.td-mv .tcp-mame .td-cast .td-gaze{animation:tcp-m-gaze 6s ease-in-out infinite}
+.td-mv .tcp-mame .td-cast .td-blink{animation:tcp-m-blink 6s ease-in-out infinite}
+.td-mv .tcp-mame .td-cast .td-throat{animation:tcp-m-throat 6s ease-in-out infinite}
+.td-mv .tcp-mame .tcp-rock{animation:tcp-m-rock 2.8s ease-in-out 1.4s infinite}
+.td-mv .tcp-mame .tcp-sail{animation:tcp-m-sail 1.3s ease-in-out infinite}
+@keyframes tcp-m-hop{0%{transform:none}14%{transform:scale(1.08,.88)}42%{transform:translateY(-7px) scale(.95,1.08)}66%{transform:translateY(0) scale(1.07,.9)}82%{transform:scale(.985,1.025)}100%{transform:none}}
+@keyframes tcp-m-land{0%{transform:scale(.72);opacity:.85}100%{transform:scale(1.25);opacity:0}}
+@keyframes tcp-m-jostle{0%,100%{transform:none}20%{transform:translateY(-1px) rotate(-9deg)}45%{transform:rotate(6deg)}70%{transform:rotate(-3deg)}}
+@keyframes tcp-m-bang{0%{transform:translateY(2px) scale(.3);opacity:0}18%{transform:translateY(-2px) scale(1.3);opacity:1}30%{transform:translateY(-2px) scale(1);opacity:1}70%{transform:translateY(-3px);opacity:1}100%{transform:translateY(-5px);opacity:0}}
+@keyframes tcp-m-ask{0%{transform:scale(.3);opacity:0}5%{transform:scale(1.15);opacity:1}8%{transform:scale(1);opacity:1}26%{transform:translateY(-4px);opacity:1}34%,100%{transform:translateY(-6px);opacity:0}}
+@keyframes tcp-m-tilt{0%,20%,56%,88%,100%{transform:rotate(0)}30%{transform:rotate(-1.8deg)}43%{transform:rotate(1.8deg)}64%,80%{transform:rotate(4.5deg)}}
+@keyframes tcp-m-gaze{0%,20%,56%,100%{transform:translate(0,0)}26%,50%{transform:translate(0,1.7px)}62%,82%{transform:translate(.4px,-.5px)}}
+@keyframes tcp-m-blink{0%,21%,25%,88%,92%,100%{transform:scaleY(1)}23%,90%{transform:scaleY(var(--bk,1.92))}}
+@keyframes tcp-m-throat{0%,60%,64.5%,69%,73.5%,78%,100%{transform:scale(1,1)}30%{transform:scale(1.03,1.08)}62.25%,66.75%,71.25%{transform:scale(1.07,1.24)}}
+@keyframes tcp-m-rock{0%,100%{transform:rotate(0)}25%{transform:rotate(-4deg)}75%{transform:rotate(4deg)}}
+@keyframes tcp-m-sail{0%,100%{transform:scaleX(1)}50%{transform:scaleX(.78)}}
+</style><defs>
+    <linearGradient id="td4_skin" gradientUnits="userSpaceOnUse" x1="0" y1="-66" x2="0" y2="1"><stop offset="0" stop-color="#fff4dc"/><stop offset="0.24" stop-color="#f2d08a"/><stop offset="0.68" stop-color="#d89c34"/><stop offset="0.93" stop-color="#bb8226"/><stop offset="1" stop-color="#173a3b"/></linearGradient>
+    <linearGradient id="td4_eye" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff1d2"/><stop offset="1" stop-color="#d9a248"/></linearGradient>
+  <radialGradient id="td4_iris" cx=".45" cy=".42" r=".6"><stop offset="0" stop-color="#f4f1b4"/><stop offset=".55" stop-color="#bdb64a"/><stop offset="1" stop-color="#6f6a1c"/></radialGradient>
+    <linearGradient id="td4_wood" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#a87a4e"/><stop offset=".5" stop-color="#8a5f3b"/><stop offset="1" stop-color="#6b452a"/></linearGradient>
+    <linearGradient id="td4_mat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ecd49a"/><stop offset="1" stop-color="#b8975a"/></linearGradient>
+    <radialGradient id="td4_gourd" cx=".38" cy=".32" r=".7"><stop offset="0" stop-color="#f3cf86"/><stop offset=".6" stop-color="#d7a04a"/><stop offset="1" stop-color="#9c6a2c"/></radialGradient>
+    <radialGradient id="td4_shell" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#f6dcc0"/><stop offset=".6" stop-color="#e2b48a"/><stop offset="1" stop-color="#b07a50"/></radialGradient>
+    <radialGradient id="td4_throat" cx=".5" cy=".35" r=".6"><stop offset="0" stop-color="#fffaf0"/><stop offset="1" stop-color="#f0d9a6"/></radialGradient>
+    <clipPath id="td4_bc"><path d="M0 0 C15 .5 33 -1 40 -8 C45 -14 44.6 -22 41 -28 C39 -31.6 39.4 -35.6 40 -40 C40.6 -47 37 -55 28.6 -58.4 C19 -61.6 -19 -61.6 -28.6 -58.4 C-37 -55 -40.6 -47 -40 -40 C-39.4 -35.6 -39 -31.6 -41 -28 C-44.6 -22 -45 -14 -40 -8 C-33 -1 -15 .5 0 0Z"/></clipPath>
+  </defs>
+  <g class="td-cast">
+  <g transform="translate(0 7)"><g class="td-splash"><ellipse rx="64" ry="11" fill="none" stroke="#e6f5f1" stroke-width=".9" opacity="0"/></g></g><g transform="translate(0 7)"><g class="td-splash two"><ellipse rx="64" ry="11" fill="none" stroke="#e6f5f1" stroke-width=".9" opacity="0"/></g></g>
+    <defs><radialGradient id="td4_stone" cx=".42" cy=".22" r=".8"><stop offset="0" stop-color="#c9d3c2"/><stop offset=".5" stop-color="#97a594"/><stop offset="1" stop-color="#5f6d5e"/></radialGradient></defs>
+    <path d="M-54 3.6 C-56 -2.6 -44 -6.4 -24 -6.8 C-2 -7.2 26 -7.2 44 -5.6 C55 -4.6 58 -.6 56 4.4 C53.6 10 36 13 6 13.2 C-24 13.4 -50 11 -54 3.6Z" fill="url(#td4_stone)" stroke="#4c5a4c" stroke-width=".5"/>
+    <path d="M-44 -2.6 C-30 -5.6 -6 -5.8 14 -5.6 C30 -5.4 44 -4.4 50 -2" fill="none" stroke="#e6ece0" stroke-width=".9" opacity=".6"/>
+    <path d="M-48 6.6 C-30 10.4 20 11 48 6.4" fill="none" stroke="#4c5a4c" stroke-width=".6" opacity=".4"/>
+    <ellipse cx="0" cy="1.4" rx="44" ry="4.2" fill="#173a3b" opacity=".3"/><ellipse cx="0" cy=".9" rx="31.68" ry="2.3" fill="#173a3b" opacity=".2"/>
+  <g class="td-body"><g class="td-breathe">
+    <!-- the pack on his back: a wooden frame box, a rolled mat, a gourd -->
+    <path d="M-25 -96.6 L-25 -52 M25 -96.6 L25 -52" stroke="#5a3a22" stroke-width="3.2" stroke-linecap="round"/>
+    <circle cx="-25" cy="-97.4" r="2.2" fill="#6b452a"/><circle cx="25" cy="-97.4" r="2.2" fill="#6b452a"/>
+    <rect x="-22" y="-86" width="44" height="34" rx="2.6" fill="url(#td4_wood)" stroke="#4a2f1c" stroke-width=".6"/>
+    <rect x="-22" y="-86" width="44" height="5.2" rx="2.4" fill="#b88a5e" stroke="#4a2f1c" stroke-width=".5"/>
+    <path d="M-20.6 -66 L20.6 -66 M-20.6 -73 L20.6 -73 M-20.6 -80 L20.6 -80" stroke="#5a3a22" stroke-width=".7" opacity=".7"/>
+    <path d="M-20.4 -80 L-20.4 -54" stroke="#c99a6a" stroke-width=".8" opacity=".5"/>
+    <path d="M-6 -66 L6 -66 L6 -60 L-6 -60Z" fill="#6b452a" opacity=".6"/>
+    <g transform="translate(0 -91.4)">
+      <rect x="-28" y="-5.6" width="56" height="11.2" rx="5.6" fill="url(#td4_mat)" stroke="#8e7034" stroke-width=".6"/>
+      <path d="M-24 -5 L-24 5 M-16 -5.4 L-16 5.4 M-8 -5.6 L-8 5.6 M0 -5.6 L0 5.6 M8 -5.6 L8 5.6 M16 -5.4 L16 5.4 M24 -5 L24 5" stroke="#b8975a" stroke-width=".5" opacity=".8"/>
+      <ellipse cx="-28" cy="0" rx="2.2" ry="5.4" fill="#d9bd7e" stroke="#8e7034" stroke-width=".5"/>
+      <path d="M-13 -5.8 L-13 5.8 M13 -5.8 L13 5.8" stroke="#6b452a" stroke-width="1.6"/>
+    </g>
+    <!-- the gourd hangs off the frame by a red cord -->
+    <g transform="translate(25.4 -80)"><g class="td-gourd">
+      <path d="M0 0 C2.4 2 4 4 4.4 6.4" fill="none" stroke="#b0524a" stroke-width="1"/>
+      <path d="M4.4 6 C2 6 1.4 9 3 10.6 C-1 12.6 -1.6 19 2.4 21.6 C6 24 11 22 12 18 C13 14 10.6 11.2 7.4 10.6 C8.6 8.6 7.4 6 4.4 6Z" fill="url(#td4_gourd)" stroke="#8a5a2b" stroke-width=".5"/>
+      <path d="M3.8 9.6 C5.6 10.2 7 10.4 8.4 10.2" fill="none" stroke="#b0524a" stroke-width="1.1"/>
+      <ellipse cx="3" cy="15.4" rx="1.4" ry="2.6" fill="#fff4dc" opacity=".55"/>
+    </g></g>
+    <!-- haunches and hind feet -->
+    <path d="M-38 -4.6 C-44 -7 -50 -6 -54.6 -3.2 C-56.6 -2 -56.4 .3 -54 .6 C-48 1 -42 .8 -37 .2Z M38 -4.6 C44 -7 50 -6 54.6 -3.2 C56.6 -2 56.4 .3 54 .6 C48 1 42 .8 37 .2Z" fill="#d29a3c" stroke="#8a5a2b" stroke-width=".5"/>
+    <g fill="#f7e2b0" stroke="#8a5a2b" stroke-width=".4"><circle cx="-55.4" cy="-.8" r="1.5"/><circle cx="-52.6" cy="-4.4" r="1.4"/><circle cx="55.4" cy="-.8" r="1.5"/><circle cx="52.6" cy="-4.4" r="1.4"/></g>
+    <!-- body: compact and stocky -->
+    <path d="M0 0 C15 .5 33 -1 40 -8 C45 -14 44.6 -22 41 -28 C39 -31.6 39.4 -35.6 40 -40 C40.6 -47 37 -55 28.6 -58.4 C19 -61.6 -19 -61.6 -28.6 -58.4 C-37 -55 -40.6 -47 -40 -40 C-39.4 -35.6 -39 -31.6 -41 -28 C-44.6 -22 -45 -14 -40 -8 C-33 -1 -15 .5 0 0Z" fill="url(#td4_skin)" stroke="#8a5a2b" stroke-width=".6"/>
+    <g clip-path="url(#td4_bc)">
+      <ellipse cx="0" cy="-15" rx="21" ry="15" fill="#fff4dc" opacity=".55"/>
+      <ellipse cx="-33.6" cy="-41" rx="3.06" ry="2.61" fill="#7a4a24" opacity=".55"/><circle cx="-33.2" cy="-40.39" r="1.35" fill="#2b2420" opacity="0.2"/><circle cx="-33.6" cy="-41" r="1.35" fill="#ffffff" opacity=".4"/><ellipse cx="34" cy="-40" rx="2.72" ry="2.32" fill="#7a4a24" opacity=".55"/><circle cx="34.36" cy="-39.46" r="1.2000000000000002" fill="#2b2420" opacity="0.2"/><circle cx="34" cy="-40" r="1.2000000000000002" fill="#ffffff" opacity=".4"/><ellipse cx="-33" cy="-30" rx="4.42" ry="3.77" fill="#7a4a24" opacity=".55"/><circle cx="-32.41" cy="-29.12" r="1.9500000000000002" fill="#2b2420" opacity="0.2"/><circle cx="-33" cy="-30" r="1.9500000000000002" fill="#ffffff" opacity=".4"/><ellipse cx="34" cy="-28" rx="4.76" ry="4.06" fill="#7a4a24" opacity=".55"/><circle cx="34.63" cy="-27.05" r="2.0999999999999996" fill="#2b2420" opacity="0.2"/><circle cx="34" cy="-28" r="2.0999999999999996" fill="#ffffff" opacity=".4"/><ellipse cx="-22" cy="-14" rx="3.74" ry="3.19" fill="#7a4a24" opacity=".55"/><circle cx="-21.5" cy="-13.26" r="1.6500000000000001" fill="#2b2420" opacity="0.2"/><circle cx="-22" cy="-14" r="1.6500000000000001" fill="#ffffff" opacity=".4"/><ellipse cx="21" cy="-12" rx="4.08" ry="3.48" fill="#7a4a24" opacity=".55"/><circle cx="21.54" cy="-11.19" r="1.7999999999999998" fill="#2b2420" opacity="0.2"/><circle cx="21" cy="-12" r="1.7999999999999998" fill="#ffffff" opacity=".4"/><ellipse cx="-36" cy="-14" rx="3.4" ry="2.9" fill="#7a4a24" opacity=".55"/><circle cx="-35.55" cy="-13.32" r="1.5" fill="#2b2420" opacity="0.2"/><circle cx="-36" cy="-14" r="1.5" fill="#ffffff" opacity=".4"/><ellipse cx="36.6" cy="-15" rx="3.4" ry="2.9" fill="#7a4a24" opacity=".55"/><circle cx="37.05" cy="-14.32" r="1.5" fill="#2b2420" opacity="0.2"/><circle cx="36.6" cy="-15" r="1.5" fill="#ffffff" opacity=".4"/><ellipse cx="-12" cy="-50" rx="2.72" ry="2.32" fill="#7a4a24" opacity=".55"/><circle cx="-11.64" cy="-49.46" r="1.2000000000000002" fill="#2b2420" opacity="0.2"/><circle cx="-12" cy="-50" r="1.2000000000000002" fill="#ffffff" opacity=".4"/><ellipse cx="13" cy="-50.6" rx="2.72" ry="2.32" fill="#7a4a24" opacity=".55"/><circle cx="13.36" cy="-50.06" r="1.2000000000000002" fill="#2b2420" opacity="0.2"/><circle cx="13" cy="-50.6" r="1.2000000000000002" fill="#ffffff" opacity=".4"/>
+      <circle cx="-16.73" cy="-27.59" r="0.9" fill="#5a3a18" opacity="0.22"/><circle cx="-17" cy="-28" r="0.9" fill="#ffffff" opacity=".4"/><circle cx="16.27" cy="-26.59" r="0.9" fill="#5a3a18" opacity="0.22"/><circle cx="16" cy="-27" r="0.9" fill="#ffffff" opacity=".4"/><circle cx="-7.76" cy="-7.64" r="0.8" fill="#5a3a18" opacity="0.22"/><circle cx="-8" cy="-8" r="0.8" fill="#ffffff" opacity=".4"/><circle cx="9.24" cy="-8.64" r="0.8" fill="#5a3a18" opacity="0.22"/><circle cx="9" cy="-9" r="0.8" fill="#ffffff" opacity=".4"/><circle cx="0.21" cy="-29.68" r="0.7" fill="#5a3a18" opacity="0.22"/><circle cx="0" cy="-30" r="0.7" fill="#ffffff" opacity=".4"/><circle cx="-29.73" cy="-5.59" r="0.9" fill="#5a3a18" opacity="0.22"/><circle cx="-30" cy="-6" r="0.9" fill="#ffffff" opacity=".4"/><circle cx="30.27" cy="-5.59" r="0.9" fill="#5a3a18" opacity="0.22"/><circle cx="30" cy="-6" r="0.9" fill="#ffffff" opacity=".4"/>
+      <ellipse cx="-13" cy="-54" rx="12" ry="2.8" fill="#ffffff" opacity=".24" transform="rotate(-8 -13 -54)"/>
+      <ellipse cx="0" cy="-2.4" rx="30" ry="3.6" fill="#173a3b" opacity=".12"/>
+    </g>
+    <g transform="translate(-18 -56.4) scale(0.9)">
+    <circle r="10" fill="url(#td4_eye)"/>
+    <circle cy=".7" r="7.4" fill="url(#td4_iris)"/>
+    <circle cy=".7" r="7.4" fill="none" stroke="#5a4a14" stroke-width=".5" opacity=".7"/>
+    <g transform="translate(0 1.2)"><g class="td-gaze">
+      <ellipse rx="4.6" ry="2.1" fill="#1f2e2c"/>
+      <circle cx="2.1" cy="-0.85" r="1.15" fill="#ffffff" opacity=".9"/>
+      <circle cx="-2.5" cy="1.9" r=".5" fill="#ffffff" opacity=".5"/>
+    </g></g>
+    <g transform="translate(0 -10.2)"><g class="td-look"><g class="td-blink" style="--bk:2.29"><g transform="translate(0 10.2)">
+      <path d="M-9.83 -2.35 A10.25 10.25 0 0 1 9.83 -2.9 C6 -1.8 -6 -1.6 -9.83 -2.35Z" fill="url(#td4_eye)"/>
+      <path d="M-7.4 -5.1 C-3 -4.1 3 -4.1 7.4 -5.1" fill="none" stroke="#fff6dc" stroke-width=".75" stroke-linecap="round" opacity=".55"/>
+      <path d="M-9.28 -2 C-6 -1.6 6 -1.6 9.28 -2.55" fill="none" stroke="#3a2614" stroke-width="1.4" stroke-linecap="round"/>
+    </g></g></g></g>
+    <path d="M9.99 -0.35 A10 10 0 0 0 -9.99 -0.35" fill="none" stroke="#8a5a2b" stroke-width=".6" stroke-linecap="round"/>
+    <path d="M8.44 -4.87 A9.75 9.75 0 0 0 -8.44 -4.87" fill="none" stroke="#9c6a2c" stroke-width="1.3" stroke-linecap="round" opacity=".85"/>
+    <path d="M5.85 -7.49 A9.5 9.5 0 0 0 -5.85 -7.49" fill="none" stroke="#7a5020" stroke-width="1.6" stroke-linecap="round" opacity=".6"/>
+    <path d="M6.72 -4.7 A8.2 8.2 0 0 0 -4.7 -6.72" fill="none" stroke="#fff6dc" stroke-width=".8" stroke-linecap="round" opacity=".7"/>
+    <path d="M9.4 3.42 A10 10 0 0 1 -9.4 3.42" fill="none" stroke="#9c6a2c" stroke-width=".6" stroke-linecap="round" opacity=".3"/>
+  </g>
+    <g transform="translate(18 -56.4) scale(0.9)">
+    <circle r="10" fill="url(#td4_eye)"/>
+    <circle cy=".7" r="7.4" fill="url(#td4_iris)"/>
+    <circle cy=".7" r="7.4" fill="none" stroke="#5a4a14" stroke-width=".5" opacity=".7"/>
+    <g transform="translate(0 1.2)"><g class="td-gaze">
+      <ellipse rx="4.6" ry="2.1" fill="#1f2e2c"/>
+      <circle cx="2.1" cy="-0.85" r="1.15" fill="#ffffff" opacity=".9"/>
+      <circle cx="-2.5" cy="1.9" r=".5" fill="#ffffff" opacity=".5"/>
+    </g></g>
+    <g transform="translate(0 -10.2)"><g class="td-look"><g class="td-blink" style="--bk:2.29"><g transform="translate(0 10.2)">
+      <path d="M-9.83 -2.9 A10.25 10.25 0 0 1 9.83 -2.35 C6 -1.6 -6 -1.8 -9.83 -2.9Z" fill="url(#td4_eye)"/>
+      <path d="M-7.4 -5.1 C-3 -4.1 3 -4.1 7.4 -5.1" fill="none" stroke="#fff6dc" stroke-width=".75" stroke-linecap="round" opacity=".55"/>
+      <path d="M-9.28 -2.55 C-6 -1.6 6 -1.6 9.28 -2" fill="none" stroke="#3a2614" stroke-width="1.4" stroke-linecap="round"/>
+    </g></g></g></g>
+    <path d="M-9.99 -0.35 A10 10 0 0 1 9.99 -0.35" fill="none" stroke="#8a5a2b" stroke-width=".6" stroke-linecap="round"/>
+    <path d="M-8.44 -4.87 A9.75 9.75 0 0 1 8.44 -4.87" fill="none" stroke="#9c6a2c" stroke-width="1.3" stroke-linecap="round" opacity=".85"/>
+    <path d="M-5.85 -7.49 A9.5 9.5 0 0 1 5.85 -7.49" fill="none" stroke="#7a5020" stroke-width="1.6" stroke-linecap="round" opacity=".6"/>
+    <path d="M-6.72 -4.7 A8.2 8.2 0 0 1 4.7 -6.72" fill="none" stroke="#fff6dc" stroke-width=".8" stroke-linecap="round" opacity=".7"/>
+    <path d="M-9.4 3.42 A10 10 0 0 0 9.4 3.42" fill="none" stroke="#9c6a2c" stroke-width=".6" stroke-linecap="round" opacity=".3"/>
+  </g>
+    <!-- Dango the snail, on top of his head -->
+    <g transform="translate(-1 -63.4)"><g class="td-snail">
+      <g transform="translate(0 0)"><g class="td-out">
+        <path d="M3 -3 C6 -3.6 10 -3.4 13.6 -2 C15.6 -1.2 16.4 .4 15 1.2 C11 2.4 5 2.2 1 1.6Z" fill="#cfd6be" stroke="#7f8a6a" stroke-width=".45"/>
+        <g transform="translate(13 -1.6)"><g class="td-horns">
+          <path d="M0 0 C.4 -3 1.2 -5.6 2.2 -7.4 M-1.4 .2 C-2.4 -2.6 -2.8 -4.8 -2.6 -6.8" fill="none" stroke="#9aa486" stroke-width=".9" stroke-linecap="round"/>
+          <circle cx="2.3" cy="-7.6" r=".9" fill="#3a3a2a"/><circle cx="-2.6" cy="-7" r=".9" fill="#3a3a2a"/>
+        </g></g>
+      </g></g>
+      <circle cx="0" cy="-3.4" r="6.4" fill="url(#td4_shell)" stroke="#8a5a2b" stroke-width=".55"/>
+      <path d="M0 -3.4 m-1.4 0 a1.4 1.4 0 1 1 2.8 .2 a2.8 2.8 0 1 1 -4.8 -1.2 a4.4 4.4 0 1 1 5.2 6.8" fill="none" stroke="#9a6a3a" stroke-width=".75" stroke-linecap="round"/>
+      <ellipse cx="-2.4" cy="-6.4" rx="1.6" ry=".9" fill="#ffffff" opacity=".5"/>
+    </g></g>
+    <ellipse cx="-4.8" cy="-46.6" rx="1.1" ry=".75" fill="#3a2614" opacity=".55"/><ellipse cx="4.8" cy="-46.6" rx="1.1" ry=".75" fill="#3a2614" opacity=".55"/>
+    <!-- a wide, easy smile -->
+    <path d="M-31 -42.6 C-22 -38.6 -10 -37.6 0 -37.8 C10 -37.6 22 -38.6 31 -42.6" fill="none" stroke="#fff6dc" stroke-width=".85" stroke-linecap="round" opacity=".55" transform="translate(0 -1.3)"/>
+    <path d="M-31 -42.6 C-22 -38.6 -10 -37.6 0 -37.8 C10 -37.6 22 -38.6 31 -42.6" fill="none" stroke="#3a2614" stroke-width="1.45" stroke-linecap="round" opacity=".8"/>
+    <path d="M-31 -42.6 C-32.6 -43.4 -33.2 -44.6 -33 -45.8 M31 -42.6 C32.6 -43.4 33.2 -44.6 33 -45.8" fill="none" stroke="#3a2614" stroke-width="1.1" stroke-linecap="round" opacity=".7"/>
+    <g transform="translate(0 -36.4)"><g class="td-throat"><g transform="translate(0 36.4)">
+      <ellipse cx="0" cy="-31.6" rx="13.6" ry="5" fill="url(#td4_throat)"/><ellipse cx="-3.8" cy="-33" rx="4.2" ry="1.2" fill="#ffffff" opacity=".4"/>
+    </g></g></g>
+    <!-- the tenugui, teal with white dots, knotted at one side -->
+    <path d="M-30.6 -30.6 C-18 -25.6 18 -25.6 30.6 -30.6 L31.6 -25.6 C18 -20 -18 -20 -31.6 -25.6Z" fill="#2f7a74" stroke="#1f5753" stroke-width=".5"/>
+    <g fill="#e6f5f1" opacity=".85"><circle cx="-22" cy="-26.2" r=".8"/><circle cx="-13" cy="-24.4" r=".8"/><circle cx="-4" cy="-23.8" r=".8"/><circle cx="5" cy="-23.8" r=".8"/><circle cx="14" cy="-24.4" r=".8"/><circle cx="-17.6" cy="-22.4" r=".6"/><circle cx="9.6" cy="-21.8" r=".6"/></g>
+    <path d="M22 -25.6 C26 -24 27.4 -20 26 -15.4 L22.4 -16.2 C23 -19.6 22 -22.4 20 -23.8Z M25 -26.6 C29.6 -25.6 32.6 -22.6 33.4 -18.6 L29.8 -17.8 C29 -21 27 -23.4 24 -24.4Z" fill="#2f7a74" stroke="#1f5753" stroke-width=".5"/>
+    <circle cx="23.4" cy="-25.6" r="2.4" fill="#2a6e68" stroke="#1f5753" stroke-width=".5"/>
+    <!-- arms, both planted -->
+    <path d="M30 -36 C38.6 -35.4 45.6 -29 46.6 -20.4 C47.4 -13 45 -6 43.4 -2.4 L34.4 -2.4 C35 -8 34.4 -14 31.6 -19 C29.4 -23 27.6 -27.6 27.6 -31.6Z M-30 -36 C-38.6 -35.4 -45.6 -29 -46.6 -20.4 C-47.4 -13 -45 -6 -43.4 -2.4 L-34.4 -2.4 C-35 -8 -34.4 -14 -31.6 -19 C-29.4 -23 -27.6 -27.6 -27.6 -31.6Z" fill="url(#td4_skin)"/>
+    <path d="M38.6 -34.6 C43.2 -31.2 46 -26.2 46.6 -20.4 C47.4 -13 45 -6 43.4 -2.4 M34.4 -2.4 C35 -8 34.4 -14 31.6 -19 C30.8 -20.4 30 -21.8 29.4 -23.2 M-38.6 -34.6 C-43.2 -31.2 -46 -26.2 -46.6 -20.4 C-47.4 -13 -45 -6 -43.4 -2.4 M-34.4 -2.4 C-35 -8 -34.4 -14 -31.6 -19 C-30.8 -20.4 -30 -21.8 -29.4 -23.2" fill="none" stroke="#8a5a2b" stroke-width=".55" stroke-linecap="round"/>
+    <ellipse cx="42" cy="-20" rx="3.06" ry="2.61" fill="#7a4a24" opacity=".55"/><circle cx="42.41" cy="-19.39" r="1.35" fill="#2b2420" opacity="0.2"/><circle cx="42" cy="-20" r="1.35" fill="#ffffff" opacity=".4"/><ellipse cx="-42" cy="-20" rx="3.06" ry="2.61" fill="#7a4a24" opacity=".55"/><circle cx="-41.59" cy="-19.39" r="1.35" fill="#2b2420" opacity="0.2"/><circle cx="-42" cy="-20" r="1.35" fill="#ffffff" opacity=".4"/><ellipse cx="40" cy="-9" rx="2.38" ry="2.03" fill="#7a4a24" opacity=".55"/><circle cx="40.31" cy="-8.53" r="1.0499999999999998" fill="#2b2420" opacity="0.2"/><circle cx="40" cy="-9" r="1.0499999999999998" fill="#ffffff" opacity=".4"/><ellipse cx="-40" cy="-9" rx="2.38" ry="2.03" fill="#7a4a24" opacity=".55"/><circle cx="-39.69" cy="-8.53" r="1.0499999999999998" fill="#2b2420" opacity="0.2"/><circle cx="-40" cy="-9" r="1.0499999999999998" fill="#ffffff" opacity=".4"/>
+    <ellipse cx="39" cy="-1.9" rx="6.4" ry="2.8" fill="#e8b860" stroke="#8a5a2b" stroke-width=".5"/>
+      <g stroke-linecap="round"><path d="M38.6 -2 L29.6 .5 M38.8 -1.8 L34.6 1.7 M39.4 -1.8 L42.6 1.8 M39.8 -2 L48.4 .4" stroke="#8a5a2b" stroke-width="4.1"/>
+      <path d="M38.6 -2 L29.6 .5 M38.8 -1.8 L34.6 1.7 M39.4 -1.8 L42.6 1.8 M39.8 -2 L48.4 .4" stroke="#efc778" stroke-width="3.2"/></g>
+      <g fill="#fbe7b8" stroke="#8a5a2b" stroke-width=".4"><circle cx="29.4" cy=".6" r="1.9"/><circle cx="34.5" cy="1.8" r="1.9"/><circle cx="42.7" cy="1.9" r="1.9"/><circle cx="48.6" cy=".5" r="1.9"/></g><ellipse cx="-39" cy="-1.9" rx="6.4" ry="2.8" fill="#e8b860" stroke="#8a5a2b" stroke-width=".5"/>
+      <g stroke-linecap="round"><path d="M-38.6 -2 L-29.6 .5 M-38.8 -1.8 L-34.6 1.7 M-39.4 -1.8 L-42.6 1.8 M-39.8 -2 L-48.4 .4" stroke="#8a5a2b" stroke-width="4.1"/>
+      <path d="M-38.6 -2 L-29.6 .5 M-38.8 -1.8 L-34.6 1.7 M-39.4 -1.8 L-42.6 1.8 M-39.8 -2 L-48.4 .4" stroke="#efc778" stroke-width="3.2"/></g>
+      <g fill="#fbe7b8" stroke="#8a5a2b" stroke-width=".4"><circle cx="-29.4" cy=".6" r="1.9"/><circle cx="-34.5" cy="1.8" r="1.9"/><circle cx="-42.7" cy="1.9" r="1.9"/><circle cx="-48.6" cy=".5" r="1.9"/></g>
+  </g></g>
+  </g></svg>
