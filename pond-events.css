@@ -1,0 +1,261 @@
+/* Pond Moments · cream paper, quiet water, and a little room to sit. */
+.pe-section{padding:22px;margin-bottom:20px;color:var(--tx,#244b47);font-family:'Outfit',sans-serif}
+.pe-section-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.pe-section h2{font:500 25px/1.2 'Outfit',sans-serif;margin:6px 0 14px}
+.pe-section .eyebrow,#pe-player .eyebrow{font-size:11px;letter-spacing:.12em;color:var(--focus,#2f7a74)}
+.pe-section p{font-size:14px;line-height:1.6;color:var(--dim,#687968);margin:0 0 14px}
+.pe-sprig{font-size:34px;color:#6e9170}.pe-pending{display:flex;gap:14px;align-items:center;justify-content:space-between;margin:0 0 16px;font-size:13px;line-height:1.6}.pe-pending b{font-size:16px;font-weight:500}
+.pe-owned button{font:500 14px/1.3 'Outfit',sans-serif;min-height:44px;cursor:pointer;border:1px solid #ced6c3;border-radius:14px;padding:10px 15px;background:#f8f3e6;color:#275e57;box-shadow:none}
+.pe-owned button:hover{background:#e7eedc}.pe-owned button:focus-visible,.pe-setting input:focus-visible{outline:3px solid #c77842;outline-offset:3px}
+.pe-owned button:disabled{opacity:.4;cursor:default}.pe-owned [data-pe-watch],.pe-owned [data-pe-next],.pe-owned [data-pe-invite-watch]{background:#2f7a74;color:#fff8e9;border-color:#2f7a74}
+.pe-owned [data-pe-watch]:hover,.pe-owned [data-pe-next]:hover,.pe-owned [data-pe-invite-watch]:hover{background:#245f59;color:#fff8e9}
+.pe-replays{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}.pe-replays button{text-align:left;font-size:13px}.pe-replays span{opacity:.65;margin-left:5px}
+.pe-hint button{border:0;padding:0 8px;background:transparent}.pe-setting{display:flex;align-items:center;gap:10px;min-height:44px;font-size:13px;color:var(--dim,#687968)}.pe-setting input{width:19px;height:19px;accent-color:#2f7a74}
+.pe-hotspot{position:absolute;z-index:9;width:74px;height:64px;min-height:44px!important;padding:0!important;background:transparent!important;border:0!important;left:52%;bottom:16px}
+.pe-hotspot svg{display:block;width:74px;height:56px;filter:drop-shadow(0 3px 3px #082b2b55)}
+.pe-hotspot span{position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);font-size:11px;white-space:nowrap;background:#fff8e9;color:#275e57;border-radius:8px;padding:4px 7px;box-shadow:0 2px 8px #082b2b30}
+.pe-boat{left:57%;bottom:10px}.pe-pebble{position:relative;left:auto;bottom:auto;display:block;margin:4px 0 0 auto}
+.pe-hotspot.pe-motion svg{animation:pe-bob 5s ease-in-out infinite}
+.pe-invitation{position:fixed;right:24px;bottom:24px;z-index:57;background:#fff8e9;color:#275e57;border:1px solid #cfdbc6;box-shadow:0 8px 30px #133c3b20;border-radius:20px;padding:17px 20px;max-width:calc(100vw - 32px);font:400 16px/1.5 'Outfit',sans-serif}
+.pe-invitation div{display:flex;gap:8px;margin-top:9px}
+#pe-player{width:min(610px,calc(100vw - 32px));max-height:calc(100dvh - 32px);margin:auto;padding:24px;border:1px solid #d5ddc6;border-radius:28px;background:#fff8e9;color:#274944;box-shadow:0 24px 90px #072e3366;font-family:'Outfit',sans-serif;overflow:auto;overscroll-behavior:contain}
+#pe-player::backdrop{background:#092e38a3;backdrop-filter:blur(3px)}
+.pe-top{display:flex;gap:12px;justify-content:space-between;align-items:flex-start}.pe-top h2{font:500 27px/1.15 'Outfit',sans-serif;margin:6px 0 18px}.pe-top button{min-width:44px;padding:8px;font-size:24px;border:0;background:transparent}
+.pe-stage{position:relative;height:220px;border-radius:20px;background:radial-gradient(ellipse at 50% 15%,#3b6660,#103c42 80%);overflow:hidden;margin-bottom:20px;isolation:isolate}
+.pe-actors{position:absolute;inset:14px 5px 30px;display:flex;align-items:center;justify-content:space-evenly;gap:0}.pe-actor{width:130px;max-width:25%;display:flex;justify-content:center}.pe-actor .td-art{width:130px;height:130px;max-width:none;flex-shrink:0}
+.pe-stage-ripple{position:absolute;bottom:28px;left:12%;width:76%;height:34px;border:1px solid #c9e0c43b;border-radius:50%;box-shadow:0 0 0 15px #c9e0c40b}
+.pe-actors:has(.pe-actor:nth-child(4)) .td-art{width:100%;height:auto}
+.pe-prop{position:absolute;bottom:5px;left:calc(50% - 50px);width:100px;height:70px}.pe-prop svg{width:100%;height:100%}
+.pe-bubble{display:flex;gap:18px;align-items:center;min-height:106px;padding:12px 16px;background:#f1eddf;border:1px solid #e1dfcb;border-radius:20px}.pe-portrait{flex:0 0 86px;width:86px;height:86px;overflow:hidden;border-radius:50%;background:#e2e7d5}.pe-portrait:empty{display:none}.pe-portrait .td-art{width:86px;height:86px;overflow:hidden}
+.pe-speaker{font-size:12px;letter-spacing:.06em;color:#5d806d}.pe-dialogue{font:400 19px/1.55 'Outfit',sans-serif;margin:4px 0 0;overflow-wrap:anywhere}.pe-action{font-size:13px;line-height:1.5;color:#758071;min-height:39px;margin:12px 4px}
+.pe-controls{display:flex;align-items:center;justify-content:space-between;gap:8px}.pe-controls button{min-width:108px}.pe-count{font-size:12px;color:#849080}.pe-footer{display:flex;justify-content:center;gap:20px;margin-top:10px}.pe-footer button{border:0;background:transparent;color:#6f8173;font-size:13px}
+.pe-sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.pe-beetle-friend,.pe-petal,.pe-note{opacity:0}#pe-player[data-beat="3"] .pe-beetle-friend,#pe-player[data-beat="4"] .pe-beetle-friend,#pe-player[data-beat="4"] .pe-petal,#pe-player[data-beat="4"] .pe-note{opacity:1}
+#pe-player[data-prop="moon"] .pe-stage{background:radial-gradient(ellipse at 50% 20%,#385457,#122d3d 80%)}.pe-moon{opacity:.45}#pe-player[data-beat="4"] .pe-moon{opacity:1}
+.pe-leaf-roof{transform:translateY(-10px) rotate(-10deg);transform-origin:20px 40px}#pe-player[data-beat="4"] .pe-leaf-roof{transform:none}
+.pe-dango{position:absolute;width:58px;height:44px;left:calc(50% - 4px);bottom:50px}.pe-dango .td-art{width:58px;height:44px}
+#pe-player.td-mv .pe-stage-ripple{animation:pe-ripple 6s ease-in-out infinite}#pe-player.td-mv .pe-prop{transition:transform 1.4s ease}#pe-player[data-prop="boat"][data-beat="0"] .pe-prop{transform:translateX(35px)}#pe-player[data-prop="boat"][data-beat="4"] .pe-prop{transform:translateX(75px)}
+#pe-player.td-mv[data-prop="stone"][data-beat="2"] .td-tabi .td-snail{animation:pe-settle 1.3s ease-out both}
+@keyframes pe-bob{50%{transform:translateY(-3px) rotate(2deg)}}@keyframes pe-ripple{50%{opacity:.55;transform:scaleX(1.04)}}@keyframes pe-settle{to{transform:translateY(1px) rotate(-2deg)}}
+.pond-still .pe-owned *{animation:none!important;transition:none!important}
+@media(prefers-reduced-motion:reduce){.pe-owned *{animation:none!important;transition:none!important}}
+@media(max-width:760px){#pe-player{padding:18px;width:calc(100vw - 24px);max-height:calc(100dvh - 24px - env(safe-area-inset-bottom));border-radius:24px}.pe-top h2{font-size:23px}.pe-stage{height:180px;margin-bottom:14px}.pe-actor .td-art{width:108px;height:108px}.pe-bubble{gap:12px;padding:12px}.pe-portrait,.pe-portrait .td-art{width:70px;height:70px}.pe-portrait{flex-basis:70px}.pe-dialogue{font-size:17px}.pe-invitation{right:16px}.pe-hotspot{left:49%;bottom:10px}.pe-hotspot.pe-pebble{left:auto;bottom:auto}}
+@media(max-height:660px){#pe-player{padding:14px}.pe-stage{height:130px;margin-bottom:10px}.pe-actors{inset:4px 5px 20px}.pe-actor .td-art{height:95px;width:95px}.pe-top h2{font-size:21px;margin-bottom:10px}.pe-bubble{min-height:90px}.pe-action{min-height:20px;margin:8px 2px}.pe-footer{margin-top:4px}}
+@media(max-height:600px) and (max-width:760px){#pe-player{padding:12px}.pe-stage{height:100px;margin-bottom:8px}.pe-actors{inset:0 5px 12px}.pe-actor .td-art{width:78px;height:78px}.pe-top h2{font-size:20px;margin-bottom:8px}.pe-bubble{padding:8px;gap:10px;min-height:72px}.pe-portrait,.pe-portrait .td-art{width:56px;height:56px}.pe-portrait{flex-basis:56px}.pe-dialogue{font-size:15px;line-height:1.45}.pe-action{font-size:12px;line-height:1.35;margin:6px 2px}.pe-footer{margin-top:0}.pe-prop{height:55px;bottom:0}}
+
+/* A pond set and a game dialogue box. Scenic layers stay behind the cast. */
+#pe-player{width:min(800px,calc(100vw - 32px));border:3px solid #c6c7a3;box-shadow:0 0 0 5px #fff8e955,0 24px 90px #072e3366}
+.pe-stage{height:310px;border:2px solid #769477;background:#527c70;box-shadow:inset 0 0 0 3px #e1e0b740}
+.pe-landscape{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+.pe-actors{inset:48px 9% 43px;align-items:flex-end;z-index:2}
+.pe-actor{position:relative;width:154px;max-width:25%;transition:transform .4s ease,filter .4s ease;transform-origin:50% 85%}
+.pe-actor .td-art{width:154px;height:154px}
+.pe-stage-ripple{left:21%;width:58%;bottom:40px;z-index:1;border-color:#d2e1b733;box-shadow:none}
+.pe-prop{z-index:3;bottom:24px;filter:drop-shadow(0 3px 2px #163f4333)}
+.pe-dango{z-index:4;bottom:62px}
+.pe-bubble{position:relative;margin:0 3px;border:2px solid #b8be92;border-radius:18px;background:linear-gradient(120deg,#fff8e8,#f1edd8);box-shadow:0 0 0 3px #e1dcc5,0 6px 0 #cfceb84d;min-height:125px;padding:17px 20px;align-items:center}
+.pe-bubble::before{content:'';position:absolute;inset:5px;border:1px solid #d8d4b7;border-radius:12px;pointer-events:none}
+.pe-copy{flex:1;min-width:0;padding-right:4px}.pe-speaker{display:inline-block;background:#507b60;color:#fff6d9;border:1px solid #93a47b;border-radius:9px;padding:4px 12px;font-size:13px;letter-spacing:.025em;position:relative;z-index:1}
+.pe-portrait{border:2px solid #c4c9a5;background:#e8ecd6;box-shadow:0 0 0 4px #faf6e5}
+.pe-dialogue{margin:8px 0 0;font-size:20px;line-height:1.55}.pe-text-off{opacity:0}
+.pe-continue{position:absolute;right:15px;bottom:7px;color:#73906c;font-size:19px;opacity:0}
+#pe-player[data-typing="false"] .pe-continue{opacity:1}
+.pe-action{margin:14px 6px;font-style:italic;color:#6d7f68}
+#pe-player.td-mv{animation:pe-arrive .35s ease-out both}
+#pe-player.td-mv .pe-beat-in .pe-copy{animation:pe-line-arrive .24s ease-out both}
+#pe-player.td-mv .pe-speaking{transform:translateY(-3px) scale(1.045);filter:drop-shadow(0 5px 4px #e3dfad22)}
+#pe-player.td-mv[data-typing="true"] .pe-speaking .td-throat{animation:pe-speaking .28s ease-in-out infinite alternate}
+#pe-player.td-mv[data-typing="false"] .pe-continue{animation:pe-cue 1.8s ease-in-out infinite}
+.td-mv .pe-water-lines{animation:pe-water-drift 10s ease-in-out infinite alternate}
+.td-mv .pe-passing-petals{animation:pe-water-drift 16s ease-in-out infinite alternate}
+.td-mv .pe-reed-stems{transform-box:view-box;transform-origin:0 0;animation:pe-reed-sway 7s ease-in-out infinite alternate}
+.td-mv .pe-scene-rain{animation:pe-rain-fall 1.8s linear infinite}
+#pe-player.td-mv .pe-leaf-roof{transition:transform 1.2s ease}
+#pe-player.td-mv .pe-beetle-friend,#pe-player.td-mv .pe-petal,#pe-player.td-mv .pe-moon{transition:opacity .7s ease}
+.pe-evening{background:#173a4d}.pe-evening .pe-actor{filter:drop-shadow(0 0 5px #c6d39b26)}
+@keyframes pe-arrive{from{opacity:0;transform:translateY(9px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes pe-line-arrive{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}
+@keyframes pe-speaking{from{transform:scaleY(1)}to{transform:scaleY(1.07)}}
+@keyframes pe-cue{50%{transform:translateY(3px);opacity:.55}}
+@keyframes pe-water-drift{to{transform:translate(6px,2px)}}
+@keyframes pe-reed-sway{from{transform:rotate(-1deg)}to{transform:rotate(1.5deg)}}
+@keyframes pe-rain-fall{from{transform:translate(2px,-9px);opacity:.1}50%{opacity:.5}to{transform:translate(-2px,9px);opacity:.1}}
+.pond-still #pe-player .pe-actor{transition:none}
+@media(prefers-reduced-motion:reduce){#pe-player,.pe-owned *{animation:none!important;transition:none!important}}
+@media(max-width:760px){#pe-player{width:calc(100vw - 24px);padding:16px}.pe-stage{height:225px}.pe-actors{inset:28px 7% 35px}.pe-actor .td-art{width:108px;height:108px}.pe-prop{bottom:19px;width:85px;left:calc(50% - 42px);height:60px}.pe-dango{bottom:52px}.pe-bubble{padding:13px 12px;gap:12px;min-height:122px}.pe-dialogue{font-size:17px;line-height:1.5}.pe-speaker{font-size:12px;padding:3px 9px}.pe-portrait{flex-basis:64px;width:64px;height:64px}.pe-portrait .td-art{width:60px;height:60px}.pe-action{margin:12px 4px}}
+@media(max-height:740px){#pe-player{padding:14px}.pe-stage{height:200px}.pe-actors{inset:24px 8% 33px}.pe-actor .td-art{width:105px;height:105px}.pe-top h2{font-size:22px;margin-bottom:12px}.pe-bubble{min-height:106px;padding:12px}.pe-dialogue{font-size:17px}.pe-action{min-height:20px;margin:10px 4px}.pe-footer{margin-top:3px}}
+@media(max-height:600px) and (max-width:760px){#pe-player{padding:10px}.pe-stage{height:120px;margin-bottom:8px}.pe-actors{inset:3px 6% 19px}.pe-actor .td-art{width:75px;height:75px}.pe-top h2{font-size:19px;margin-bottom:8px}.pe-bubble{padding:8px;gap:8px;min-height:83px}.pe-portrait{flex-basis:48px;width:48px;height:48px}.pe-portrait .td-art{width:44px;height:44px}.pe-dialogue{font-size:14px;line-height:1.4;margin-top:5px}.pe-speaker{font-size:11px;padding:2px 7px}.pe-action{font-size:11px;line-height:1.35;margin:7px 2px}.pe-prop{height:43px;bottom:10px;width:65px;left:calc(50% - 32px)}.pe-dango{height:30px;bottom:35px}.pe-continue{bottom:4px;font-size:15px}.pe-footer{margin-top:0}}
+
+/* A camera journey through the actual pond set, landing on the same stage. */
+@property --pe-aperture{syntax:'<length>';inherits:false;initial-value:0px}
+#pe-player.td-mv{animation:none}
+#pe-player.pe-entering,#pe-player.pe-leaving{overflow:visible;background:transparent;border-color:transparent;box-shadow:none;transform:none!important}
+#pe-player.pe-entering > :not(.pe-journey):not(.pe-journey-paper):not(.pe-announcement),
+#pe-player.pe-leaving > :not(.pe-journey):not(.pe-journey-paper):not(.pe-announcement){opacity:0}
+.pe-journey-paper{position:absolute;inset:-3px;z-index:-1;background:#fff8e9;border:3px solid #c6c7a3;border-radius:inherit;box-shadow:0 0 0 5px #fff8e955,0 24px 90px #072e3366;pointer-events:none}
+.pe-journey{position:fixed;inset:0;z-index:20;overflow:hidden;pointer-events:none}
+.pe-journey-world{position:absolute;inset:0;pointer-events:none}
+.pe-journey-feather{mask-image:radial-gradient(circle at var(--pe-origin-x) var(--pe-origin-y),#000 max(0px,calc(var(--pe-aperture) - 64px)),transparent var(--pe-aperture))}
+.pe-journey-plane{position:absolute;top:0;left:0;transform-origin:0 0;overflow:hidden;will-change:transform,opacity}
+.pe-journey-shade{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 44%,transparent 34%,#0c303d60);opacity:0}
+.pe-journey-ring{position:absolute;width:46px;height:30px;box-sizing:border-box;border:1.5px solid #d6e7c9cc;border-radius:50%;box-shadow:0 0 0 5px #d6e7c917;pointer-events:none}
+.pe-owned .pe-journey-skip{position:absolute;right:max(18px,env(safe-area-inset-right));top:max(18px,env(safe-area-inset-top));pointer-events:auto;min-height:44px;padding:10px 17px;background:#fff8e9e8;border:1px solid #c5d0b7;color:#285951;font-size:13px;box-shadow:0 4px 20px #193f4022;backdrop-filter:blur(5px)}
+#pe-player.pe-entering::backdrop{animation:pe-journey-backdrop-in .6s ease both}
+#pe-player.pe-leaving::backdrop{animation:pe-journey-backdrop-out .34s ease both}
+@keyframes pe-journey-backdrop-in{from{background:#092e3800;backdrop-filter:blur(0)}to{background:#092e38a3;backdrop-filter:blur(3px)}}
+@keyframes pe-journey-backdrop-out{from{background:#092e38a3;backdrop-filter:blur(3px)}to{background:#092e3800;backdrop-filter:blur(0)}}
+@media(prefers-reduced-motion:reduce){.pe-journey{display:none}#pe-player::backdrop{animation:none!important}}
+
+/* A generous scenic frame, with one continuous sky-to-pond camera world. */
+#pe-player{box-sizing:border-box;width:min(1440px,calc(100vw - 28px));height:calc(100dvh - 28px);max-width:none;max-height:calc(100dvh - 28px);padding:18px 22px;border-radius:24px;overflow:hidden}
+#pe-player[open]{display:grid;grid-template-rows:auto minmax(0,1fr) auto auto auto auto;gap:10px}
+#pe-player .pe-top{align-items:center}
+#pe-player .pe-top h2{font-size:25px;margin:3px 0 0}
+#pe-player .pe-top .eyebrow{font-size:10px}
+#pe-player .pe-stage{height:auto;min-height:0;margin:0;border-color:#456f64;background:#0f3b41}
+.pe-camera-world{position:absolute;inset:0 0 auto;height:220%;transform:translateY(-54.545455%);background:#0f3b41}
+.pe-entering .pe-camera-world{will-change:transform}
+.pe-sky{position:absolute;inset:0 0 auto;height:62.727273%;z-index:1;pointer-events:none;overflow:hidden;opacity:0;mask-image:linear-gradient(#000 0%,#000 84%,transparent 100%);--pe-horizon:66%}
+.pe-entering .pe-sky{opacity:1}
+/* sky: the app's teal air warming to paper cream at the horizon; crisp cream-topped clouds */
+.pe-sky-air,.pe-sky-glow,.pe-sky-clouds,.pe-sky-rainfall{position:absolute;inset:0 0 calc(100% - var(--pe-horizon))}
+.pe-sky-day .pe-sky-air{background:linear-gradient(180deg,#86c0c0 0%,#a9d3cf 30%,#d3e8de 58%,#efefdc 82%,#f8e8cc 100%)}
+.pe-sky-rain .pe-sky-air{background:linear-gradient(180deg,#7a9696 0%,#97b0ac 40%,#bccbc4 76%,#d3dcd2 100%)}
+.pe-sky-night .pe-sky-air{background:linear-gradient(180deg,#0b2231 0%,#12324a 42%,#1f4a57 78%,#33616a 100%)}
+.pe-sky-day .pe-sky-glow{background:radial-gradient(circle at 81% 21%,#fff8e3 0,#fff1cf8c 6%,#ffeccf33 18%,transparent 34%),radial-gradient(ellipse 60% 30% at 81% 100%,#fde7c78c,transparent 70%)}
+.pe-sky-night .pe-sky-glow{background:radial-gradient(circle at 74% 22%,#fff1c62e 0,transparent 26%),radial-gradient(ellipse 60% 26% at 74% 100%,#cfe9e324,transparent 70%)}
+.pe-sky-rain .pe-sky-glow{background:radial-gradient(ellipse 50% 40% at 64% 18%,#f4f6ee66,transparent 70%)}
+.pe-sky-cloud{position:absolute;height:auto;overflow:visible;width:calc(var(--pe-w) * var(--pe-cloud-scale,1))}
+@media(max-width:760px){.pe-sky{--pe-cloud-scale:1.8}}
+.pe-sky-sun{position:absolute;left:81%;top:13.9%;width:clamp(34px,4.6vw,64px);aspect-ratio:1;transform:translate(-50%,-50%)}
+.pe-sky-sun i{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 42% 40%,#fffdf2 0%,#fff3cf 55%,#fbe2a8 100%);box-shadow:0 0 0 6px #fff4d43d,0 0 0 16px #fff4d41f}
+.pe-sky-moon{position:absolute;left:74%;top:14.5%;width:clamp(40px,5.4vw,76px);height:auto;transform:translate(-50%,-50%);filter:drop-shadow(0 0 16px #fff1c633)}
+.pe-sky-star{position:absolute;background:#fff8e9;border-radius:50%;opacity:.7;box-shadow:0 0 4px #cfe9e366}
+.pe-sky-bird{position:absolute;height:auto;overflow:visible;opacity:.75;transform-origin:50% 70%}
+.pe-sky-rainfall{overflow:hidden}
+.pe-sky-rainfall i{position:absolute;width:1px;height:16px;background:linear-gradient(#f4f8f300,#f4f8f3a6);transform:rotate(12deg);opacity:.55}
+/* below the horizon: open water reflecting the sky, deepening into the pond's own teal */
+.pe-sky-water{position:absolute;left:0;right:0;top:var(--pe-horizon);bottom:0;overflow:hidden}
+.pe-sky-day .pe-sky-water{background:linear-gradient(180deg,#e1ecdf 0%,#b9d8cd 7%,#7fb4ab 24%,#3e8a84 50%,#22686a 76%,#185359 100%)}
+.pe-sky-rain .pe-sky-water{background:linear-gradient(180deg,#cad6cf 0%,#a2b8b2 10%,#6e9592 32%,#3a706e 60%,#1f5a5d 82%,#185158 100%)}
+.pe-sky-night .pe-sky-water{background:linear-gradient(180deg,#3d6a70 0%,#2d5a63 12%,#1f4954 40%,#163e4b 72%,#12384a 100%)}
+.pe-sky-shimmer{position:absolute;inset:0;width:100%;height:100%}
+.pe-sky-glint{position:absolute;inset:0}
+.pe-sky-glint i{position:absolute;left:81%;height:2px;border-radius:2px;background:#fff4d6;opacity:.85;transform:translateX(-50%)}
+.pe-sky-night .pe-sky-glint i{left:74%;background:#fff1c6;opacity:.55}
+.pe-far-pad{position:absolute;aspect-ratio:1;transform:translate(-50%,-50%) scaleY(var(--pe-flat))}
+.pe-far-pad::before{content:'';position:absolute;inset:0;border-radius:50%;transform:rotate(var(--pe-pad-rotation));background:conic-gradient(from 0deg,transparent 0 26deg,var(--pe-pad-color) 26deg 360deg)}
+.pe-sky-night .pe-far-pad{opacity:.55}
+.pe-sky-drops i{position:absolute;width:3%;aspect-ratio:1;border:1px solid #e6f1ec99;border-radius:50%;transform:translate(-50%,-50%) scaleY(.3)}
+.pe-sky-horizon{position:absolute;left:0;right:0;top:var(--pe-horizon);height:2px;margin-top:-1px;background:linear-gradient(90deg,#fff8e900,#fff8e9b3 18%,#fffaf0 50%,#fff8e9b3 82%,#fff8e900);box-shadow:0 0 12px 2px #fff8e955}
+.pe-sky-night .pe-sky-horizon{background:linear-gradient(90deg,#cfe9e300,#cfe9e340 30%,#cfe9e366 74%,#cfe9e300);box-shadow:none}
+.pe-sky-rain .pe-sky-horizon{opacity:.6}
+.pe-landscape{transition:box-shadow .9s ease}
+/* while the camera tilts down, the pond's far edge stays open water (no dark top vignette); it returns on landing */
+.pe-entering .pe-landscape{box-shadow:inset 0 -26px 70px -26px #07252a,inset 26px 0 70px -26px #07252a,inset -26px 0 70px -26px #07252a}
+.pe-pond-set{position:absolute;bottom:0;left:0;width:100%;height:45.454545%;overflow:hidden}
+#pe-player .pe-actors{inset:18% 7% 10%;align-items:flex-end}
+#pe-player .pe-actor{width:clamp(120px,20vw,230px);max-width:31%}
+#pe-player .pe-actor .td-art{width:100%;height:auto}
+#pe-player .pe-actors:has(.pe-actor:nth-child(4)) .pe-actor{max-width:19%}
+#pe-player .pe-prop{--pe-prop-width:clamp(85px,9vw,130px);bottom:4%;width:var(--pe-prop-width);height:85px;left:calc(50% - var(--pe-prop-width)/2);transform:none}
+#pe-player .pe-dango{bottom:14%;width:70px;height:53px}
+#pe-player .pe-bubble{min-height:105px;margin:0;padding:12px 20px}
+#pe-player .pe-dialogue{font-size:20px;line-height:1.45}
+#pe-player .pe-action{min-height:0;margin:0 4px;font-size:13px}
+#pe-player .pe-footer{margin:0;gap:20px}
+#pe-player .pe-footer button{min-height:32px;padding:4px 12px}
+#pe-player.pe-entering > .pe-stage{opacity:1}
+.pe-pan-controls{background:none}
+.td-mv .pe-sky-clouds{animation:pe-cloud-drift 36s ease-in-out infinite alternate}
+.td-mv .pe-sky-star{animation:pe-native-glint 6s ease-in-out var(--pe-delay) infinite}
+@keyframes pe-cloud-drift{to{transform:translateX(15px)}}
+.td-mv .pe-sky-bird{animation:pe-bird-flap .8s ease-in-out var(--pe-delay) infinite alternate}
+.td-mv .pe-sky .pe-sky-star{animation:pe-star-twinkle 3.6s ease-in-out var(--pe-delay) infinite}
+.td-mv .pe-sky-glint i{animation:pe-glint-shimmer 2.2s ease-in-out var(--pe-delay) infinite}
+.td-mv .pe-sky-rainfall i{animation:pe-sky-rain .8s linear var(--pe-delay) infinite}
+.td-mv .pe-sky-drops i{animation:pe-sky-drop 2.4s ease-out var(--pe-delay) infinite}
+@keyframes pe-bird-flap{to{transform:scaleY(.45)}}
+@keyframes pe-star-twinkle{0%,100%{opacity:.85}50%{opacity:.3}}
+@keyframes pe-glint-shimmer{0%,100%{opacity:.85;transform:translateX(-50%) scaleX(1)}50%{opacity:.4;transform:translateX(-50%) scaleX(.8)}}
+@keyframes pe-sky-rain{from{transform:translate(0,-20px) rotate(12deg)}to{transform:translate(-14px,60px) rotate(12deg)}}
+@keyframes pe-sky-drop{0%{transform:translate(-50%,-50%) scaleY(.3) scale(.2);opacity:0}25%{opacity:.8}100%{transform:translate(-50%,-50%) scaleY(.3) scale(1.6);opacity:0}}
+@media(max-width:760px){
+  #pe-player{width:100vw;height:100dvh;max-height:100dvh;border-width:0;border-radius:0;padding:12px 12px max(12px,env(safe-area-inset-bottom));box-shadow:none}
+  #pe-player[open]{gap:8px}
+  #pe-player .pe-top h2{font-size:21px}
+  #pe-player .pe-stage{border-radius:16px}
+  #pe-player .pe-actors{inset:18% 3% 10%}
+  #pe-player .pe-actor{width:clamp(90px,33vw,180px);max-width:37%}
+  #pe-player .pe-bubble{padding:10px 12px;gap:12px;min-height:106px}
+  #pe-player .pe-dialogue{font-size:17px;line-height:1.45;margin-top:6px}
+  #pe-player .pe-portrait{flex-basis:58px;width:58px;height:58px}
+  #pe-player .pe-portrait .td-art{width:54px;height:54px}
+  #pe-player .pe-action{font-size:12px;line-height:1.4}
+  #pe-player .pe-controls button{min-width:90px}
+  #pe-player .pe-prop{height:60px}
+}
+@media(max-height:600px){
+  #pe-player{padding:8px 12px}
+  #pe-player[open]{gap:5px}
+  #pe-player .pe-top h2{font-size:19px}
+  #pe-player .pe-bubble{min-height:78px;padding:8px 12px}
+  #pe-player .pe-dialogue{font-size:15px;line-height:1.35}
+  #pe-player .pe-portrait{flex-basis:46px;width:46px;height:46px}
+  #pe-player .pe-portrait .td-art{width:42px;height:42px}
+  #pe-player .pe-speaker{font-size:11px;padding:2px 7px}
+  #pe-player .pe-action{font-size:11px}
+  #pe-player .pe-actor{width:clamp(78px,25vw,140px)}
+  #pe-player .pe-footer button{min-height:32px}
+}
+@media(max-width:520px){
+  #pe-player .pe-actors:has(.pe-actor:nth-child(4)){display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,minmax(0,1fr));inset:12% 5% 5%;align-items:center}
+  #pe-player .pe-actors:has(.pe-actor:nth-child(4)) .pe-actor{justify-self:center;width:clamp(70px,24vw,115px);max-width:100%;max-height:100%}
+  #pe-player .pe-actors:has(.pe-actor:nth-child(4)) .td-art{max-height:100%}
+}
+@media(max-height:450px) and (min-width:600px){
+  #pe-player[open]{grid-template-columns:minmax(0,1.5fr) minmax(260px,1fr);grid-template-rows:auto 1fr auto auto}
+  #pe-player .pe-top{grid-column:1/-1}
+  #pe-player .pe-stage{grid-column:1;grid-row:2/5}
+  #pe-player .pe-bubble{grid-column:2;grid-row:2}
+  #pe-player .pe-action{grid-column:2;grid-row:3}
+  #pe-player .pe-controls{grid-column:2;grid-row:4}
+  #pe-player .pe-footer{display:none}
+}
+
+/* Native Catching Days water: the same depth, round notched pads, actual
+   Pond.plant blooms and Pond.creature shadows as Today and Focus. */
+.pe-landscape{background:radial-gradient(ellipse at 60% 45%,#2a7d78 0%,#1a5c60 42%,#0f3b41 100%);box-shadow:inset 0 0 70px #07252a;overflow:hidden}
+.pe-landscape::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 60% 45%,#25565f 0%,#163e49 42%,#0c2834 100%);opacity:0;transition:opacity 1.4s ease;pointer-events:none}
+.pe-water-night::before{opacity:1}
+.pe-water-reflections{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#pe-player .pe-actor{transition:transform .4s ease,filter .4s ease,opacity .5s ease}
+#pe-player .pe-actor[data-present="false"]{opacity:0;visibility:hidden}
+.pe-water-pad{position:absolute;width:clamp(28px,7vw,var(--pe-pad-size));aspect-ratio:1;transform:translate(-50%,-50%);z-index:1;pointer-events:none}
+.pe-water-pad > i{position:absolute;inset:0;border-radius:50%;transform:rotate(var(--pe-pad-rotation));background:conic-gradient(from 0deg,transparent 0 26deg,var(--pe-pad-color) 26deg 360deg);filter:drop-shadow(0 8px 7px #05191c59)}
+.pe-water-pad > i::after{content:'';position:absolute;inset:22%;border-radius:50%;border:1px solid #ffffff22}
+.pe-pad-flower{position:absolute;left:25%;top:22%;width:55%;z-index:1}
+.pe-pad-flower svg{width:100%!important;height:auto!important}
+.pe-water-ring{position:absolute;border-radius:50%;border:1.5px solid #cfe9e3;box-shadow:0 0 0 6px #cfe9e30f;opacity:.1;transform:translate(-50%,-50%);pointer-events:none}
+.pe-water-glint{position:absolute;height:2px;border-radius:2px;background:#ffffffcc;opacity:.22;pointer-events:none}
+.pe-deep-shadow{position:absolute;opacity:.38;filter:blur(2.5px);pointer-events:none}
+.pe-passing-petals{position:absolute;inset:0;pointer-events:none}
+.pe-passing-petals i{position:absolute;width:9px;height:6px;border-radius:60% 40% 60% 40%;background:#f7c1d4;box-shadow:0 3px 4px #05191c4d}
+.pe-passing-petals i:nth-child(2){background:#fde3d0}
+.pe-water-moon{position:absolute;left:58%;top:27%;width:64px;height:64px;opacity:0;visibility:hidden;transition:opacity 1.4s ease;filter:blur(.8px)}
+.pe-water-night .pe-water-moon{opacity:.6;visibility:visible}
+#pe-player:not(.td-mv) .pe-actor,#pe-player:not(.td-mv) .pe-landscape::before,#pe-player:not(.td-mv) .pe-water-moon{transition:none}
+.pe-water-moon i{position:absolute;left:22px;top:7px;width:23px;height:23px;border-radius:50%;background:#fff1bd;box-shadow:0 0 22px #fff1bd55}
+.pe-water-moon span{position:absolute;top:40px;width:70px;height:13px;border-radius:50%;border:1px solid #cfe9e355}
+.pe-water-rain{position:absolute;inset:0}
+.pe-water-rain i{position:absolute;width:19px;height:19px;border-radius:50%;border:1px solid #cfe9e370;opacity:.3}
+.td-mv .pe-water-ring{animation:pe-native-ripple 7s ease-out var(--pe-delay) infinite}
+.td-mv .pe-water-glint{animation:pe-native-glint 4.5s ease-in-out var(--pe-delay) infinite}
+.td-mv .pe-water-pad > i{animation:pe-native-pad 6s ease-in-out infinite}
+.td-mv .pe-water-rain i{animation:pe-native-rain 2.8s ease-out infinite}
+.td-mv .pe-water-rain i:nth-child(2){animation-delay:-1.3s}.td-mv .pe-water-rain i:nth-child(3){animation-delay:-2s}
+@keyframes pe-native-ripple{0%{transform:translate(-50%,-50%) scale(.35);opacity:0}15%{opacity:.18}100%{transform:translate(-50%,-50%) scale(1.4);opacity:0}}
+@keyframes pe-native-glint{0%,100%{opacity:0}50%{opacity:.55}}
+@keyframes pe-native-pad{50%{translate:0 -2px}}
+@keyframes pe-native-rain{0%{scale:.1;opacity:0}20%{opacity:.4}100%{scale:2;opacity:0}}
+@media(prefers-reduced-motion:reduce){.pe-owned *{animation:none!important;transition:none!important}}

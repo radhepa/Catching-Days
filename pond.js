@@ -14,7 +14,7 @@
    design they came from. Style objects follow React's rules: camelCase keys,
    bare numbers get 'px' unless the property is unitless. */
 const UNITLESS=new Set(['opacity','zIndex','flex','fontWeight','lineHeight','order','flexGrow','flexShrink']);
-const KEBAB_ATTR=new Set(['strokeWidth','strokeLinecap','strokeLinejoin','strokeDasharray','strokeOpacity','fillOpacity','clipPath']);
+const KEBAB_ATTR=new Set(['strokeWidth','strokeLinecap','strokeLinejoin','strokeDasharray','strokeOpacity','fillOpacity','clipPath','stopColor','stopOpacity']);
 const kebab=s=>s.replace(/[A-Z]/g,m=>'-'+m.toLowerCase());
 function css(o){
   if(!o) return '';
@@ -41,7 +41,7 @@ function h(tag,attrs,...kids){
 }
 
 /* one switch for all movement — the app sets it from settings + reduced-motion */
-const PF={ motion:true, ripples:true, petals:true };
+const PF={ motion:true, ripples:true, petals:true, light:false };
 
 /* seeded randomness, so the same scene draws the same way every paint */
 let seed=11;
@@ -101,6 +101,9 @@ DRAW.ghost=(c,p,w)=>DRAW.koi(c,p,w);
 let cpN=0;
 const gen=o=>(c,p,w)=>{
   const {L,H,pt}=o, ex=o.ex, b=o.b??.75, pk=L*(o.pk??.15), pw=H*(o.ped??.3), T=-L+1, id='pfc'+(cpN++), R=hs(o.name||'x');
+  const detailed=!!o.detailed, silhouette=c===p;
+  const ink=silhouette?c:'#173a3b', pearl=silhouette?c:'#fff8e9';
+  const finMotion=side=>PF.motion&&w?{transformBox:'fill-box',transformOrigin:'right center',animation:`pf-fin-stroke ${+(w*2.7).toFixed(2)}s ease-in-out ${side<0?0:-w}s infinite alternate`}:null;
   const tl=ex.has('fork')?'fork':ex.has('lunate')?'lunate':ex.has('sword')?'sword':o.tl;
   const o2=[]; const add=(tag,a)=>o2.push(h(tag,a));
   const f=n=>+n.toFixed(2);
@@ -109,9 +112,14 @@ const gen=o=>(c,p,w)=>{
     point:`M${T} -1.6 Q${T-8} -1 ${T-14} 0 Q${T-8} 1 ${T} 1.6 Z`,fan:`M${T} 0 Q${T-10} -13 ${T-16} -6 Q${T-12} 0 ${T-16} 6 Q${T-10} 13 ${T} 0 Z`,
     round:`M${T} 0 Q${T-6} -8 ${T-11} -4 Q${T-12} 0 ${T-11} 4 Q${T-6} 8 ${T} 0 Z`,heter:`M${T} -1.4 Q${T-8} -2.4 ${T-17} -5 Q${T-11} 0 ${T-10} 1.8 Q${T-5} 1.8 ${T} 1.4 Z`,
     sword:`M${T} 0 L${T-12} -7 Q${T-7} -1 ${T-9} 3 L${T-22} 6 L${T-8} 5 Q${T-4} 3 ${T} 0 Z`};
+  TL.veil=`M${T} 0 C${T-7} -3 ${T-14} -15 ${T-22} -11 Q${T-19} -5 ${T-22} 0 Q${T-19} 5 ${T-22} 11 C${T-14} 15 ${T-7} 3 ${T} 0Z`;
+  TL.lyre=`M${T} 0 Q${T-6} -5 ${T-18} -12 Q${T-11} -2 ${T-12} 0 Q${T-11} 2 ${T-18} 12 Q${T-6} 5 ${T} 0Z`;
+  TL.delta=`M${T} 0 Q${T-8} -5 ${T-18} -11 Q${T-23} 0 ${T-18} 11 Q${T-8} 5 ${T} 0Z`;
+  TL.double=`M${T} 0 C${T-8} -11 ${T-18} -13 ${T-20} -7 Q${T-23} -1 ${T-12} 0 Q${T-23} 1 ${T-20} 7 C${T-18} 13 ${T-8} 11 ${T} 0Z`;
   const ts=Math.min(1,.45+H*.12), eyeX=L-Math.max(2.2,Math.min(H*.7,L*.28)), eyeR=Math.min(1.9,Math.max(.85,H*.2))*(ex.has('bigeye')?1.5:1);
   if(ex.has('spikes')) for(let i=0;i<12;i++){ const s=i%2?1:-1, x=f(-L*.5+i*L*.09); add('path',{d:`M${x} ${f(s*H*.6)} L${f(x-4)} ${s*(H+8+(i%3)*2)}`,stroke:p,strokeWidth:1.2,strokeLinecap:'round',opacity:.9}); }
   if(ex.has('whisk')) add('path',{d:`M${L-.5} -1.6 Q${L+5} -5 ${L+9} -8 M${L-.5} 1.6 Q${L+5} 5 ${L+9} 8 M${L-1.5} -2.5 Q${L+1} -6 ${L+2} -9 M${L-1.5} 2.5 Q${L+1} 6 ${L+2} 9`,stroke:c,strokeWidth:.9,fill:'none',strokeLinecap:'round'});
+  if(o.barbels) add('path',{d:`M${L-1} -1 Q${L+2} -2 ${L+3} -3 M${L-1} 1 Q${L+2} 2 ${L+3} 3`,stroke:c,strokeWidth:.55,fill:'none',strokeLinecap:'round'});
   if(ex.has('horns')) add('path',{d:`M${f(L*.6)} ${f(-H*.55)} L${L+4} ${f(-H*.55-2)} M${f(L*.6)} ${f(H*.55)} L${L+4} ${f(H*.55+2)}`,stroke:c,strokeWidth:1.8,strokeLinecap:'round'});
   if(ex.has('snout')) add('ellipse',{cx:L+6,cy:0,rx:7.5,ry:f(Math.max(1.3,H*.24)),fill:c});
   if(ex.has('bill')) add('path',{d:`M${L-1} -1.5 L${L+15} 0 L${L-1} 1.5 Z`,fill:c});
@@ -119,11 +127,20 @@ const gen=o=>(c,p,w)=>{
   if(ex.has('saw')){ add('path',{d:`M${L-2} -2 L${L+14} -1.5 L${L+14} 1.5 L${L-2} 2 Z`,fill:p}); for(let i=0;i<5;i++) add('path',{d:`M${f(L+2+i*2.6)} -1.5 l0 -2.4 M${f(L+2+i*2.6)} 1.5 l0 2.4`,stroke:p,strokeWidth:1}); }
   if(ex.has('wide')) add('ellipse',{cx:0,cy:0,rx:L+2,ry:H+3.5,fill:c,opacity:.5});
   if(ex.has('feelers')) [-1,1].forEach(s=>add('path',{d:`M${f(L*.15)} ${f(s*H*.7)} Q${f(-L*.3)} ${s*(H+3)} ${f(-L*1.1)} ${s*(H+5)}`,stroke:p,strokeWidth:.9,fill:'none',strokeLinecap:'round',opacity:.9}));
-  if(TL[tl]) o2.push(h('g',{transform:`translate(${T} 0) scale(${f(ts)}) translate(${-T} 0)`},h('path',{d:TL[tl],fill:c,opacity:.85,style:wagS(w)})));
+  if(TL[tl]) o2.push(h('g',{transform:`translate(${T} 0) scale(${f(ts)}) translate(${-T} 0)`},
+    detailed?h('g',{style:wagS(w? w*(o.tempo||1):0)},
+      h('path',{d:TL[tl],fill:silhouette?c:`url(#${id}-fin)`,stroke:c,strokeWidth:.5,opacity:.92}),
+      h('g',{clipPath:`url(#${id}-tail)`,opacity:silhouette?0:.46},[-3,-2,-1,0,1,2,3].map(n=>h('path',{d:`M${T} 0 Q${T-7} ${n} ${T-26} ${n*4.5}`,fill:'none',stroke:pearl,strokeWidth:.45})))):
+    h('path',{d:TL[tl],fill:c,opacity:.85,style:wagS(w)})));
   if(ex.has('shark')) [-1,1].forEach(s=>add('path',{d:`M${f(L*.35)} ${f(s*H*.7)} Q${f(L*.05)} ${s*(H+5)} ${f(-L*.12)} ${s*(H+8)} Q${f(L*.1)} ${s*(H+2)} ${f(L*.05)} ${f(s*H*.7)} Z`,fill:c,opacity:.9}));
+  else if(detailed) [-1,1].forEach(s=>{
+    const x=f(L*.24), y=f(s*H*.7), reach=o.fins||5;
+    o2.push(h('g',{style:finMotion(s)},h('path',{d:`M${x+2} ${y} Q${x-1} ${s*(H+reach+1)} ${x-7} ${s*(H+reach)} Q${x-6} ${s*(H+1)} ${x-3} ${y}Z`,fill:silhouette?c:`url(#${id}-fin)`,stroke:c,strokeWidth:.35,opacity:.8}),
+      silhouette?'':h('path',{d:`M${x} ${y} L${x-5} ${s*(H+reach-1)}`,stroke:pearl,strokeWidth:.45,opacity:.5})));
+  });
   else if(!ex.has('wide')) [-1,1].forEach(s=>{ add('ellipse',{cx:f(L*.3),cy:s*(H+1),rx:f(4.5*ts),ry:f(1.8*ts),transform:`rotate(${s*30} ${f(L*.3)} ${s*(H+1)})`,fill:c,opacity:.7});
     if(tl!=='point') add('ellipse',{cx:f(-L*.28),cy:f(s*H*.85),rx:f(2.6*ts),ry:f(ts),transform:`rotate(${s*28} ${f(-L*.28)} ${f(s*H*.85)})`,fill:c,opacity:.6}); });
-  add('path',{d,fill:c});
+  add('path',{d,fill:detailed&&!silhouette?`url(#${id}-body)`:c,stroke:detailed?c:null,strokeWidth:detailed?.35:null});
   const pat=[];
   const P=(tag,a)=>pat.push(h(tag,{fill:p,...a}));
   if(pt==='stripes') [-.5,-.1,.3].forEach(q=>P('rect',{x:f(q*L-1.5),y:-H,width:3,height:H*2}));
@@ -138,6 +155,9 @@ const gen=o=>(c,p,w)=>{
   if(pt==='tip') P('rect',{x:-L,y:-H,width:f(L*.5),height:H*2});
   if(pt==='head') P('rect',{x:f(L*.45),y:-H,width:L,height:H*2});
   if(pt==='ocellus'){ P('circle',{cx:f(-L*.62),cy:0,r:f(H*.42)}); pat.push(h('circle',{cx:f(-L*.62),cy:0,r:f(H*.2),fill:'#1f2e2c',opacity:.8})); }
+  if(pt==='kohaku') P('path',{d:`M${f(-L*.8)} ${f(-H*.15)} Q${f(-L*.6)} ${-H} ${f(-L*.35)} ${f(-H*.7)} C0 ${f(-H*.5)} ${f(-L*.25)} ${f(H*.2)} ${f(-L*.6)} ${f(H*.4)} Q${f(-L*.8)} ${f(H*.2)} ${f(-L*.8)} ${f(-H*.15)}Z M${f(-L*.15)} ${f(H*.25)} Q${f(L*.1)} ${f(-H*.35)} ${f(L*.3)} ${f(H*.1)} Q${f(L*.4)} ${H} ${f(L*.1)} ${H} Q${f(-L*.1)} ${f(H*.9)} ${f(-L*.15)} ${f(H*.25)}Z M${f(L*.55)} ${f(-H*.8)} Q${f(L*.85)} ${f(-H*.65)} ${f(L*.78)} ${f(H*.2)} Q${f(L*.45)} ${f(H*.4)} ${f(L*.55)} ${f(-H*.8)}Z`});
+  if(pt==='pearls') for(let row=-1;row<=1;row++) for(let j=0;j<5;j++) P('ellipse',{cx:f((-0.65+j*.27+(row===0?.1:0))*L),cy:f(row*H*.48),rx:f(H*.17),ry:f(H*.15),opacity:.75});
+  if(pt==='chevron') [-.6,-.2,.2].forEach(q=>P('path',{d:`M${f(q*L-2)} ${-H} L${f(q*L+2)} 0 L${f(q*L-2)} ${H}`,fill:'none',stroke:p,strokeWidth:1.2,opacity:.85}));
   pat.push(h('ellipse',{cx:f(-L*.05),cy:0,rx:f(L*.85),ry:f(H*.22),fill:'#0b2226',opacity:.12}),h('ellipse',{cx:f(L*.15),cy:f(-H*.45),rx:f(L*.55),ry:f(H*.22),fill:'#ffffff',opacity:.16}));
   o2.push(h('g',{clipPath:`url(#${id})`},pat));
   if(ex.has('sail')) add('ellipse',{cx:f(-L*.15),cy:0,rx:f(L*.7),ry:f(H*.42),fill:p,opacity:.55});
@@ -146,7 +166,16 @@ const gen=o=>(c,p,w)=>{
   if(ex.has('hammer')){ add('ellipse',{cx:f(L*.95),cy:0,rx:2.4,ry:f(H*2.3),fill:c}); [-1,1].forEach(s=>add('circle',{cx:f(L*.95),cy:f(s*H*2.1),r:1.1,fill:'#1f2e2c'})); }
   else [-1,1].forEach(s=>{ add('circle',{cx:f(eyeX),cy:f(s*H*.52),r:f(eyeR),fill:'#1f2e2c'}); add('circle',{cx:f(eyeX+eyeR*.3),cy:f(s*H*.52-eyeR*.3),r:f(eyeR*.35),fill:'#ffffff',opacity:.8}); });
   if(ex.has('lure')){ add('path',{d:`M${f(L*.6)} 0 Q${L+6} -8 ${L+9} -3`,stroke:p,strokeWidth:.9,fill:'none'}); add('circle',{cx:L+9,cy:-3,r:3.2,fill:'#f7f3c0',opacity:.35}); add('circle',{cx:L+9,cy:-3,r:1.6,fill:'#f7f3c0'}); }
-  return [h('defs',null,h('clipPath',{id},h('path',{d}))),...o2];
+  if(detailed&&!silhouette){
+    [-1,1].forEach(s=>add('path',{d:`M${f(L*.55)} ${f(s*H*.24)} Q${f(L*.38)} ${f(s*H*.52)} ${f(L*.48)} ${f(s*H*.78)}`,fill:'none',stroke:ink,strokeWidth:.5,opacity:.32}));
+    add('path',{d:`M${f(-L*.6)} ${f(-H*.26)} Q0 ${f(-H*.65)} ${f(L*.48)} ${f(-H*.28)}`,fill:'none',stroke:pearl,strokeWidth:.7,opacity:.4});
+  }
+  // A locked fish stays a single silhouette, including its eyes and markings.
+  const body=silhouette&&detailed?o2.join('').replace(/(fill|stroke)="(?!none)[^"]*"/g,`$1="${c}"`):o2;
+  return [h('defs',null,h('clipPath',{id},h('path',{d})),detailed?[
+    h('clipPath',{id:id+'-tail'},h('path',{d:TL[tl]||''})),
+    h('linearGradient',{id:id+'-body',x1:'0%',y1:'0%',x2:'0%',y2:'100%'},h('stop',{offset:'0%',stopColor:pearl}),h('stop',{offset:'24%',stopColor:c}),h('stop',{offset:'72%',stopColor:c}),h('stop',{offset:'100%',stopColor:ink})),
+    h('linearGradient',{id:id+'-fin',x1:'0%',y1:'0%',x2:'100%',y2:'0%'},h('stop',{offset:'0%',stopColor:p,stopOpacity:.65}),h('stop',{offset:'65%',stopColor:c,stopOpacity:.85}),h('stop',{offset:'100%',stopColor:c}))]:null),body];
 };
 
 /* ── the catalog ──
@@ -244,22 +273,154 @@ const RQ=[['tasks','Finish {n} tasks in total'],['focusH','Log {n} hours of focu
 const RB={Common:12,Uncommon:30,Rare:70,Legendary:180};
 ALL.forEach((a,i)=>{ const k='x'+i, ty=i%RQ.length, nn=Math.round(RB[a.rar]*(1+(i*7%5)*.25)/(ty===3?3:1));
   DRAW[k]=a.draw; SPEC.push({k,name:a.name,rar:a.rar,c:a.c,p:a.p,s:a.s,goal:{m:RQ[ty][0],n:nn,t:RQ[ty][1].replace('{n}',nn)}}); });
+/* The original five now use the same tapered anatomy as the field guide.
+   Stable keys and ordering preserve class assignments and saved discoveries. */
+const FIRST_FIVE=[
+  ['koi',18,6,'fork','kohaku','#f4ead5','#d9694e',{b:.82,barbels:true,fins:5}],
+  ['goldfish',11,7,'double','back','#eaaa4f','#ffe0a0',{b:1,pk:.28,fins:6,tempo:1.3}],
+  ['clown',12,5.8,'round','stripes','#ed9562','#fff2d8',{b:.9,fins:4}],
+  ['guppy',9,3.5,'delta','ocellus','#71aaa2','#e8aa77',{b:.7,fins:3,tempo:.85}],
+  ['betta',12,4.5,'veil','marble','#617fa7','#d3b1d3',{b:.8,fins:10,tempo:1.6}]
+];
+FIRST_FIVE.forEach(([k,L,H,tl,pt,c,p,detail])=>{
+  DRAW[k]=gen({name:k,L,H,tl,pt,...detail,detailed:true,ex:new Set(detail.ex?[detail.ex]:[])});
+  Object.assign(SPEC.find(s=>s.k===k),{c,p});
+});
+/* Catalog 6–15: tailored silhouettes for the pond's small companions. */
+const REFINED_FISH_6_15=[
+  ['puffer',10,9,'round','spots','#c5b276','#fff0c6',{b:1,pk:.15,fins:3,tempo:1.3}],
+  ['catfish',19,5.8,'fork','back','#869d95','#cbd6b4',{b:.95,pk:.4,fins:6,ex:'whisk'}],
+  ['ghost',18,5.7,'veil','kohaku','#e0e9e6','#b8c9e3',{b:.8,barbels:true,fins:6,tempo:1.7}],
+  ['x0',9,3.2,'fork','band','#77b6c8','#d96d73',{b:.7,fins:3}],
+  ['x1',10,3.3,'fork','lines','#dbcf9e','#617b9d',{b:.65,fins:3}],
+  ['x2',9,4.8,'fan','tip','#e6ab71','#637777',{b:.9,fins:4}]
+];
+REFINED_FISH_6_15.forEach(([k,L,H,tl,pt,c,p,detail])=>{
+  DRAW[k]=gen({name:k,L,H,tl,pt,...detail,detailed:true,ex:new Set(detail.ex?[detail.ex]:[])});
+  Object.assign(SPEC.find(s=>s.k===k),{c,p});
+});
+// Shared paint treatment; each amphibian/reptile keeps its own anatomy.
+function companion(kind,c,p,w){
+  const id='pfc'+cpN++, flat=c===p, shade=flat?c:'#264d49', light=flat?c:'#fff4dc';
+  const fill=flat?c:`url(#${id}-skin)`;
+  const path=(d,color=fill,attrs={})=>h('path',{d,fill:color,...attrs});
+  const eye=(x,y,r=1.1)=>h('circle',{cx:x,cy:y,r:r+0.55,fill:p})+h('circle',{cx:x+.15,cy:y,r,fill:flat?c:'#183c3e'})+(flat?'':h('circle',{cx:x+.45,cy:y-.35,r:.35,fill:light}));
+  const motion=(n,origin='center')=>PF.motion&&w?{transformBox:'fill-box',transformOrigin:origin,animation:`pf-${n} ${w*3}s ease-in-out infinite alternate`}:null;
+  const parts=[];
+  if(kind==='axolotl'){
+    parts.push(h('g',{style:wagS(w?w*1.4:0)},path('M-8 -3 Q-23 -7 -31 0 Q-23 7 -8 3Z',p),path('M-8 -1 Q-22 -2 -30 0 Q-22 2 -8 1Z',c)));
+    [-1,1].forEach(s=>{
+      [-6,6].forEach(x=>parts.push(h('g',{transform:`translate(${x} ${s*3}) scale(1 ${s})`},h('g',{style:motion('paddle')},path('M0 0 Q-1 5 -5 8 L-8 8 M-5 8 L-7 10 M-5 8 L-4 11','none',{stroke:c,strokeWidth:1.7,strokeLinecap:'round'})))));
+      [6,9,12].forEach((x,i)=>parts.push(h('g',{style:motion('fin-stroke')},path(`M${x} ${s*3} Q${x-4} ${s*(9+i)} ${x-2} ${s*(12-i)}`, 'none',{stroke:p,strokeWidth:1.8,strokeLinecap:'round'}),path(`M${x-2} ${s*7} l-3 ${s*1} m3 1 l-3 ${s*2}`,'none',{stroke:p,strokeWidth:.7,strokeLinecap:'round'}))));
+    });
+    parts.push(path('M15 0 C15 -6 9 -7 5 -5 C-3 -4 -12 -5 -14 0 C-12 5 -3 4 5 5 C9 7 15 6 15 0Z'),path('M-9 -1 Q1 -3 8 -2','none',{stroke:light,strokeWidth:.7,opacity:.5}),eye(11,-2.5),eye(11,2.5));
+  }else if(kind==='ray'){
+    parts.push(h('g',{style:wagS(w?w*1.8:0)},path('M-8 0 Q-21 2 -32 -1','none',{stroke:c,strokeWidth:1.3,strokeLinecap:'round'})));
+    parts.push(h('g',{style:motion('flap')},path('M15 0 C11 -4 5 -4 -1 -12 Q-7 -17 -13 -13 Q-9 -6 -11 0 Q-9 6 -13 13 Q-7 17 -1 12 C5 4 11 4 15 0Z'),path('M9 0 Q-2 -1 -9 -10 M9 0 Q-2 1 -9 10','none',{stroke:p,strokeWidth:.65,opacity:.65})));
+    [[-3,-5],[-6,-8],[-3,5],[-6,8],[0,-3],[0,3]].forEach(([x,y])=>parts.push(h('circle',{cx:x,cy:y,r:.8,fill:p,opacity:.7})));
+    parts.push(eye(9,-2),eye(9,2));
+  }else if(kind==='frog'){
+    [-1,1].forEach(s=>parts.push(h('g',{transform:`scale(1 ${s})`},h('g',{style:motion('paddle')},path('M-4 4 Q-12 8 -12 12 Q-5 15 -2 9 L-8 9 Q-5 7 -3 6Z',c),path('M6 4 Q10 7 6 11 L3 12 M6 11 L6 14 M6 11 L9 13','none',{stroke:c,strokeWidth:1.6,strokeLinecap:'round'})))));
+    parts.push(path('M14 0 C15 -5 10 -8 5 -7 C-2 -8 -10 -6 -11 0 C-10 6 -2 8 5 7 C10 8 15 5 14 0Z'),path('M-6 0 Q-2 -4 5 -3 Q9 0 5 3 Q-2 4 -6 0Z',p,{opacity:.6}),eye(10,-4,1.4),eye(10,4,1.4));
+    [-1,1].forEach(s=>parts.push(path(`M-7 ${s*4} Q0 ${s*6} 6 ${s*4}`,'none',{stroke:light,strokeWidth:.65,opacity:.6})));
+  }else if(kind==='turtle'){
+    [-1,1].forEach(s=>[-1,1].forEach(x=>parts.push(h('g',{transform:`translate(${x*7} ${s*7}) scale(${x} ${s})`},h('g',{style:motion('paddle')},path('M-2 -1 Q4 0 6 7 Q1 8 -2 3Z',p))))));
+    parts.push(path('M-11 -2 L-17 0 L-11 2Z',p),h('ellipse',{cx:15,cy:0,rx:5,ry:3.8,fill:p}),h('ellipse',{cx:0,cy:0,rx:12.5,ry:9.5,fill}),path('M-5 -5 L2 -6 L7 -2 L7 2 L2 6 L-5 5 L-8 0Z','none',{stroke:p,strokeWidth:.9}),path('M-5 -5 L-7 -8 M2 -6 L3 -9 M7 -2 L12 -3 M7 2 L12 3 M2 6 L3 9 M-5 5 L-7 8 M-8 0 L-12 0','none',{stroke:p,strokeWidth:.7}),path('M-6 -3 Q-2 -7 4 -5','none',{stroke:light,strokeWidth:.8,opacity:.5}),eye(17,-1.8,.7),eye(17,1.8,.7));
+  }
+  return [h('defs',null,h('linearGradient',{id:id+'-skin',x1:'0%',y1:'0%',x2:'0%',y2:'100%'},h('stop',{offset:'0%',stopColor:light}),h('stop',{offset:'30%',stopColor:c}),h('stop',{offset:'75%',stopColor:c}),h('stop',{offset:'100%',stopColor:shade}))),flat?parts.join('').replace(/(fill|stroke)="(?!none)[^"]*"/g,`$1="${c}"`):parts];
+}
+[['axolotl','#e9b9b3','#c77d94'],['ray','#88aca4','#d6d9b6'],['frog','#87a17a','#cbd4a0'],['turtle','#708d79','#b6bfa0']].forEach(([k,c,p])=>{
+  DRAW[k]=(c,p,w)=>companion(k,c,p,w);Object.assign(SPEC.find(s=>s.k===k),{c,p});
+});
+/* Twenty-five individually art-directed additions, appended rather than
+   inserted so every existing catalog number remains stable. */
+const EDITION=[
+  ['threadfin-rainbowfish','Threadfin Rainbowfish','Uncommon',10,3,'lyre','lines','#a5c7b9','#e6b46c',8,'feelers','focusH',6],
+  ['forktail-blue-eye','Forktail Blue-eye','Common',8,3,'fork','tip','#9bc9cf','#f0cf70',5,'bigeye','tasks',15],
+  ['pacific-blue-eye','Pacific Blue-eye','Common',8.5,2.7,'lyre','band','#b8ccc1','#79a7c9',4,'bigeye','noon',8],
+  ['dwarf-neon-rainbowfish','Dwarf Neon Rainbowfish','Uncommon',10,4.2,'fork','back','#7db6cc','#dc8379',4,'','focusH',12],
+  ['celebes-rainbowfish','Celebes Rainbowfish','Rare',11,3.6,'lyre','lines','#c4ceb0','#729faa',7,'feelers','fstreak',12],
+  ['sparkling-gourami','Sparkling Gourami','Uncommon',9,4,'round','pearls','#80a79e','#d5e6c6',4,'feelers','jdays',7],
+  ['chocolate-gourami','Chocolate Gourami','Uncommon',9,5.5,'round','stripes','#836b5e','#e7cf9d',4,'feelers','blooms',5],
+  ['licorice-gourami','Licorice Gourami','Rare',10,3.8,'fan','lines','#536970','#8fc6c1',6,'feelers','focusH',24],
+  ['pearl-danio','Pearl Danio','Common',10,3,'fork','band','#b8bfd2','#e9b0a0',3,'','tasks',20],
+  ['emerald-dwarf-rasbora','Emerald Dwarf Rasbora','Uncommon',8.5,3.2,'fork','bars','#83b0a4','#dfbc87',3,'','noon',15],
+  ['phoenix-rasbora','Phoenix Rasbora','Common',7,2.6,'fork','ocellus','#d88c74','#574c57',3,'','tasks',8],
+  ['green-neon-tetra','Green Neon Tetra','Common',8,2.8,'fork','band','#77bbb0','#d0e2c2',3,'','focusH',4],
+  ['ruby-tetra','Ruby Tetra','Common',7,3.2,'round','tip','#c76e69','#f1baa1',3,'','noon',5],
+  ['blue-emperor-tetra','Blue Emperor Tetra','Rare',10,3.6,'lyre','band','#829ebf','#404c68',5,'','fstreak',10],
+  ['splash-tetra','Splash Tetra','Uncommon',11,3,'lyre','lines','#b5bb9d','#d58f73',5,'','tasks',45],
+  ['panda-garra','Panda Garra','Uncommon',11,4,'round','bars','#657e79','#e3cca0',5,'','late',12],
+  ['clown-pleco','Clown Pleco','Rare',12,4.6,'lyre','chevron','#876951','#e8ba78',6,'whisk','late',25],
+  ['sunset-variatus','Sunset Variatus Platy','Common',9,4.6,'fan','tip','#e8bd76','#ce7965',4,'','blooms',3],
+  ['pearlscale-goldfish','Pearlscale Goldfish','Rare',10,8,'double','pearls','#dfae7d','#fff0ce',6,'','blooms',15],
+  ['oranda-goldfish','Oranda Goldfish','Rare',12,7,'double','head','#eee0c2','#d87763',6,'hump','tasks',100],
+  ['shubunkin','Shubunkin','Legendary',17,5.8,'veil','marble','#a8bdc7','#c37a60',6,'whisk','blooms',25],
+  ['red-sea-purple-tang','Red Sea Purple Tang','Rare',10,7,'lunate','tip','#8a82b0','#e9ca75',5,'','focusH',40],
+  ['kole-tang','Kole Tang','Uncommon',10.5,6.5,'lunate','lines','#aa8984','#efcf84',4,'','jdays',14],
+  ['longfin-bannerfish','Longfin Bannerfish','Legendary',9,7.8,'fan','stripes','#f1e8cf','#526977',10,'feelers','fstreak',25],
+  ['orchid-dottyback','Orchid Dottyback','Rare',12,3.6,'round','back','#aa87b5','#dfb8ca',4,'','jdays',21]
+];
+EDITION.forEach(([slug,name,rar,L,H,tl,pt,c,p,fins,ex,metric,n])=>{
+  const k='atelier-'+slug, template=RQ.find(([m])=>m===metric)[1];
+  DRAW[k]=gen({name,L,H,tl,pt,fins,detailed:true,b:H>6?.95:.7,tempo:tl==='veil'?1.5:1,ex:new Set(ex?ex.split('+'):[])});
+  SPEC.push({k,name,rar,c,p,s:+Math.min(1.25,1.5-L*.022).toFixed(2),goal:{m:metric,n,t:template.replace('{n}',n)}});
+});
+/* The field guide is the art source for every in-game appearance. Keep the
+   existing species objects (and their goals) and append only new stable keys.
+   Templates are local, inert SVG; each draw receives fresh gradient/clip IDs. */
+let catalogInstance=0;
+const CATALOG_FRAMES=new Map();
+function catalogDraw(art){
+  return (c,p,w)=>{
+    let drawing=art.art;
+    if(c===p){
+      drawing=drawing.replace(/\b(fill|stroke|stop-color)="(?!none")[^"]*"/g,(_,a)=>`${a}="${c}"`)
+        .replace(/\bopacity="[^"]*"/g,'opacity="1"');
+    }else if(c!==art.c||p!==art.p){
+      drawing=drawing.replace(/\b(fill|stroke|stop-color)="(#[0-9a-f]+)"/gi,(all,a,col)=>
+        `${a}="${col===art.c?c:col===art.p?p:col}"`);
+    }
+    drawing=drawing.replace(/animation:([^;"}]*)(;?)/g,(_,value)=>{
+      if(!PF.motion||!(+w>0)) return '';
+      const ratio=+w/.95;
+      return 'animation:'+value.replace(/(-?[\d.]+)s\b/g,(_,n)=>+(+n*ratio).toFixed(4)+'s')+';';
+    });
+    return drawing.replace(/__PF__/g,'pfatlas'+(++catalogInstance)+'-');
+  };
+}
+(window.PondCatalog||[]).forEach(art=>{
+  const existing=SPEC.find(s=>s.k===art.k);
+  if(existing) Object.assign(existing,{c:art.c,p:art.p});
+  else SPEC.push({k:art.k,name:art.name,rar:art.rar,c:art.c,p:art.p,s:1.1});
+  CATALOG_FRAMES.set(art.k,art.viewBox.split(/\s+/).map(Number));
+  DRAW[art.k]=catalogDraw(art);
+});
 const SP={}; SPEC.forEach((s,i)=>{ s.no=i+1; SP[s.k]=s; });
 const RAR={Common:{ink:'#3f774d',bg:'#dcebd9'},Uncommon:{ink:'#2f7a74',bg:'#d4e8e4'},Rare:{ink:'#715c95',bg:'#e6e0f1'},Legendary:{ink:'#8a5f1f',bg:'#f5e4c2'}};
 /* what a finished task can release: everything except the milestone species,
    which only ever arrive by habit */
 const POOL=SPEC.filter(s=>!s.milestone), PW={Common:60,Uncommon:27,Rare:10,Legendary:3}, byR={};
 POOL.forEach(s=>(byR[s.rar]=byR[s.rar]||[]).push(s));
+/* the pool as it stood when the catalog ended at No. n (250, 275, 375,
+   376, 380…), grouped by rarity in catalog order. A task rolls from the
+   catalog that existed when it was finished, so adding species never
+   re-rolls a fish someone already caught. */
+const poolAt={};
+const poolUpTo=n=>poolAt[n]||(poolAt[n]=POOL.filter(s=>s.no<=n).reduce((o,s)=>((o[s.rar]=o[s.rar]||[]).push(s),o),{}));
 /* 30% the class's own species, otherwise weighted by rarity. Seeded by the
    task's id, so a task always releases the same fish — unticking and
    re-ticking can't reroll it. */
-function rollSpecies(taskId,classKey){
+function rollSpecies(taskId,classKey,includeEdition=true){
   const r=hs(taskId+'·pond');
   const first=r();
   if(classKey&&SP[classKey]&&first<.3) return classKey;
   let x=r()*100, Rr='Common';
   for(const q of ['Common','Uncommon','Rare','Legendary']){ if((x-=PW[q])<0){ Rr=q; break; } }
-  const a=byR[Rr]; return a[Math.floor(r()*a.length)].k;
+  // a number is the catalog size to roll from (see poolUpTo); false is the
+  // original 250; true (the default) is everything there is now.
+  const pool=includeEdition===false?poolUpTo(250):typeof includeEdition==='number'?poolUpTo(includeEdition):byR;
+  const a=pool[Rr]; return a[Math.floor(r()*a.length)].k;
 }
 
 /* ── one creature as an inline <svg> ──
@@ -267,14 +428,182 @@ function rollSpecies(taskId,classKey){
    merged into the svg's style. */
 function creature(kind,c,p,s,w,extra){
   const sp=SP[kind]; if(!DRAW[kind]&&!sp) kind='koi';
+  const frame=CATALOG_FRAMES.get(kind)||[-34,-16,64,32];
   const shadow=kind==='ghost'?'drop-shadow(0 0 6px #ffffffcc)':extra==='flat'?'none':'drop-shadow(0 6px 5px rgba(5,25,28,.45))';
-  return h('svg',{width:+(64*s).toFixed(1),height:+(32*s).toFixed(1),viewBox:'-34 -16 64 32',
+  /* data-k: which drawing (every fish of a kind has the same anatomy);
+     data-f: this exact fish, so a redrawn scene can keep one it already has */
+  return h('svg',{class:'pf-cr','data-k':kind,'data-f':kfHash([kind,c,p,s,w,JSON.stringify(extra||''),PF.motion].join('|')),width:+(frame[2]*s).toFixed(1),height:+(frame[3]*s).toFixed(1),viewBox:frame.join(' '),
     style:{display:'block',overflow:'visible',filter:shadow,...(extra&&extra!=='flat'?extra:{})}},DRAW[kind](c,p,w));
 }
 /* a species in its own colours */
 const fish=(k,s,w,extra)=>{ const d=SP[k]||SP.koi; return creature(d.k,d.c,d.p,s??d.s,w,extra); };
 /* a species as a dark silhouette — for ones you haven't found */
 const shadowFish=(k,s,col)=>{ const d=SP[k]||SP.koi; return creature(d.k,col||'#0a2a2f',col||'#0a2a2f',s??d.s,0,'flat'); };
+
+/* ── tails and fins, on the compositor ──
+   A tail wag or a fin stroke is a CSS animation on a part inside the fish's
+   SVG, and animating anything inside an SVG makes the browser repaint the
+   whole fish, drop shadow and all, every frame, on the main thread. So once
+   a fish is on the page, each animated part is lifted into its own copy of
+   the fish's SVG frame, stacked in the same place beneath the body, and
+   that whole element is animated instead: same keyframes, same timing,
+   around the same pivot. The GPU turns those layers; the fish is painted
+   once. The fish's outer look (drop shadow, opacity, blur) moves to a
+   wrapper, so it still applies to the fish as one piece.
+   Parts sit under the body because every animated part is drawn before it
+   (tails, fins, flippers, wings). A MutationObserver runs this for every
+   screen; a fish added while hidden waits until it's shown. */
+const SVGNS='http://www.w3.org/2000/svg';
+/* a mirrored part (flippers and legs drawn with scale(1 -1)) turns the
+   other way once it's lifted out of its mirror */
+const MIRRORED={'pf-wag':'pf-wag-m','pf-paddle':'pf-paddle-m','pf-fin-stroke':'pf-fin-stroke-m'};
+function originIn(str,bb){
+  const kx={left:0,right:100}, ky={top:0,bottom:100};
+  let t=(str||'').trim().split(/\s+/).filter(Boolean);
+  if(!t.length) t=['center'];
+  if(t.length===1) t=t[0] in ky?['center',t[0]]:[t[0],'center'];
+  if(t[0] in ky||t[1] in kx) t=[t[1],t[0]];
+  const v=(s,o,len,kw)=>s==='center'?o+len/2:s in kw?o+kw[s]/100*len:s.endsWith('%')?o+parseFloat(s)/100*len:o+parseFloat(s);
+  return [v(t[0],bb.x,bb.width,kx),v(t[1],bb.y,bb.height,ky)];
+}
+/* Where each part sits and turns depends only on the drawing, not on size
+   or colour, so it's measured once per kind and remembered: after that a
+   fish is lifted without asking the browser for any geometry, which would
+   force a style and layout pass in the middle of building a scene. */
+const LIFT_GEO=new Map();
+function animatedParts(svg){ return [...svg.querySelectorAll('[style*="animation"]')].filter(e=>e.style.animationName&&e.style.animationName!=='none'); }
+function liftPlan(svg){
+  const parts=animatedParts(svg), vb=svg.viewBox.baseVal;
+  if(!parts.length) return {svg,parts};
+  const k=(+svg.getAttribute('width')||vb.width)/vb.width, geo=LIFT_GEO.get(svg.dataset.k);
+  if(geo&&geo.length===parts.length) return {svg,vb,k,parts:parts.map((el,i)=>({el,...geo[i]}))};
+  if(!svg.getClientRects().length) return null;                 // not rendered: measure later
+  const root=svg.getScreenCTM(); if(!root) return null;
+  const inv=root.inverse();
+  const plan={svg,vb,k,parts:parts.map(el=>{
+    const P=inv.multiply(el.parentNode.getScreenCTM()), [ox,oy]=originIn(el.style.transformOrigin,el.getBBox());
+    const M={a:P.a,b:P.b,c:P.c,d:P.d,e:P.e,f:P.f};
+    return {el,M,X:M.a*ox+M.c*oy+M.e,Y:M.b*ox+M.d*oy+M.f,flip:M.a*M.d-M.b*M.c<0};
+  })};
+  if(svg.dataset.k) LIFT_GEO.set(svg.dataset.k,plan.parts.map(({M,X,Y,flip})=>({M,X,Y,flip})));
+  return plan;
+}
+/* The drop shadow can't stay a CSS filter on the fish: over moving layers
+   the GPU would re-blur it every frame (40% of the GPU's work on Today).
+   So it's baked into the layers, drawn once by an SVG filter inside them:
+   the body's shadow is a still layer at the very bottom, so it never falls
+   across a fin, and each fin or tail carries its own shadow in its own
+   layer, moving with it. No extra moving layers, and nothing for the GPU
+   to recompute per frame. */
+const DROP=/^drop-shadow\((rgba?\(([^)]*)\))\s+(-?[\d.]+)px\s+(-?[\d.]+)px\s+([\d.]+)px\)$/;
+let shN=0;
+function liftApply(plan){
+  const {svg,vb,parts,k}=plan;
+  if(svg.dataset.lifted) return;                               // never twice
+  svg.dataset.lifted='1';
+  if(!parts.length) return;
+  const wrap=document.createElement('span'); wrap.className='pf-crw';
+  const f=svg.style.filter, op=svg.style.opacity, ds=DROP.exec(f||'');
+  wrap.style.cssText='position:relative;display:block;width:fit-content;height:fit-content'+(f&&f!=='none'&&!ds?';filter:'+f:'')+(op?';opacity:'+op:'');
+  svg.style.filter='none'; svg.style.opacity='';
+  const pct=x=>(x*100).toFixed(2)+'%', vbs=svg.getAttribute('viewBox');
+  const el=(tag,attrs,kids)=>{ const n=document.createElementNS(SVGNS,tag); Object.entries(attrs||{}).forEach(([a,v])=>n.setAttribute(a,v)); (kids||[]).forEach(c=>n.appendChild(c)); return n; };
+  const layer=(style,kids)=>{ const l=el('svg',{class:'pf-part',viewBox:vbs,'aria-hidden':'true'},kids);
+    l.style.cssText='position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;'+(style||''); return l; };
+  const mat=M=>el('g',{transform:`matrix(${[M.a,M.b,M.c,M.d,M.e,M.f].map(n=>+n.toFixed(4)).join(' ')})`});
+  let drop=null, bodyShadow=null;
+  if(ds){
+    const ch=ds[2].split(',').map(x=>+x), id='pfsh'+(++shN), m=40;
+    const sd=+(+ds[5]/2/k).toFixed(3), dx=+(+ds[3]/k).toFixed(3), dy=+(+ds[4]/k).toFixed(3), col=`rgb(${ch[0]},${ch[1]},${ch[2]})`, a=ch.length>3?ch[3]:1;
+    const box={filterUnits:'userSpaceOnUse',x:vb.x-m,y:vb.y-m,width:vb.width+2*m,height:vb.height+2*m,'color-interpolation-filters':'sRGB'};
+    const fOnly=el('filter',{id:id+'s',...box}); fOnly.innerHTML=`<feGaussianBlur in="SourceAlpha" stdDeviation="${sd}"/><feOffset dx="${dx}" dy="${dy}" result="b"/><feFlood flood-color="${col}" flood-opacity="${a}"/><feComposite in2="b" operator="in"/>`;
+    const fDrop=el('filter',{id:id+'d',...box}); fDrop.innerHTML=`<feDropShadow dx="${dx}" dy="${dy}" stdDeviation="${sd}" flood-color="${col}" flood-opacity="${a}"/>`;
+    drop=g=>el('g',{filter:`url(#${id}d)`},[g]);
+    bodyShadow=()=>{
+      // everything left once the moving parts are out, minus its defs (the clone reuses them)
+      const still=[...svg.childNodes].filter(n=>n.nodeName!=='defs').map(n=>n.cloneNode(true));
+      const l=layer('',[el('defs',{},[fOnly,fDrop]),el('g',{filter:`url(#${id}s)`},still)]);
+      l.setAttribute('class','pf-crs-body'); return l;
+    };
+  }
+  const layers=parts.map(({el:part,M,X,Y,flip})=>{
+    const s=part.style, name=s.animationName;
+    const anim=`${flip&&MIRRORED[name]||name} ${s.animationDuration} ${s.animationTimingFunction} ${s.animationDelay} ${s.animationIterationCount} ${s.animationDirection}`;
+    ['animation','transform-box','transform-origin'].forEach(p=>s.removeProperty(p));
+    const g=mat(M); g.appendChild(part);
+    return layer(`transform-origin:${pct((X-vb.x)/vb.width)} ${pct((Y-vb.y)/vb.height)};animation:${anim}`,[drop?drop(g):g]);
+  });
+  svg.parentNode.insertBefore(wrap,svg);
+  if(bodyShadow) wrap.appendChild(bodyShadow());
+  layers.forEach(l=>wrap.appendChild(l));
+  /* positioned like the layers, so all of them paint in document order
+     (the body's shadow, then the parts, then the body); an in-flow body
+     would otherwise paint underneath every positioned layer */
+  svg.style.position='relative';
+  wrap.appendChild(svg);
+}
+let liftIO=null;
+function liftLater(svg){
+  liftIO=liftIO||new IntersectionObserver(es=>{
+    const ready=es.map(e=>e.target).filter(t=>!t.dataset.lifted&&t.getClientRects().length);
+    const plans=ready.map(liftPlan);                             // measure everything, then move everything
+    plans.forEach((pl,i)=>{ if(pl){ liftIO.unobserve(ready[i]); liftApply(pl); } });
+  });
+  liftIO.observe(svg);
+}
+function liftWithin(nodes){
+  /* a container and its contents can arrive in the same batch: a Set, so
+     each fish is found once */
+  const found=new Set();
+  nodes.forEach(n=>{ if(n.nodeType!==1) return;
+    if(n.matches('svg.pf-cr:not([data-lifted])')) found.add(n);
+    n.querySelectorAll('svg.pf-cr:not([data-lifted])').forEach(s=>found.add(s)); });
+  if(!found.size) return;
+  const list=[...found].filter(s=>s.isConnected), plans=list.map(liftPlan);   // measure all, then move all
+  plans.forEach((pl,i)=>pl?liftApply(pl):liftLater(list[i]));
+}
+function liftStart(){
+  if(typeof MutationObserver==='undefined'||liftStart.on) return; liftStart.on=true;
+  new MutationObserver(ms=>{ const add=[]; ms.forEach(m=>m.addedNodes.forEach(n=>add.push(n))); if(PF.motion) liftWithin(add); })
+    .observe(document.documentElement,{childList:true,subtree:true});
+}
+if(typeof document!=='undefined') liftStart();
+
+/* ── redrawing a scene in place ──
+   A scene is rebuilt whenever its size changes (a resize, a zoom), because
+   swim paths are laid out in pixels. Swapping in fresh markup would throw
+   away every fish's layers and make the browser draw, lift and rasterise
+   them all again, on every zoom step. morph() builds the new markup off the
+   page and walks it against what's there: the same fish in the same place
+   is kept and only takes the new swimmer styles (its path, its phase); a
+   plain element takes the new attributes; anything different is replaced.
+   The result is identical to a fresh build. */
+function sameFish(a,b){ const x=a.querySelector('svg.pf-cr'), y=b.querySelector('svg.pf-cr'); return !!x&&!!y&&x.dataset.f===y.dataset.f; }
+function syncAttrs(o,n){
+  for(const {name,value} of [...n.attributes]) if(o.getAttribute(name)!==value) o.setAttribute(name,value);
+  for(const {name} of [...o.attributes]) if(!n.hasAttribute(name)&&name!=='data-lifted') o.removeAttribute(name);
+}
+function morphNode(o,n){
+  if(o.nodeType!==n.nodeType||o.nodeName!==n.nodeName){ o.replaceWith(n); return; }
+  if(o.nodeType!==1){ if(o.nodeValue!==n.nodeValue) o.nodeValue=n.nodeValue; return; }
+  if(o.classList.contains('pf-swim')||n.classList&&n.classList.contains('pf-swim')){
+    if(sameFish(o,n)) syncAttrs(o,n); else o.replaceWith(n);
+    return;
+  }
+  if(o.matches('svg.pf-cr')){ if(o.dataset.f!==n.getAttribute('data-f')) o.replaceWith(n); return; }   // a fish on its own (a lifted one arrives as its wrapper, a <span>, and is replaced above)
+  syncAttrs(o,n);
+  const oc=[...o.childNodes], nc=[...n.childNodes];
+  if(oc.length!==nc.length){ o.replaceChildren(...nc); return; }
+  nc.forEach((c,i)=>morphNode(oc[i],c));
+}
+function morph(box,html){
+  if(!box) return;
+  if(!box.firstChild){ box.innerHTML=html; return; }
+  const t=document.createElement('template'); t.innerHTML=html;
+  const oc=[...box.childNodes], nc=[...t.content.childNodes];
+  if(oc.length!==nc.length){ box.replaceChildren(...nc); return; }
+  nc.forEach((c,i)=>morphNode(oc[i],c));
+}
 
 /* ── water toolkit ── */
 function loop(cx,cy,rx,ry,n,jit){
@@ -287,20 +616,142 @@ function loop(cx,cy,rx,ry,n,jit){
   }
   return d;
 }
+/* ── swimming, on the compositor ──
+   A fish follows its loop by transform keyframes sampled from the path:
+   KF_STOPS points spaced evenly by arc length, each with the heading of the
+   path there. Transform animations run on the GPU compositor, so a swimming
+   fish costs the main thread nothing per frame and keeps gliding while the
+   app is busy re-rendering a list. (offset-path, which this replaced, is
+   animated on the main thread: a style recalc for every fish, every frame.)
+   One @keyframes rule per distinct path, cached; unused ones are pruned. */
+const KF_STOPS=64, KF=new Map();
+let kfSheet=null;
+function kfHash(s){ let x=2166136261; for(let i=0;i<s.length;i++){ x^=s.charCodeAt(i); x=Math.imul(x,16777619); } return (x>>>0).toString(36); }
+/* loop() paths are one M then cubic C segments; flatten them finely */
+function flatten(d){
+  const n=(d.match(/-?\d*\.?\d+/g)||[]).map(Number);
+  if(!/^M[\d\s.-]+(C[\d\s.-]+)+$/.test(d)||n.length<8||(n.length-2)%6) return null;
+  const pts=[[n[0],n[1]]];
+  for(let i=2;i<n.length;i+=6){
+    const [x0,y0]=pts[pts.length-1], x1=n[i],y1=n[i+1],x2=n[i+2],y2=n[i+3],x3=n[i+4],y3=n[i+5];
+    for(let s=1;s<=24;s++){ const t=s/24, u=1-t, a=u*u*u, b=3*u*u*t, c=3*u*t*t, e=t*t*t;
+      pts.push([a*x0+b*x1+c*x2+e*x3, a*y0+b*y1+c*y2+e*y3]); }
+  }
+  return pts;
+}
+/* evenly spaced stops round the loop: [x, y, heading in degrees, unwrapped] */
+function stops(pts,n){
+  const cum=[0];
+  for(let i=1;i<pts.length;i++) cum.push(cum[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]));
+  const L=cum[cum.length-1]||1, out=[];
+  let j=1, prev=null;
+  for(let k=0;k<=n;k++){
+    const want=(k%n)/n*L;
+    if(k%n===0) j=1;
+    while(j<pts.length-1&&cum[j]<want) j++;
+    const a=pts[j-1], b=pts[j], seg=(cum[j]-cum[j-1])||1, t=Math.max(0,Math.min(1,(want-cum[j-1])/seg));
+    let ang=Math.atan2(b[1]-a[1],b[0]-a[0])*180/Math.PI;
+    if(prev!=null){ while(ang-prev>180) ang-=360; while(ang-prev<-180) ang+=360; }
+    if(k===n) ang=out[0][2]+Math.round((prev-out[0][2])/360)*360;   // close the lap a whole turn on
+    out.push([a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t, ang]); prev=ang;
+  }
+  return out;
+}
+function kfSheetGet(){
+  if(kfSheet) return kfSheet;
+  const s=document.createElement('style'); s.id='pf-kf'; (document.head||document.documentElement).appendChild(s);
+  return kfSheet=s.sheet;
+}
+/* drop rules nothing on the page uses any more (and that weren't made just
+   now for markup that's still being assembled) */
+function kfPrune(){
+  if(KF.size<400) return;
+  const used=new Set([...document.querySelectorAll('.pf-swim')].map(e=>e.style.animationName));
+  const sh=kfSheetGet(), cut=Date.now()-10000;
+  for(const [key,v] of KF) if(!used.has(v.name)&&v.at<cut){
+    for(let i=sh.cssRules.length-1;i>=0;i--) if(sh.cssRules[i].name===v.name){ sh.deleteRule(i); break; }
+    KF.delete(key);
+  }
+}
+function swimKeyframes(path,rev,w,hgt){
+  const key=path+'|'+(rev?1:0)+'|'+w+'|'+hgt; let v=KF.get(key);
+  if(v){ v.at=Date.now(); return v; }
+  const pts=flatten(path); if(!pts) return null;
+  const st=stops(pts,KF_STOPS), turn=rev?180:0, name='pfk'+kfHash(key);
+  const tf=s=>`translate(${(s[0]-w/2).toFixed(1)}px,${(s[1]-hgt/2).toFixed(1)}px) rotate(${(s[2]+turn).toFixed(1)}deg)`;
+  const body=st.map((s,k)=>`${+(k/KF_STOPS*100).toFixed(3)}%{transform:${tf(s)}}`).join('');
+  try{ const sh=kfSheetGet(); sh.insertRule(`@keyframes ${name}{${body}}`,sh.cssRules.length); }catch(e){ return null; }
+  v={name,st,tf,at:Date.now()}; KF.set(key,v); kfPrune();
+  return v;
+}
+/* The lap's phase is read off the wall clock, so when a scene is rebuilt
+   (a resize, a zoom) each fish carries on from where it was on its loop
+   instead of every fish restarting at once. */
 function swimmer(path,dur,rev,node,z,extraStyle){
+  const at=rnd(), ph=rnd(), lap=((Date.now()/1000/dur+ph)%1)*dur;
+  const m=/^<svg[^>]*?\swidth="([\d.]+)"[^>]*?\sheight="([\d.]+)"/.exec(node||''), v=m&&typeof document!=='undefined'&&swimKeyframes(path,rev,+m[1],+m[2]);
+  if(v){
+    /* the resting transform is where a still pond (or reduced motion) shows it */
+    const rest=v.st[Math.floor(at*KF_STOPS)%KF_STOPS];
+    return h('div',{class:'pf-swim',style:{position:'absolute',left:0,top:0,transformOrigin:`${+m[1]/2}px ${+m[2]/2}px`,transform:v.tf(rest),
+      animation:PF.motion?`${v.name} ${dur}s linear ${(-lap).toFixed(2)}s infinite${rev?' reverse':''}`:'none',zIndex:z||2,...(extraStyle||{})}},node);
+  }
   return h('div',{class:'pf-swim',style:{position:'absolute',left:0,top:0,offsetPath:`path('${path}')`,offsetRotate:rev?'auto 180deg':'auto',
-    offsetDistance:(rnd()*100).toFixed(0)+'%',animation:PF.motion?`pf-swim ${dur}s linear ${(-rnd()*dur).toFixed(1)}s infinite${rev?' reverse':''}`:'none',zIndex:z||2,...(extraStyle||{})}},node);
+    offsetDistance:(at*100).toFixed(0)+'%',animation:PF.motion?`pf-swim ${dur}s linear ${(-lap).toFixed(2)}s infinite${rev?' reverse':''}`:'none',zIndex:z||2,...(extraStyle||{})}},node);
 }
-/* moving light on the water: two turbulence layers drifting past each other */
+/* ── moving light on the water ──
+   Two sheets of turbulence noise drifting past each other, screen-blended.
+   Running feTurbulence live means the GPU redraws a screen-sized filter
+   every frame (and the filters were never actually on the page, so it
+   drew black). Instead each sheet is drawn once, at load, as a seamlessly
+   tiling bitmap (stitchTiles; each tile size makes baseFrequency × size a
+   whole number), and the compositor slides it. The sheets are empty for
+   the few milliseconds before the bitmaps exist. */
+const CAUS=[
+  {v:'--pf-caus-a',w:545,h:526,f:'0.011 0.019',seed:4,m:'0 0 0 0 0.82  0 0 0 0 1  0 0 0 0 0.94  -3.4 0 0 0 1.25'},
+  {v:'--pf-caus-b',w:500,h:545,f:'0.016 0.011',seed:9,m:'0 0 0 0 0.9  0 0 0 0 1  0 0 0 0 0.9  -3.8 0 0 0 1.2'}];
+let causBaked=false;
+function bakeCaustics(){
+  if(causBaked||typeof document==='undefined') return; causBaked=true;
+  const d=Math.min(2,Math.max(1,Math.round((window.devicePixelRatio||1)*2)/2));
+  CAUS.forEach(c=>{
+    const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${c.w*d}" height="${c.h*d}" viewBox="0 0 ${c.w} ${c.h}"><filter id="f" x="0" y="0" width="100%" height="100%">`+
+      `<feTurbulence type="turbulence" baseFrequency="${c.f}" numOctaves="2" seed="${c.seed}" stitchTiles="stitch"/><feColorMatrix type="matrix" values="${c.m}"/></filter>`+
+      `<rect width="${c.w}" height="${c.h}" filter="url(#f)"/></svg>`;
+    const src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+    const use=u=>document.documentElement.style.setProperty(c.v,`url("${u}")`);
+    const img=new Image();
+    img.onload=()=>{
+      try{
+        const cv=document.createElement('canvas'); cv.width=c.w*d; cv.height=c.h*d;
+        cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
+        cv.toBlob(b=>use(b?URL.createObjectURL(b):src),'image/png');
+      }catch(e){ use(src); }          // a tainted canvas: the SVG itself still works as an image
+    };
+    img.onerror=()=>use(src);
+    img.src=src;
+  });
+}
 function caustics(w,hgt,op){
+  if(!PF.light) return '';
+  bakeCaustics();
+  /* each sheet is sized to cover the pond at every point of its drift
+     (the second one travels 160px left of its 120px offset) */
+  const sheet=(c,x,y,o,anim,ew)=>h('div',{style:{position:'absolute',left:x,top:y,width:Math.round(w+ew),height:Math.round(hgt+100),opacity:o,
+    backgroundImage:`var(${c.v})`,backgroundSize:`${c.w}px ${c.h}px`,animation:PF.motion?anim:'none'}});
   return h('div',{class:'pf-caustics',style:{position:'absolute',left:0,top:0,width:w,height:hgt,zIndex:3,pointerEvents:'none',mixBlendMode:'screen',opacity:op}},
-    h('svg',{width:Math.round(w+200),height:Math.round(hgt+100),style:{position:'absolute',left:-20,top:-20,animation:PF.motion?'pf-drift1 26s ease-in-out infinite alternate':'none'}},h('rect',{width:'100%',height:'100%',filter:'url(#pfCausticA)'})),
-    h('svg',{width:Math.round(w+200),height:Math.round(hgt+100),style:{position:'absolute',left:-120,top:-40,opacity:.7,animation:PF.motion?'pf-drift2 34s ease-in-out infinite alternate':'none'}},h('rect',{width:'100%',height:'100%',filter:'url(#pfCausticB)'})));
+    sheet(CAUS[0],-20,-20,null,'pf-drift1 26s ease-in-out infinite alternate',200),
+    sheet(CAUS[1],-120,-40,.7,'pf-drift2 34s ease-in-out infinite alternate',300));
 }
+/* Delays are given as the equivalent negative ones (the same rhythm, already
+   under way): an animation still waiting out a positive delay is watched
+   from the main thread every frame until it starts. */
+const lead=(delay,dur)=>+(((+delay%dur)-dur)%dur).toFixed(2);
 const ripple=(x,y,size,delay,dur)=>!PF.ripples?'':h('div',{style:{position:'absolute',left:x,top:y,width:size,height:size,borderRadius:'50%',border:'1.5px solid #cfe9e3',boxShadow:'0 0 0 6px #cfe9e30f',opacity:0,
-  transform:'translate(-50%,-50%)',animation:PF.motion?`pf-ripple ${dur||6}s ease-out ${delay}s infinite`:'none',zIndex:3,pointerEvents:'none'}});
-const glints=(w,hgt,n)=>Array.from({length:n},()=>h('div',{style:{position:'absolute',left:+(rnd()*w).toFixed(1),top:+(rnd()*hgt).toFixed(1),width:+(10+rnd()*14).toFixed(1),height:2,borderRadius:2,background:'#ffffffcc',opacity:0,zIndex:6,pointerEvents:'none',
-  animation:PF.motion?`pf-glint ${(2.5+rnd()*3).toFixed(1)}s ease-in-out ${(rnd()*6).toFixed(1)}s infinite`:'none'}})).join('');
+  transform:'translate(-50%,-50%)',animation:PF.motion?`pf-ripple ${dur||6}s ease-out ${lead(delay,dur||6)}s infinite`:'none',zIndex:3,pointerEvents:'none'}});
+const glints=(w,hgt,n)=>Array.from({length:n},()=>{ const x=+(rnd()*w).toFixed(1), y=+(rnd()*hgt).toFixed(1), gw=+(10+rnd()*14).toFixed(1), dur=+(2.5+rnd()*3).toFixed(1), dl=+(rnd()*6).toFixed(1);
+  return h('div',{style:{position:'absolute',left:x,top:y,width:gw,height:2,borderRadius:2,background:'#ffffffcc',opacity:0,zIndex:6,pointerEvents:'none',
+  animation:PF.motion?`pf-glint ${dur}s ease-in-out ${lead(dl,dur)}s infinite`:'none'}}); }).join('');
 const petals=(hgt,n)=>!PF.petals?'':Array.from({length:n},(_,i)=>h('div',{style:{position:'absolute',left:0,top:+(30+rnd()*(hgt-60)).toFixed(1),zIndex:5,pointerEvents:'none',
   animation:PF.motion?`pf-float ${(55+rnd()*35).toFixed(0)}s linear ${(-rnd()*80).toFixed(0)}s infinite`:'none'}},
   h('div',{style:{width:9,height:6,borderRadius:'60% 40% 60% 40%',background:i%2?'#f7c1d4':'#fde3d0',boxShadow:'0 3px 4px rgba(5,25,28,.3)'}}))).join('');
@@ -347,20 +798,71 @@ function plant(mood,size,still){
     animation:PF.motion&&!still?`pf-sway ${(4+rnd()*3).toFixed(1)}s ease-in-out infinite`:'none'}},k);
 }
 
-/* the two turbulence filters caustics() points at — injected once per page */
-const DEFS=h('svg',{width:0,height:0,style:{position:'absolute'},'aria-hidden':'true'},h('defs',null,
-  h('filter',{id:'pfCausticA',x:0,y:0,width:'100%',height:'100%'},
-    h('feTurbulence',{type:'turbulence',baseFrequency:'0.011 0.019',numOctaves:2,seed:4}),
-    h('feColorMatrix',{type:'matrix',values:'0 0 0 0 0.82  0 0 0 0 1  0 0 0 0 0.94  -3.4 0 0 0 1.25'})),
-  h('filter',{id:'pfCausticB',x:0,y:0,width:'100%',height:'100%'},
-    h('feTurbulence',{type:'turbulence',baseFrequency:'0.016 0.011',numOctaves:2,seed:9}),
-    h('feColorMatrix',{type:'matrix',values:'0 0 0 0 0.9  0 0 0 0 1  0 0 0 0 0.9  -3.8 0 0 0 1.2'}))));
-function injectDefs(){
-  if(document.getElementById('pf-defs')) return;
-  const d=document.createElement('div'); d.id='pf-defs'; d.innerHTML=DEFS;
-  (document.body||document.documentElement).appendChild(d);
+/* A side-view bloom: every petal shares a rooted base and opens outward. */
+function lotus(progress){
+  const p=Math.max(0,Math.min(1,Number(progress)||0));
+  const petal=(angle,length,width,fill)=>`<g transform="translate(140 139) rotate(${angle})"><path d="M0 0 C${-width} -14 ${-width} ${-length*.65} 0 ${-length} C${width} ${-length*.65} ${width} -14 0 0Z" fill="${fill}" stroke="#b7775f" stroke-opacity=".35" stroke-width=".8"/><path d="M0 -5 Q-3 ${-length*.45} 0 ${-length*.87}" fill="none" stroke="#fff6e7" stroke-opacity=".4" stroke-width=".8"/></g>`;
+  const layers=[[-72,-48,-24,0,24,48,72].sort((a,b)=>Math.abs(b)-Math.abs(a)).map(a=>petal(a*(.10+.90*p),65+12*p-Math.abs(a)*.18*(1-p),13+4*p,'url(#lotus-back)')).join(''),
+    [-55,-28,0,28,55].sort((a,b)=>Math.abs(b)-Math.abs(a)).map(a=>petal(a*(.12+.88*p),58+4*p,14+3*p,'url(#lotus-front)')).join(''),
+    [-77,-42,0,42,77].sort((a,b)=>Math.abs(b)-Math.abs(a)).map(a=>petal(a*(.08+.92*p),48-13*p,12+6*p,'url(#lotus-front)')).join('')];
+  return `<svg viewBox="0 0 280 200" role="img" aria-label="Lotus, ${Math.round(p*100)} percent of daily focus goal" xmlns="http://www.w3.org/2000/svg">
+    <defs><radialGradient id="lotus-water"><stop stop-color="#dbe8db"/><stop offset="1" stop-color="#f5f1e7" stop-opacity="0"/></radialGradient>
+    <linearGradient id="lotus-back" x2=".2" y2="1"><stop stop-color="#edbda4"/><stop offset="1" stop-color="#ce8066"/></linearGradient>
+    <linearGradient id="lotus-front" x2=".15" y2="1"><stop stop-color="#fff0dc"/><stop offset=".5" stop-color="#f5c7aa"/><stop offset="1" stop-color="#e49b79"/></linearGradient></defs>
+    <ellipse cx="140" cy="148" rx="137" ry="50" fill="url(#lotus-water)"/>
+    <g fill="none" stroke="#7ca396" stroke-width=".8"><ellipse cx="140" cy="151" rx="114" ry="27" opacity=".2"/><ellipse cx="140" cy="151" rx="94" ry="19" opacity=".35"/></g>
+    <path d="M139 148 C107 125 58 133 63 151 C69 176 174 177 211 151 C219 131 173 124 146 143 L177 155Z" fill="#819e77" stroke="#6c8b69" stroke-width=".8"/>
+    <path d="M78 151 Q112 142 139 148 M102 166 Q115 153 139 148 M195 145 Q171 139 149 145" fill="none" stroke="#b6c8a1" stroke-width=".8" opacity=".65"/>
+    <ellipse cx="140" cy="145" rx="${22+27*p}" ry="7" fill="#3f6050" opacity=".13"/>
+    ${layers[0]}${layers[1]}<ellipse cx="140" cy="130" rx="${3+12*p}" ry="${2+5*p}" fill="#d9ac57" opacity="${p}"/>${layers[2]}
+    <path d="M118 143 Q139 155 162 143" fill="none" stroke="#647e5d" stroke-width="2" stroke-linecap="round"/>
+  </svg>`;
 }
 
-window.Pond={PF,h,css,rnd,reseed,hs,SPEC,SP,RAR,POOL,rollSpecies,creature,fish,shadowFish,
-  loop,swimmer,caustics,ripple,glints,petals,pad,deep,plant,PLANT,injectDefs};
+/* ── the Catching Days mark ──
+   A koi curled once around a round pond, swimming toward a small sun: it is
+   always about to catch the day. Drawn in a 100×100 box (the curve was
+   generated from an arc with a tapering width, then frozen here as paths).
+   opts.swim sends the koi and its sun slowly around the pond, the koi
+   surging toward the sun and easing off as it goes; opts.flat drops the glow for tiny sizes. */
+const MK={
+  body:'M29.2 68.8L28.6 68.4L28.1 67.9L27.5 67.5L27 67L26.5 66.6L25.9 66.1L25.4 65.6L25 65.1L24.5 64.6L24 64L23.5 63.5L23.1 62.9L22.7 62.3L22.2 61.7L21.8 61.1L21.5 60.5L21.1 59.8L20.7 59.2L20.4 58.5L20.1 57.8L19.7 57.2L19.5 56.5L19.2 55.7L18.9 55L18.7 54.3L18.5 53.6L18.3 52.8L18.1 52.1L17.9 51.3L17.8 50.6L17.7 49.8L17.6 49L17.5 48.2L17.5 47.5L17.4 46.7L17.4 45.9L17.4 45.1L17.5 44.3L17.5 43.5L17.6 42.7L17.7 41.9L17.8 41.1L18 40.3L18.1 39.6L18.3 38.8L18.5 38L18.7 37.2L19 36.5L19.3 35.7L19.6 34.9L19.9 34.2L20.2 33.5L20.6 32.7L21 32L21.4 31.3L21.8 30.6L22.3 29.9L22.7 29.2L23.2 28.6L23.7 27.9L24.2 27.3L24.8 26.7L25.3 26.1L25.9 25.5L26.5 24.9L27.1 24.4L27.7 23.8L28.4 23.3L29 22.9L29.7 22.4L30.4 22L31.1 21.5L31.8 21.1L32.5 20.7L33.2 20.4L34 20L34.7 19.7L35.4 19.3L36.2 19L36.9 18.7L37.7 18.5L38.5 18.2L39.2 18L40 17.8L40.8 17.6L41.6 17.4L42.4 17.3L43.2 17.1L44 17L44.8 16.9L45.6 16.8L46.4 16.8L47.1 16.7L47.9 16.7L48.7 16.7L49.5 16.7L50.3 16.8L51.1 16.8L51.9 16.9L52.7 17L53.5 17.1L54.3 17.2L55 17.4L55.8 17.5L56.6 17.7L57.3 17.9L58.1 18.1L58.8 18.4L59.6 18.7L60.3 19L61 19.4L61.6 19.9L62.2 20.3L62.8 20.9L63.4 21.5L63.9 22.2L64.3 22.9L64.7 23.8L64.9 24.9L64.3 27.1L64.3 27.1L62.7 28.6L61.7 29.1L60.9 29.3L60.2 29.5L59.6 29.6L59 29.7L58.4 29.7L57.8 29.8L57.3 29.7L56.7 29.7L56.2 29.7L55.7 29.6L55.2 29.5L54.7 29.4L54.2 29.4L53.7 29.3L53.2 29.3L52.7 29.2L52.2 29.2L51.7 29.2L51.2 29.2L50.7 29.2L50.2 29.2L49.7 29.3L49.2 29.3L48.7 29.4L48.2 29.5L47.8 29.6L47.3 29.6L46.8 29.8L46.3 29.9L45.8 30L45.4 30.1L44.9 30.3L44.5 30.5L44 30.6L43.6 30.8L43.1 31L42.7 31.2L42.2 31.4L41.8 31.7L41.4 31.9L41 32.1L40.6 32.4L40.2 32.6L39.8 32.9L39.4 33.2L39 33.5L38.7 33.8L38.3 34.1L37.9 34.4L37.6 34.7L37.3 35.1L36.9 35.4L36.6 35.7L36.2 36L35.9 36.3L35.6 36.7L35.3 37L34.9 37.4L34.6 37.7L34.3 38.1L34 38.4L33.7 38.8L33.4 39.2L33.1 39.5L32.8 39.9L32.6 40.3L32.3 40.7L32 41.1L31.8 41.5L31.5 41.9L31.3 42.3L31 42.8L30.8 43.2L30.6 43.6L30.3 44.1L30.1 44.5L29.9 45L29.7 45.4L29.5 45.9L29.4 46.4L29.2 46.9L29 47.3L28.9 47.8L28.7 48.3L28.6 48.8L28.4 49.3L28.3 49.9L28.2 50.4L28.1 50.9L28 51.4L27.9 52L27.9 52.5L27.8 53.1L27.8 53.6L27.7 54.2L27.7 54.7L27.7 55.3L27.7 55.8L27.7 56.4L27.7 57L27.8 57.5L27.8 58.1L27.9 58.7L28 59.3L28.1 59.9L28.2 60.4L28.3 61L28.5 61.6L28.6 62.2L28.8 62.8L29 63.4L29.2 63.9L29.4 64.5L29.6 65.1L29.9 65.7L30.1 66.2L30.4 66.8L30.7 67.4Z',
+  tail:'M28.1 68.4Q28.8 75.8 31.6 82.7Q34.3 72.9 44.3 71.3Q37.7 67.8 30.5 66.3Z',
+  finA:'M33.3 21.4Q30.9 15.3 24.2 19.8Q28.2 22.7 29 24Z',
+  finB:'M39.4 31.9Q43.6 37.1 36.4 40.7Q35.9 35.8 35.1 34.5Z',
+  p1:'M22.2 52.9L21.8 52.2L21.4 51.5L21 50.7L20.6 50L20.3 49.2L20 48.4L19.7 47.6L19.5 46.7L19.4 45.9L19.3 45.1L19.3 44.2L19.4 43.4L19.6 42.6L19.8 41.8L20.1 41.1L20.5 40.3L21 39.7L21.5 39L22.2 38.4L22.8 37.8L23.5 37.3L24.3 36.8L25.1 36.4L25.9 36L25.9 36L26 36.9L26.1 37.7L26.2 38.6L26.3 39.4L26.3 40.1L26.4 40.9L26.4 41.6L26.4 42.3L26.4 43L26.3 43.6L26.2 44.2L26 44.9L25.8 45.5L25.6 46.1L25.3 46.7L25 47.3L24.6 48L24.3 48.6L23.9 49.3L23.6 50L23.2 50.7L22.9 51.4L22.5 52.1L22.2 52.9Z',
+  p2:'M30 33.2L30.1 32.4L30.1 31.6L30.2 30.9L30.4 30.1L30.6 29.3L30.9 28.6L31.2 27.9L31.6 27.3L32 26.7L32.5 26.2L33 25.7L33.6 25.3L34.2 24.9L34.9 24.7L35.5 24.4L36.3 24.3L37 24.2L37.8 24.2L38.5 24.2L39.3 24.3L40 24.5L40.8 24.6L41.5 24.8L42.3 25.1L42.3 25.1L41.8 25.7L41.4 26.3L41 26.9L40.6 27.5L40.2 28.1L39.9 28.6L39.5 29.2L39.1 29.7L38.8 30.1L38.4 30.5L38 30.9L37.5 31.2L37.1 31.5L36.6 31.8L36.1 32L35.6 32.2L35 32.4L34.3 32.5L33.7 32.6L33 32.7L32.3 32.8L31.5 32.9L30.8 33.1L30 33.2Z',
+  sun:[75,39.9], eyes:[[61.2,21.3],[58.5,28.4]]
+};
+let markN=0;
+function mark(size,opts){
+  const o=opts||{}, id='cdm'+(++markN), swim=o.swim&&PF.motion;
+  const defs=`<defs><radialGradient id="${id}w" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#2f8a83"/><stop offset=".55" stop-color="#1a5c60"/><stop offset="1" stop-color="#0c3137"/></radialGradient>
+    <radialGradient id="${id}s"><stop offset="0" stop-color="#ffe3a3"/><stop offset=".6" stop-color="#f0b35a"/><stop offset="1" stop-color="#f0b35a" stop-opacity="0"/></radialGradient></defs>`;
+  const disc=`<circle cx="50" cy="50" r="48" fill="url(#${id}w)"/>
+    <circle cx="50" cy="50" r="41" fill="none" stroke="#cfe9e3" stroke-opacity=".13"/>`;
+  const glow=op=>o.flat?'':`<circle cx="${MK.sun[0]}" cy="${MK.sun[1]}" r="11" fill="url(#${id}s)"${op?` opacity="${op}"`:''}/>`;
+  const sun=`<circle cx="${MK.sun[0]}" cy="${MK.sun[1]}" r="5.2" fill="#f5c65a"/>`;
+  const koi=`<g${o.flat?'':' filter="drop-shadow(0 2px 1.5px rgba(5,25,28,.45))"'}>
+        <path d="${MK.tail}" fill="#ec7a45" opacity=".9"/><path d="${MK.finA}" fill="#ec7a45" opacity=".8"/><path d="${MK.finB}" fill="#ec7a45" opacity=".8"/>
+        <path d="${MK.body}" fill="#ec7a45"/><path d="${MK.p1}" fill="#fbf8f2"/><path d="${MK.p2}" fill="#fbf8f2" opacity=".92"/>
+        ${size>=40?MK.eyes.map(e=>`<circle cx="${e[0]}" cy="${e[1]}" r="1.1" fill="#3a1a0c" opacity=".75"/>`).join(''):''}
+      </g>`;
+  if(!swim) return `<svg class="cd-mark" width="${size}" height="${size}" viewBox="0 0 100 100" aria-hidden="true">${defs}${disc}${glow('.55')}${sun}${koi}</svg>`;
+  /* Swimming, it's built as stacked layers, each animation on a whole
+     element: the pond is still, a ring carrying the sun and the koi turns,
+     the glow breathes and the koi surges within it. The GPU does all of it;
+     nothing inside an SVG animates, so nothing is repainted per frame. */
+  const L=(inner,style)=>`<svg viewBox="0 0 100 100" aria-hidden="true" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;${style||''}">${inner}</svg>`;
+  const at=`${MK.sun[0]}% ${MK.sun[1]}%`;
+  return `<span class="cd-mark" style="position:relative;display:block;width:${size}px;height:${size}px" aria-hidden="true">
+    <svg class="cd-disc" width="${size}" height="${size}" viewBox="0 0 100 100" style="display:block">${defs}${disc}</svg>
+    <span style="position:absolute;left:0;top:0;width:100%;height:100%;animation:cd-orbit 48s linear infinite">
+      ${o.flat?'':L(glow(),`transform-origin:${at};animation:cd-glow 4s ease-in-out infinite`)}
+      ${L(sun)}
+      ${L(koi,'transform-origin:50% 50%;animation:cd-surge 3.6s ease-in-out infinite alternate')}
+    </span></span>`;
+}
+window.Pond={PF,mark,h,css,rnd,reseed,hs,SPEC,SP,RAR,POOL,rollSpecies,creature,fish,shadowFish,lotus,
+  loop,swimmer,caustics,ripple,glints,petals,pad,deep,plant,PLANT,bakeCaustics,morph};
 })();

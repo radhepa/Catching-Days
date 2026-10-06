@@ -11,7 +11,7 @@
   var DEVICE = /iPhone|iPod/.test(navigator.userAgent) ? 'iPhone' : /iPad/.test(navigator.userAgent) ? 'iPad'
     : /Android/.test(navigator.userAgent) ? 'Android' : 'Laptop';
   var DISMISS_KEY = 'radhelabs.sync.bannerDismissed';
-  var DOCS_URL = 'https://github.com/radhepa/The-Life-App/blob/main/docs/sync.md';
+  var DOCS_URL = 'https://github.com/radhepa/Catching-Days/blob/main/docs/sync.md';
 
   var store = {
     get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
@@ -30,6 +30,7 @@
     if (!db.onboarded && (db.classes.length || db.assignments.length || db.sessions.length)) db.onboarded = true;
     cacheSave();
     if (SERVER) syncOut();       // the local server copy stays in step too
+    window.PondEvents?.reconcile(); // backfill legacy story state; never evaluate imported sessions
     refreshViews();
   }
 

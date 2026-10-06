@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-68 -118 136 136" role="img" aria-label="Kuri · revised concept"><title>Kuri · revised concept</title><defs>
+    <linearGradient id="kuri_revised_skin" gradientUnits="userSpaceOnUse" x1="0" y1="-69" x2="0" y2="1"><stop offset="0" stop-color="#f7ecda"/><stop offset="0.24" stop-color="#ddbd98"/><stop offset="0.66" stop-color="#b88c68"/><stop offset="0.94" stop-color="#926a4e"/><stop offset="1" stop-color="#173a3b"/></linearGradient>
+    <linearGradient id="kuri_revised_eye" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7e9ce"/><stop offset="1" stop-color="#c39b71"/></linearGradient>
+  <radialGradient id="kuri_revised_iris" cx=".45" cy=".42" r=".6"><stop offset="0" stop-color="#e2e8c4"/><stop offset=".55" stop-color="#99ad7f"/><stop offset="1" stop-color="#5f7656"/></radialGradient>
+    <radialGradient id="kuri_revised_cloudedEye" cx=".4" cy=".3" r=".7"><stop stop-color="#fffdf3"/><stop offset=".6" stop-color="#f1f0e7"/><stop offset="1" stop-color="#dfe4db"/></radialGradient>
+    <radialGradient id="kuri_revised_throat" cx=".4" cy=".3" r=".65"><stop stop-color="#fff9e8"/><stop offset="1" stop-color="#e2c49e"/></radialGradient>
+    <linearGradient id="kuri_revised_patch" gradientUnits="userSpaceOnUse" x1="0" y1="-61" x2="0" y2="-7"><stop stop-color="#b27d56"/><stop offset="1" stop-color="#88583f"/></linearGradient>
+    <linearGradient id="kuri_revised_cloth" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#809f8b"/><stop offset="1" stop-color="#50765f"/></linearGradient>
+    <linearGradient id="kuri_revised_seed" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#ead39d"/><stop offset="1" stop-color="#b4955b"/></linearGradient>
+    <clipPath id="kuri_revised_bc"><path d="M0 0 C15 .5 32 -1 38 -8 C44 -14 43 -23 39 -29 C42 -35 44 -43 42 -49 C40 -56 33 -59 25 -60 C15 -62 -15 -62 -25 -60 C-33 -59 -40 -56 -42 -49 C-44 -43 -42 -35 -39 -29 C-43 -23 -44 -14 -38 -8 C-32 -1 -15 .5 0 0Z"/></clipPath>
+  </defs>
+  <g transform="translate(0 5.52)"><g class="td-splash"><ellipse rx="64.41" ry="12.96" fill="none" stroke="#e6f5f1" stroke-width=".9" opacity="0"/></g></g><g transform="translate(0 5.52)"><g class="td-splash two"><ellipse rx="64.41" ry="12.96" fill="none" stroke="#e6f5f1" stroke-width=".9" opacity="0"/></g></g>
+    <defs><linearGradient id="kuri_revised_pad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8db58a"/><stop offset=".55" stop-color="#6f9e7a"/><stop offset="1" stop-color="#5a8d69"/></linearGradient></defs>
+    <g transform="scale(0.92 0.92)"><path d="M0 3.5 L30.4 13.5 A62 11.5 0 1 0 12.6 14.75 Z" transform="translate(0 1.7)" fill="#3a6a51"/><path d="M0 3.5 L30.4 13.5 A62 11.5 0 1 0 12.6 14.75 Z" fill="url(#kuri_revised_pad)"/>
+    <path d="M0 3.5 L-53.56 -0.13 M0 3.5 L-40.31 -4 M0 3.5 L-19.5 -6.46 M0 3.5 L4.97 -7.06 M0 3.5 L28.5 -5.68 M0 3.5 L46.69 -2.58 M0 3.5 L56.13 1.66 M0 3.5 L55.06 6.24 M0 3.5 L43.66 10.31 M0 3.5 L-43.66 10.31 M0 3.5 L-55.06 6.24" stroke="#a9c795" stroke-width=".5" opacity=".45" fill="none"/>
+    <path d="M-61.4 2.2 C-50 -6 50 -6 61.4 2.2" fill="none" stroke="#b9d29f" stroke-width=".7" opacity=".7"/></g><ellipse cx="0" cy="1.4" rx="42" ry="4.2" fill="#173a3b" opacity=".3"/><ellipse cx="0" cy=".9" rx="30.24" ry="2.3" fill="#173a3b" opacity=".2"/>
+  <!-- Natural broad haunches and little rounded toe ends. -->
+  <g transform="scale(1)">
+    <path d="M-36 -4 C-44 -7 -51 -5 -55 -2 C-58 0 -54 1 -50 1 L-34 0 M36 -4 C44 -7 51 -5 55 -2 C58 0 54 1 50 1 L34 0" fill="#ba946f" stroke="#86644f" stroke-width=".5"/>
+    <g fill="#f1ddbc" stroke="#86644f" stroke-width=".4"><circle cx="-54" cy="0" r="1.5"/><circle cx="-51" cy="-3" r="1.3"/><circle cx="54" cy="0" r="1.5"/><circle cx="51" cy="-3" r="1.3"/></g>
+  </g>
+  <path d="M0 0 C15 .5 32 -1 38 -8 C44 -14 43 -23 39 -29 C42 -35 44 -43 42 -49 C40 -56 33 -59 25 -60 C15 -62 -15 -62 -25 -60 C-33 -59 -40 -56 -42 -49 C-44 -43 -42 -35 -39 -29 C-43 -23 -44 -14 -38 -8 C-32 -1 -15 .5 0 0Z" fill="url(#kuri_revised_skin)" stroke="#86644f" stroke-width=".6"/>
+  <g clip-path="url(#kuri_revised_bc)">
+    <path d="M-11 -62 C-7 -68 5 -68 11 -61 C13 -56 7 -50 1 -51 C-4 -51 -9 -56 -11 -62Z" fill="url(#kuri_revised_patch)"/>
+      <path d="M31 -35 C40 -36 44 -29 40 -23 C35 -20 29 -23 28 -28 Q26 -32 31 -35Z" fill="url(#kuri_revised_patch)" opacity=".65"/>
+    <ellipse cx="33" cy="-47" rx="2.04" ry="1.74" fill="#8b6047" opacity=".55"/><circle cx="33.27" cy="-46.59" r="0.8999999999999999" fill="#2b2420" opacity="0.2"/><circle cx="33" cy="-47" r="0.8999999999999999" fill="#ffffff" opacity=".4"/><ellipse cx="31" cy="-42" rx="1.53" ry="1.3" fill="#8b6047" opacity=".55"/><circle cx="31.2" cy="-41.7" r="0.675" fill="#2b2420" opacity="0.2"/><circle cx="31" cy="-42" r="0.675" fill="#ffffff" opacity=".4"/><ellipse cx="27" cy="-12" rx="2.21" ry="1.89" fill="#8b6047" opacity=".55"/><circle cx="27.29" cy="-11.56" r="0.9750000000000001" fill="#2b2420" opacity="0.2"/><circle cx="27" cy="-12" r="0.9750000000000001" fill="#ffffff" opacity=".4"/><ellipse cx="-12" cy="-52" rx="1.19" ry="1.01" fill="#8b6047" opacity=".55"/><circle cx="-11.84" cy="-51.76" r="0.5249999999999999" fill="#2b2420" opacity="0.2"/><circle cx="-12" cy="-52" r="0.5249999999999999" fill="#ffffff" opacity=".4"/>
+    <circle cx="-34.67" cy="-42.51" r="1.1" fill="#625132" opacity="0.22"/><circle cx="-35" cy="-43" r="1.1" fill="#ffffff" opacity=".4"/><circle cx="35.3" cy="-43.55" r="1" fill="#625132" opacity="0.22"/><circle cx="35" cy="-44" r="1" fill="#ffffff" opacity=".4"/><circle cx="-27.76" cy="-47.64" r="0.8" fill="#625132" opacity="0.22"/><circle cx="-28" cy="-48" r="0.8" fill="#ffffff" opacity=".4"/><circle cx="28.27" cy="-48.59" r="0.9" fill="#625132" opacity="0.22"/><circle cx="28" cy="-49" r="0.9" fill="#ffffff" opacity=".4"/><circle cx="-19.79" cy="-25.68" r="0.7" fill="#625132" opacity="0.22"/><circle cx="-20" cy="-26" r="0.7" fill="#ffffff" opacity=".4"/><circle cx="21.21" cy="-25.68" r="0.7" fill="#625132" opacity="0.22"/><circle cx="21" cy="-26" r="0.7" fill="#ffffff" opacity=".4"/><circle cx="-30.76" cy="-8.64" r="0.8" fill="#625132" opacity="0.22"/><circle cx="-31" cy="-9" r="0.8" fill="#ffffff" opacity=".4"/><circle cx="31.27" cy="-8.6" r="0.9" fill="#625132" opacity="0.22"/><circle cx="31" cy="-9" r="0.9" fill="#ffffff" opacity=".4"/><circle cx="-4.83" cy="-27.75" r="0.55" fill="#625132" opacity="0.22"/><circle cx="-5" cy="-28" r="0.55" fill="#ffffff" opacity=".4"/>
+    <ellipse cx="-12" cy="-56" rx="12" ry="2.8" fill="#fff" opacity=".22" transform="rotate(-8 -12 -56)"/>
+    <ellipse cy="-2" rx="29" ry="3" fill="#173a3b" opacity=".12"/>
+  </g>
+  <!-- Rounded parotoid glands, following the original Hasu/Tabi contours. -->
+  <g transform="translate(0 0) scale(1)">
+    <path d="M27 -60 C34 -63 42 -59 44 -53 C45 -49 44 -46 42 -45 C38 -50 32 -55 27 -60Z M-27 -60 C-34 -63 -42 -59 -44 -53 C-45 -49 -44 -46 -42 -45 C-38 -50 -32 -55 -27 -60Z" fill="url(#kuri_revised_eye)"/>
+    <path d="M27 -60 C34 -63 42 -59 44 -53 C45 -49 44 -46 42 -45 M-27 -60 C-34 -63 -42 -59 -44 -53 C-45 -49 -44 -46 -42 -45" stroke="#86644f" stroke-width=".55" fill="none"/>
+    <g fill="#8a7147" opacity=".3"><circle cx="40" cy="-54" r=".6"/><circle cx="42" cy="-51" r=".5"/><circle cx="-40" cy="-54" r=".6"/><circle cx="-42" cy="-51" r=".5"/></g>
+  </g>
+  <g transform="translate(-19.3 -59) scale(1.09 .94)"><g transform="translate(0 0) scale(0.91)">
+    <circle r="10" fill="url(#kuri_revised_eye)"/>
+    <circle cy=".7" r="7.4" fill="url(#kuri_revised_cloudedEye)"/>
+    <circle cy=".7" r="7.4" fill="none" stroke="#c1c7ba" stroke-width=".5" opacity=".7"/>
+    <g transform="translate(0 1.2)"><g class="td-gaze">
+      
+      <circle cx="2.1" cy="2.6" r="1.15" fill="#ffffff" opacity=".9"/>
+      <circle cx="-2.5" cy="1.9" r=".5" fill="#ffffff" opacity=".5"/>
+    </g></g>
+    <g transform="translate(0 -10.2)"><g class="td-look"><g class="td-blink" style="--bk:1.49"><g transform="translate(0 10.2)">
+      <path d="M-10.07 2.45 A10.25 10.25 0 0 1 10.07 1.9 C6 3 -6 3.2 -10.07 2.45Z" fill="url(#kuri_revised_eye)"/>
+      <path d="M-7.4 -3.6 C-3 -2.6 3 -2.6 7.4 -3.6" fill="none" stroke="#fff0dc" stroke-width=".75" stroke-linecap="round" opacity=".55"/>
+      <path d="M-9.52 2.8 C-6 3.2 6 3.2 9.52 2.25" fill="none" stroke="#3f3128" stroke-width="1.4" stroke-linecap="round"/>
+    </g></g></g></g>
+    <path d="M9.99 -0.35 A10 10 0 0 0 -9.99 -0.35" fill="none" stroke="#86644f" stroke-width=".6" stroke-linecap="round"/>
+    <path d="M8.44 -4.87 A9.75 9.75 0 0 0 -8.44 -4.87" fill="none" stroke="#a37e60" stroke-width="1.3" stroke-linecap="round" opacity=".85"/>
+    <path d="M5.85 -7.49 A9.5 9.5 0 0 0 -5.85 -7.49" fill="none" stroke="#795843" stroke-width="1.6" stroke-linecap="round" opacity=".6"/>
+    <path d="M6.72 -4.7 A8.2 8.2 0 0 0 -4.7 -6.72" fill="none" stroke="#fff0dc" stroke-width=".8" stroke-linecap="round" opacity=".7"/>
+    <path d="M9.4 3.42 A10 10 0 0 1 -9.4 3.42" fill="none" stroke="#a37e60" stroke-width=".6" stroke-linecap="round" opacity=".3"/>
+  </g></g><g transform="translate(19.3 -59) scale(1.09 .94)"><g transform="translate(0 0) scale(0.91)">
+    <circle r="10" fill="url(#kuri_revised_eye)"/>
+    <circle cy=".7" r="7.4" fill="url(#kuri_revised_iris)"/>
+    <circle cy=".7" r="7.4" fill="none" stroke="#53684c" stroke-width=".5" opacity=".7"/>
+    <g transform="translate(0 1.2)"><g class="td-gaze">
+      <ellipse rx="4.6" ry="2.1" fill="#1f2e2c"/>
+      <circle cx="2.1" cy="0.6" r="1.15" fill="#ffffff" opacity=".9"/>
+      <circle cx="-2.5" cy="1.9" r=".5" fill="#ffffff" opacity=".5"/>
+    </g></g>
+    <g transform="translate(0 -10.2)"><g class="td-look"><g class="td-blink" style="--bk:1.75"><g transform="translate(0 10.2)">
+      <path d="M-10.25 -0.1 A10.25 10.25 0 0 1 10.25 0.45 C6 1.2 -6 1 -10.25 -0.1Z" fill="url(#kuri_revised_eye)"/>
+      <path d="M-7.4 -3.6 C-3 -2.6 3 -2.6 7.4 -3.6" fill="none" stroke="#fff0dc" stroke-width=".75" stroke-linecap="round" opacity=".55"/>
+      <path d="M-9.7 0.25 C-6 1.2 6 1.2 9.7 0.8" fill="none" stroke="#3f3128" stroke-width="1.4" stroke-linecap="round"/>
+    </g></g></g></g>
+    <path d="M-9.99 -0.35 A10 10 0 0 1 9.99 -0.35" fill="none" stroke="#86644f" stroke-width=".6" stroke-linecap="round"/>
+    <path d="M-8.44 -4.87 A9.75 9.75 0 0 1 8.44 -4.87" fill="none" stroke="#a37e60" stroke-width="1.3" stroke-linecap="round" opacity=".85"/>
+    <path d="M-5.85 -7.49 A9.5 9.5 0 0 1 5.85 -7.49" fill="none" stroke="#795843" stroke-width="1.6" stroke-linecap="round" opacity=".6"/>
+    <path d="M-6.72 -4.7 A8.2 8.2 0 0 1 4.7 -6.72" fill="none" stroke="#fff0dc" stroke-width=".8" stroke-linecap="round" opacity=".7"/>
+    <path d="M-9.4 3.42 A10 10 0 0 0 9.4 3.42" fill="none" stroke="#a37e60" stroke-width=".6" stroke-linecap="round" opacity=".3"/>
+  </g></g>
+  <g fill="#423b28" opacity=".55"><ellipse cx="-5" cy="-47" rx="1.1" ry="0.75"/><ellipse cx="5" cy="-47" rx="1.1" ry="0.75"/></g>
+  <path d="M-32 -40 C-22 -38 -10 -37.4 0 -37.8 C12 -37.4 22 -38.4 32 -41" fill="none" stroke="#fff8e6" stroke-width="0.85" transform="translate(0 -1.3)" opacity=".55" stroke-linecap="round"/>
+  <path d="M-32 -40 C-22 -38 -10 -37.4 0 -37.8 C12 -37.4 22 -38.4 32 -41" fill="none" stroke="#423b28" stroke-width="1.45" stroke-linecap="round" opacity=".82"/>
+  <path d="M-32 -40 q-2 .5 -1.8 2 M32 -41 q2 -.3 2 -2" stroke="#423b28" stroke-width="1.1" fill="none" stroke-linecap="round" opacity=".7"/>
+  <ellipse cy="-31" rx="13" ry="5" fill="url(#kuri_revised_throat)"/><ellipse cx="-3.6" cy="-32.4" rx="4" ry="1" fill="#fff" opacity=".35"/>
+  <g transform="scale(1)">
+    <path d="M28 -33 C37 -33 44 -27 45 -19 C46 -12 43 -6 41 -2 L33 -2 C34 -8 32 -15 29 -20 C27 -24 26 -28 26 -31Z M-28 -33 C-37 -33 -44 -27 -45 -19 C-46 -12 -43 -6 -41 -2 L-33 -2 C-34 -8 -32 -15 -29 -20 C-27 -24 -26 -28 -26 -31Z" fill="url(#kuri_revised_skin)"/>
+    <path d="M36 -31 C41 -27 44 -23 45 -19 C46 -12 43 -6 41 -2 M33 -2 C34 -8 32 -15 29 -20 M-36 -31 C-41 -27 -44 -23 -45 -19 C-46 -12 -43 -6 -41 -2 M-33 -2 C-34 -8 -32 -15 -29 -20" fill="none" stroke="#86644f" stroke-width=".55" stroke-linecap="round"/>
+    <circle cx="41.3" cy="-17.55" r="1" fill="#625132" opacity="0.22"/><circle cx="41" cy="-18" r="1" fill="#ffffff" opacity=".4"/><circle cx="-40.7" cy="-17.55" r="1" fill="#625132" opacity="0.22"/><circle cx="-41" cy="-18" r="1" fill="#ffffff" opacity=".4"/><circle cx="38.24" cy="-7.64" r="0.8" fill="#625132" opacity="0.22"/><circle cx="38" cy="-8" r="0.8" fill="#ffffff" opacity=".4"/><circle cx="-37.76" cy="-7.64" r="0.8" fill="#625132" opacity="0.22"/><circle cx="-38" cy="-8" r="0.8" fill="#ffffff" opacity=".4"/>
+    <g transform="translate(-37 -1.5) scale(-1 1)"><ellipse rx="6" ry="2.7" fill="#dbbd98" stroke="#86644f" stroke-width=".5"/><path d="M0 0 L-8 2 M0 0 L-3.5 3.2 M0 0 L3.5 3.3 M0 0 L8 1.5" stroke="#86644f" stroke-width="3.8" stroke-linecap="round" fill="none"/><path d="M0 0 L-8 2 M0 0 L-3.5 3.2 M0 0 L3.5 3.3 M0 0 L8 1.5" stroke="#dbbd98" stroke-width="2.9" stroke-linecap="round" fill="none"/><g fill="#f8e6c7" stroke="#86644f" stroke-width=".35"><circle cx="-8" cy="2" r="1.7"/><circle cx="-3.5" cy="3.2" r="1.7"/><circle cx="3.5" cy="3.3" r="1.7"/><circle cx="8" cy="1.5" r="1.7"/></g></g><g transform="translate(37 -1.5) scale(1 1)"><ellipse rx="6" ry="2.7" fill="#dbbd98" stroke="#86644f" stroke-width=".5"/><path d="M0 0 L-8 2 M0 0 L-3.5 3.2 M0 0 L3.5 3.3 M0 0 L8 1.5" stroke="#86644f" stroke-width="3.8" stroke-linecap="round" fill="none"/><path d="M0 0 L-8 2 M0 0 L-3.5 3.2 M0 0 L3.5 3.3 M0 0 L8 1.5" stroke="#dbbd98" stroke-width="2.9" stroke-linecap="round" fill="none"/><g fill="#f8e6c7" stroke="#86644f" stroke-width=".35"><circle cx="-8" cy="2" r="1.7"/><circle cx="-3.5" cy="3.2" r="1.7"/><circle cx="3.5" cy="3.3" r="1.7"/><circle cx="8" cy="1.5" r="1.7"/></g></g>
+  </g>
+  </svg>

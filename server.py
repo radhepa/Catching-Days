@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tiny local server for Focus.
+"""Tiny local server for Catching Days.
 
 Serves the app's files exactly like a normal static server (GET), but also
 accepts POST requests that write a file into this same folder — that's how
@@ -16,6 +16,14 @@ PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 8765
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
+    def send_head(self):
+        # Keep the author's scene/expression previews off the app server.
+        name = os.path.basename(self.translate_path(self.path)).lower()
+        if name.startswith(('pond-moments-library.', 'pond-expressions-library.')):
+            self.send_error(404, 'Not found')
+            return None
+        return super().send_head()
+
     def do_POST(self):
         name = self.path.lstrip('/')
         ok_name = name and '/' not in name and '\\' not in name and '..' not in name
@@ -46,7 +54,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 if __name__ == '__main__':
     os.chdir(os.path.dirname(os.path.abspath(__file__)) or '.')
     httpd = http.server.HTTPServer(('127.0.0.1', PORT), Handler)
-    print(f"Focus — serving http://127.0.0.1:{PORT}  (Ctrl+C to stop)")
+    print(f"Catching Days — serving http://127.0.0.1:{PORT}  (Ctrl+C to stop)")
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:

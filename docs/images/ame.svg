@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="td-art td-ame" width="210" height="210" viewBox="-68 -118 136 136" aria-hidden="true" focusable="false"><defs>
+    <linearGradient id="td5_skin" gradientUnits="userSpaceOnUse" x1="0" y1="-58" x2="0" y2="1"><stop offset="0" stop-color="#eef4f3"></stop><stop offset="0.24" stop-color="#a9c1c1"></stop><stop offset="0.7" stop-color="#728f95"></stop><stop offset="0.93" stop-color="#5d7b81"></stop><stop offset="1" stop-color="#173a3b"></stop></linearGradient>
+    <linearGradient id="td5_eye" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d7e5e2"></stop><stop offset="1" stop-color="#7f9da2"></stop></linearGradient>
+  <radialGradient id="td5_iris" cx=".45" cy=".42" r=".6"><stop offset="0" stop-color="#f4c98c"></stop><stop offset=".55" stop-color="#d08a48"></stop><stop offset="1" stop-color="#8a5228"></stop></radialGradient>
+    <linearGradient id="td5_straw" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e3c98f"></stop><stop offset=".5" stop-color="#cfae68"></stop><stop offset="1" stop-color="#a8853f"></stop></linearGradient>
+    <linearGradient id="td5_cape" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b8975a"></stop><stop offset="1" stop-color="#8e7034"></stop></linearGradient>
+    <radialGradient id="td5_throat" cx=".5" cy=".35" r=".6"><stop offset="0" stop-color="#eef6f3"></stop><stop offset="1" stop-color="#b9cfcb"></stop></radialGradient>
+    <clipPath id="td5_bc"><path d="M0 0 C18 .6 38 -.4 46 -7 C52 -12 52.4 -20 48.4 -26 C46.2 -30 45.6 -34 44.6 -38 C43 -45 36 -50 26 -51.5 C14 -53 -14 -53 -26 -51.5 C-36 -50 -43 -45 -44.6 -38 C-45.6 -34 -46.2 -30 -48.4 -26 C-52.4 -20 -52 -12 -46 -7 C-38 -.4 -18 .6 0 0Z"></path></clipPath>
+    <clipPath id="td5_cb"><path d="M-36 -30 C-48 -27 -58 -18 -64.6 -4 L-60 -2.2 L-55.6 -4 L-51 -1.8 L51 -1.8 L55.6 -4 L60 -2.2 L64.6 -4 C58 -18 48 -27 36 -30Z"></path></clipPath>
+    <clipPath id="td5_fl"><path d="M29.6 -24 C38 -25.6 46 -24 51 -19.6 C55.4 -15.4 58.4 -9.6 60 -3.2 L57 -1.6 L54 -3.6 L50.6 -1.2 L47.4 -3.4 L44 -1.2 L40.8 -3.2 L37.6 -1.4 L34.6 -3.2 L31.6 -1.6 C32 -6.6 32 -11.6 31 -16 C30.6 -19 29.6 -21.6 29.6 -24Z M-29.6 -24 C-38 -25.6 -46 -24 -51 -19.6 C-55.4 -15.4 -58.4 -9.6 -60 -3.2 L-57 -1.6 L-54 -3.6 L-50.6 -1.2 L-47.4 -3.4 L-44 -1.2 L-40.8 -3.2 L-37.6 -1.4 L-34.6 -3.2 L-31.6 -1.6 C-32 -6.6 -32 -11.6 -31 -16 C-30.6 -19 -29.6 -21.6 -29.6 -24Z"></path></clipPath>
+  </defs>
+  <g class="td-cast">
+  <g transform="translate(0 8)"><g class="td-splash"><ellipse rx="74" ry="12" fill="none" stroke="#e6f5f1" stroke-width=".9" opacity="0"></ellipse></g></g><g transform="translate(0 8)"><g class="td-splash two"><ellipse rx="74" ry="12" fill="none" stroke="#e6f5f1" stroke-width=".9" opacity="0"></ellipse></g></g>
+    <defs><linearGradient id="td5_rock" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#93a39b"></stop><stop offset=".45" stop-color="#6c7d77"></stop><stop offset="1" stop-color="#3f4f4c"></stop></linearGradient></defs>
+    <path d="M-64 3 C-64 -3.6 -52 -6.4 -31 -6 C-10 -5.6 20 -7 45 -5.6 C59 -4.6 65.6 -1.2 64.6 4 C63.4 10 47 13.6 20 14 C-6 14.4 -41 13.4 -55 10.4 C-62 8.6 -64 6 -64 3Z" fill="url(#td5_rock)" stroke="#33413f" stroke-width=".5"></path>
+    <path d="M-60 -.6 C-46 -4.6 -16 -4 10 -4.6 C30 -5 50 -4.6 61 -1.2" fill="none" stroke="#b7c6bd" stroke-width=".8" opacity=".55"></path>
+    <path d="M-62 1.6 C-58 -3.4 -46 -5.2 -38 -4.4 C-40 -1.6 -46 1.2 -54 2.4 C-58 3 -61 2.8 -62 1.6Z M50 -4.8 C56 -4.2 61.6 -2.6 63.6 .4 C59 1 54.4 .2 50.6 -1.4 C48.8 -2.2 48.6 -3.8 50 -4.8Z" fill="#7fa878" opacity=".9"></path>
+    <path d="M-20 -5.2 C-14 -6.6 -6 -6.4 -2 -5.2 C-6 -4 -14 -3.8 -20 -5.2Z M22 -6 C28 -7 34 -6.8 38 -5.6 C33 -4.6 27 -4.6 22 -6Z" fill="#8fb882" opacity=".8"></path>
+    <g fill="#2b3836" opacity=".35"><circle cx="-30" cy="6" r=".8"></circle><circle cx="-12" cy="9" r=".6"></circle><circle cx="14" cy="7.4" r=".9"></circle><circle cx="36" cy="8.6" r=".6"></circle><circle cx="-44" cy="7.6" r=".7"></circle></g>
+    <ellipse cx="0" cy="1.4" rx="52" ry="4.2" fill="#173a3b" opacity=".3"></ellipse><ellipse cx="0" cy=".9" rx="37.44" ry="2.3" fill="#173a3b" opacity=".2"></ellipse>
+  <g class="td-body"><g class="td-breathe">
+    <!-- the cape, behind him: it shows round his sides like a straw haystack -->
+    <path d="M-36 -30 C-48 -27 -58 -18 -64.6 -4 L-60 -2.2 L-55.6 -4 L-51 -1.8 L51 -1.8 L55.6 -4 L60 -2.2 L64.6 -4 C58 -18 48 -27 36 -30Z" fill="url(#td5_cape)" stroke="#6e5526" stroke-width=".5"></path>
+    <g clip-path="url(#td5_cb)"><path d="M-64 -30 Q-65.04 -16 -66.6 -2 M-61.2 -30 Q-62.24 -16 -63.8 -1.1 M-58.4 -30 Q-59.44 -16 -61 -0.2 M-55.6 -30 Q-56.64 -16 -58.2 -2 M-52.8 -30 Q-53.84 -16 -55.4 -1.1 M-50 -30 Q-51.04 -16 -52.6 -0.2 M-47.2 -30 Q-48.24 -16 -49.8 -2 M-44.4 -30 Q-45.44 -16 -47 -1.1 M-41.6 -30 Q-42.64 -16 -44.2 -0.2 M-38.8 -30 Q-39.84 -16 -41.4 -2 M-36 -30 Q-37.04 -16 -38.6 -1.1 M36 -30 Q37.04 -16 38.6 -2 M38.8 -30 Q39.84 -16 41.4 -1.1 M41.6 -30 Q42.64 -16 44.2 -0.2 M44.4 -30 Q45.44 -16 47 -2 M47.2 -30 Q48.24 -16 49.8 -1.1 M50 -30 Q51.04 -16 52.6 -0.2 M52.8 -30 Q53.84 -16 55.4 -2 M55.6 -30 Q56.64 -16 58.2 -1.1 M58.4 -30 Q59.44 -16 61 -0.2 M61.2 -30 Q62.24 -16 63.8 -2 M64 -30 Q65.04 -16 66.6 -1.1" fill="none" stroke="#e0c48a" stroke-width=".55" opacity=".6"></path></g>
+    <!-- the body: wide and low, more boulder than dumpling -->
+    <path d="M0 0 C18 .6 38 -.4 46 -7 C52 -12 52.4 -20 48.4 -26 C46.2 -30 45.6 -34 44.6 -38 C43 -45 36 -50 26 -51.5 C14 -53 -14 -53 -26 -51.5 C-36 -50 -43 -45 -44.6 -38 C-45.6 -34 -46.2 -30 -48.4 -26 C-52.4 -20 -52 -12 -46 -7 C-38 -.4 -18 .6 0 0Z" fill="url(#td5_skin)" stroke="#4a6268" stroke-width=".6"></path>
+    <g clip-path="url(#td5_bc)">
+      <ellipse cx="0" cy="-13" rx="25" ry="13" fill="#dcebe7" opacity=".55"></ellipse>
+      <ellipse cx="-36" cy="-26" rx="3.64" ry="2.6" fill="#3e5a61" opacity=".35"></ellipse><ellipse cx="35" cy="-24" rx="3.08" ry="2.2" fill="#3e5a61" opacity=".35"></ellipse><ellipse cx="-18" cy="-7" rx="2.8" ry="2" fill="#3e5a61" opacity=".35"></ellipse><ellipse cx="16" cy="-6" rx="3.36" ry="2.4" fill="#3e5a61" opacity=".35"></ellipse><ellipse cx="-26" cy="-36" rx="2.52" ry="1.8" fill="#3e5a61" opacity=".35"></ellipse><ellipse cx="27" cy="-35" rx="2.24" ry="1.6" fill="#3e5a61" opacity=".35"></ellipse>
+      <circle cx="-33.64" cy="-37.46" r="1.2" fill="#1f3338" opacity="0.25"></circle><circle cx="-34" cy="-38" r="1.2" fill="#ffffff" opacity=".4"></circle><circle cx="-38.3" cy="-30.55" r="1" fill="#1f3338" opacity="0.25"></circle><circle cx="-38.6" cy="-31" r="1" fill="#ffffff" opacity=".4"></circle><circle cx="33.73" cy="-36.91" r="1.1" fill="#1f3338" opacity="0.25"></circle><circle cx="33.4" cy="-37.4" r="1.1" fill="#ffffff" opacity=".4"></circle><circle cx="38.9" cy="-30.15" r="1" fill="#1f3338" opacity="0.25"></circle><circle cx="38.6" cy="-30.6" r="1" fill="#ffffff" opacity=".4"></circle><circle cx="-27.64" cy="-19.46" r="1.2" fill="#1f3338" opacity="0.25"></circle><circle cx="-28" cy="-20" r="1.2" fill="#ffffff" opacity=".4"></circle><circle cx="-21.7" cy="-12.55" r="1" fill="#1f3338" opacity="0.25"></circle><circle cx="-22" cy="-13" r="1" fill="#ffffff" opacity=".4"></circle><circle cx="27.33" cy="-19.11" r="1.1" fill="#1f3338" opacity="0.25"></circle><circle cx="27" cy="-19.6" r="1.1" fill="#ffffff" opacity=".4"></circle><circle cx="22.87" cy="-11.6" r="0.9" fill="#1f3338" opacity="0.25"></circle><circle cx="22.6" cy="-12" r="0.9" fill="#ffffff" opacity=".4"></circle><circle cx="-11.79" cy="-34.29" r="0.7" fill="#1f3338" opacity="0.25"></circle><circle cx="-12" cy="-34.6" r="0.7" fill="#ffffff" opacity=".4"></circle><circle cx="12.61" cy="-34.09" r="0.7" fill="#1f3338" opacity="0.25"></circle><circle cx="12.4" cy="-34.4" r="0.7" fill="#ffffff" opacity=".4"></circle><circle cx="-29.73" cy="-8.6" r="0.9" fill="#1f3338" opacity="0.25"></circle><circle cx="-30" cy="-9" r="0.9" fill="#ffffff" opacity=".4"></circle><circle cx="30.67" cy="-8.2" r="0.9" fill="#1f3338" opacity="0.25"></circle><circle cx="30.4" cy="-8.6" r="0.9" fill="#ffffff" opacity=".4"></circle><circle cx="0.21" cy="-11.69" r="0.7" fill="#1f3338" opacity="0.25"></circle><circle cx="0" cy="-12" r="0.7" fill="#ffffff" opacity=".4"></circle>
+      <ellipse cx="0" cy="-2.2" rx="36" ry="3.6" fill="#173a3b" opacity=".14"></ellipse>
+      <ellipse cx="0" cy="-47" rx="40" ry="6.4" fill="#173a3b" opacity=".22"></ellipse>
+    </g>
+    <g transform="translate(-19 -40.6) scale(0.82)">
+    <circle r="10" fill="url(#td5_eye)"></circle>
+    <circle cy=".7" r="7.4" fill="url(#td5_iris)"></circle>
+    <circle cy=".7" r="7.4" fill="none" stroke="#6b3f1f" stroke-width=".5" opacity=".7"></circle>
+    <g transform="translate(0 1.2)"><g class="td-gaze">
+      <ellipse rx="4.6" ry="2.1" fill="#1f2e2c"></ellipse>
+      <circle cx="2.1" cy="1.8" r="1.15" fill="#ffffff" opacity=".9"></circle>
+      <circle cx="-2.5" cy="1.9" r=".5" fill="#ffffff" opacity=".5"></circle>
+    </g></g>
+    <g transform="translate(0 -10.2)"><g class="td-look"><g class="td-blink" style="--bk:1.58"><g transform="translate(0 10.2)">
+      <path d="M-10.19 1.65 A10.25 10.25 0 0 1 10.19 1.1 C6 2.2 -6 2.4 -10.19 1.65Z" fill="url(#td5_eye)"></path>
+      <path d="M-7.4 -3.6 C-3 -2.6 3 -2.6 7.4 -3.6" fill="none" stroke="#eef6f4" stroke-width=".75" stroke-linecap="round" opacity=".55"></path>
+      <path d="M-9.64 2 C-6 2.4 6 2.4 9.64 1.45" fill="none" stroke="#1f2e33" stroke-width="1.4" stroke-linecap="round"></path>
+    </g></g></g></g>
+    <path d="M9.99 -0.35 A10 10 0 0 0 -9.99 -0.35" fill="none" stroke="#4a6268" stroke-width=".6" stroke-linecap="round"></path>
+    <path d="M8.44 -4.87 A9.75 9.75 0 0 0 -8.44 -4.87" fill="none" stroke="#4f6a70" stroke-width="1.3" stroke-linecap="round" opacity=".85"></path>
+    <path d="M5.85 -7.49 A9.5 9.5 0 0 0 -5.85 -7.49" fill="none" stroke="#3f585d" stroke-width="1.6" stroke-linecap="round" opacity=".6"></path>
+    <path d="M6.72 -4.7 A8.2 8.2 0 0 0 -4.7 -6.72" fill="none" stroke="#eef6f4" stroke-width=".8" stroke-linecap="round" opacity=".7"></path>
+    <path d="M9.4 3.42 A10 10 0 0 1 -9.4 3.42" fill="none" stroke="#4f6a70" stroke-width=".6" stroke-linecap="round" opacity=".3"></path>
+  </g>
+    <g transform="translate(19 -40.6) scale(0.82)">
+    <circle r="10" fill="url(#td5_eye)"></circle>
+    <circle cy=".7" r="7.4" fill="url(#td5_iris)"></circle>
+    <circle cy=".7" r="7.4" fill="none" stroke="#6b3f1f" stroke-width=".5" opacity=".7"></circle>
+    <g transform="translate(0 1.2)"><g class="td-gaze">
+      <ellipse rx="4.6" ry="2.1" fill="#1f2e2c"></ellipse>
+      <circle cx="2.1" cy="1.8" r="1.15" fill="#ffffff" opacity=".9"></circle>
+      <circle cx="-2.5" cy="1.9" r=".5" fill="#ffffff" opacity=".5"></circle>
+    </g></g>
+    <g transform="translate(0 -10.2)"><g class="td-look"><g class="td-blink" style="--bk:1.58"><g transform="translate(0 10.2)">
+      <path d="M-10.19 1.1 A10.25 10.25 0 0 1 10.19 1.65 C6 2.4 -6 2.2 -10.19 1.1Z" fill="url(#td5_eye)"></path>
+      <path d="M-7.4 -3.6 C-3 -2.6 3 -2.6 7.4 -3.6" fill="none" stroke="#eef6f4" stroke-width=".75" stroke-linecap="round" opacity=".55"></path>
+      <path d="M-9.64 1.45 C-6 2.4 6 2.4 9.64 2" fill="none" stroke="#1f2e33" stroke-width="1.4" stroke-linecap="round"></path>
+    </g></g></g></g>
+    <path d="M-9.99 -0.35 A10 10 0 0 1 9.99 -0.35" fill="none" stroke="#4a6268" stroke-width=".6" stroke-linecap="round"></path>
+    <path d="M-8.44 -4.87 A9.75 9.75 0 0 1 8.44 -4.87" fill="none" stroke="#4f6a70" stroke-width="1.3" stroke-linecap="round" opacity=".85"></path>
+    <path d="M-5.85 -7.49 A9.5 9.5 0 0 1 5.85 -7.49" fill="none" stroke="#3f585d" stroke-width="1.6" stroke-linecap="round" opacity=".6"></path>
+    <path d="M-6.72 -4.7 A8.2 8.2 0 0 1 4.7 -6.72" fill="none" stroke="#eef6f4" stroke-width=".8" stroke-linecap="round" opacity=".7"></path>
+    <path d="M-9.4 3.42 A10 10 0 0 0 9.4 3.42" fill="none" stroke="#4f6a70" stroke-width=".6" stroke-linecap="round" opacity=".3"></path>
+  </g>
+    <ellipse cx="0" cy="-48.6" rx="34" ry="3.2" fill="#173a3b" opacity=".16"></ellipse>
+    <ellipse cx="-4.6" cy="-31.6" rx="1" ry=".7" fill="#1f2e33" opacity=".55"></ellipse><ellipse cx="4.6" cy="-31.6" rx="1" ry=".7" fill="#1f2e33" opacity=".55"></ellipse>
+    <path d="M-36 -26.4 C-24 -24.8 -11 -24.6 0 -24.8 C11 -24.6 24 -24.8 36 -26.4" fill="none" stroke="#eef6f4" stroke-width=".8" stroke-linecap="round" opacity=".45" transform="translate(0 -1.3)"></path>
+    <path d="M-36 -26.4 C-24 -24.8 -11 -24.6 0 -24.8 C11 -24.6 24 -24.8 36 -26.4" fill="none" stroke="#1f2e33" stroke-width="1.45" stroke-linecap="round" opacity=".8"></path>
+    <path d="M-36 -26.4 C-37.6 -26 -38.2 -24.8 -37.8 -23.4 M36 -26.4 C37.6 -26 38.2 -24.8 37.8 -23.4" fill="none" stroke="#1f2e33" stroke-width="1.15" stroke-linecap="round" opacity=".7"></path>
+    <g transform="translate(0 -23.6)"><g class="td-throat"><g transform="translate(0 23.6)">
+      <ellipse cx="0" cy="-18.6" rx="15" ry="5" fill="url(#td5_throat)"></ellipse><ellipse cx="-4" cy="-20" rx="4.6" ry="1.2" fill="#ffffff" opacity=".35"></ellipse>
+    </g></g></g>
+    <!-- the cape's front flaps over his shoulders, over the tops of the arms -->
+    <path d="M29.6 -24 C38 -25.6 46 -24 51 -19.6 C55.4 -15.4 58.4 -9.6 60 -3.2 L57 -1.6 L54 -3.6 L50.6 -1.2 L47.4 -3.4 L44 -1.2 L40.8 -3.2 L37.6 -1.4 L34.6 -3.2 L31.6 -1.6 C32 -6.6 32 -11.6 31 -16 C30.6 -19 29.6 -21.6 29.6 -24Z" fill="url(#td5_straw)" stroke="#7a5f2c" stroke-width=".5"></path>
+    <path d="M-29.6 -24 C-38 -25.6 -46 -24 -51 -19.6 C-55.4 -15.4 -58.4 -9.6 -60 -3.2 L-57 -1.6 L-54 -3.6 L-50.6 -1.2 L-47.4 -3.4 L-44 -1.2 L-40.8 -3.2 L-37.6 -1.4 L-34.6 -3.2 L-31.6 -1.6 C-32 -6.6 -32 -11.6 -31 -16 C-30.6 -19 -29.6 -21.6 -29.6 -24Z" fill="url(#td5_straw)" stroke="#7a5f2c" stroke-width=".5"></path>
+    <g clip-path="url(#td5_fl)"><path d="M31 -24 Q32.04 -13 33.6 -2 M33.8 -24 Q34.84 -13 36.4 -1.1 M36.6 -24 Q37.64 -13 39.2 -0.2 M39.4 -24 Q40.44 -13 42 -2 M42.2 -24 Q43.24 -13 44.8 -1.1 M45 -24 Q46.04 -13 47.6 -0.2 M47.8 -24 Q48.84 -13 50.4 -2 M50.6 -24 Q51.64 -13 53.2 -1.1 M53.4 -24 Q54.44 -13 56 -0.2 M56.2 -24 Q57.24 -13 58.8 -2 M59 -24 Q60.04 -13 61.6 -1.1 M-31 -24 Q-32.04 -13 -33.6 -2 M-33.8 -24 Q-34.84 -13 -36.4 -1.1 M-36.6 -24 Q-37.64 -13 -39.2 -0.2 M-39.4 -24 Q-40.44 -13 -42 -2 M-42.2 -24 Q-43.24 -13 -44.8 -1.1 M-45 -24 Q-46.04 -13 -47.6 -0.2 M-47.8 -24 Q-48.84 -13 -50.4 -2 M-50.6 -24 Q-51.64 -13 -53.2 -1.1 M-53.4 -24 Q-54.44 -13 -56 -0.2 M-56.2 -24 Q-57.24 -13 -58.8 -2 M-59 -24 Q-60.04 -13 -61.6 -1.1" fill="none" stroke="#8e7034" stroke-width=".55" opacity=".6"></path>
+    <path d="M33 -23 Q33.8 -13.5 35 -4 M37 -23 Q37.8 -13.5 39 -3.1 M41 -23 Q41.8 -13.5 43 -2.2 M45 -23 Q45.8 -13.5 47 -4 M49 -23 Q49.8 -13.5 51 -3.1 M53 -23 Q53.8 -13.5 55 -2.2 M57 -23 Q57.8 -13.5 59 -4 M-33 -23 Q-33.8 -13.5 -35 -4 M-37 -23 Q-37.8 -13.5 -39 -3.1 M-41 -23 Q-41.8 -13.5 -43 -2.2 M-45 -23 Q-45.8 -13.5 -47 -4 M-49 -23 Q-49.8 -13.5 -51 -3.1 M-53 -23 Q-53.8 -13.5 -55 -2.2 M-57 -23 Q-57.8 -13.5 -59 -4" fill="none" stroke="#f0dcab" stroke-width=".45" opacity=".6"></path>
+    <path d="M30 -22.4 C38.6 -24.2 46.4 -22.8 51.2 -18.8 M-30 -22.4 C-38.6 -24.2 -46.4 -22.8 -51.2 -18.8" fill="none" stroke="#f6e6bd" stroke-width="1.1" opacity=".55"></path></g>
+    <!-- forearms, coming out through the front of the cape -->
+    <path d="M38.2 -12.8 C40.6 -14.8 45.6 -14.6 48 -12.4 C48.8 -9 48.2 -5 47.6 -2.2 L38.6 -2.2 C38.4 -5.6 37.8 -9.4 38.2 -12.8Z M-38.2 -12.8 C-40.6 -14.8 -45.6 -14.6 -48 -12.4 C-48.8 -9 -48.2 -5 -47.6 -2.2 L-38.6 -2.2 C-38.4 -5.6 -37.8 -9.4 -38.2 -12.8Z" fill="#86a2a6" stroke="#4a6268" stroke-width=".55"></path>
+    <path d="M40.4 -11.6 C42.4 -12.6 45 -12.4 46.4 -11.2 M-40.4 -11.6 C-42.4 -12.6 -45 -12.4 -46.4 -11.2" fill="none" stroke="#c9dad8" stroke-width=".9" stroke-linecap="round" opacity=".7"></path>
+    <ellipse cx="43" cy="-1.9" rx="6.4" ry="2.8" fill="#7d989d" stroke="#4a6268" stroke-width=".5"></ellipse>
+      <g stroke-linecap="round"><path d="M42.6 -2 L33.6 .5 M42.8 -1.8 L38.6 1.7 M43.4 -1.8 L46.6 1.8 M43.8 -2 L52.4 .4" stroke="#4a6268" stroke-width="4.1"></path>
+      <path d="M42.6 -2 L33.6 .5 M42.8 -1.8 L38.6 1.7 M43.4 -1.8 L46.6 1.8 M43.8 -2 L52.4 .4" stroke="#89a4a8" stroke-width="3.2"></path></g>
+      <g fill="#b9cfcd" stroke="#4a6268" stroke-width=".4"><circle cx="33.4" cy=".6" r="1.9"></circle><circle cx="38.5" cy="1.8" r="1.9"></circle><circle cx="46.7" cy="1.9" r="1.9"></circle><circle cx="52.6" cy=".5" r="1.9"></circle></g><ellipse cx="-43" cy="-1.9" rx="6.4" ry="2.8" fill="#7d989d" stroke="#4a6268" stroke-width=".5"></ellipse>
+      <g stroke-linecap="round"><path d="M-42.6 -2 L-33.6 .5 M-42.8 -1.8 L-38.6 1.7 M-43.4 -1.8 L-46.6 1.8 M-43.8 -2 L-52.4 .4" stroke="#4a6268" stroke-width="4.1"></path>
+      <path d="M-42.6 -2 L-33.6 .5 M-42.8 -1.8 L-38.6 1.7 M-43.4 -1.8 L-46.6 1.8 M-43.8 -2 L-52.4 .4" stroke="#89a4a8" stroke-width="3.2"></path></g>
+      <g fill="#b9cfcd" stroke="#4a6268" stroke-width=".4"><circle cx="-33.4" cy=".6" r="1.9"></circle><circle cx="-38.5" cy="1.8" r="1.9"></circle><circle cx="-46.7" cy="1.9" r="1.9"></circle><circle cx="-52.6" cy=".5" r="1.9"></circle></g>
+    <!-- the straw closing over the top of each forearm, like a sleeve -->
+    <path d="M36.4 -15.6 C40.6 -17.4 46.4 -17.2 49.6 -15 L48.6 -12.2 L47 -13.4 L45.4 -11.6 L43.8 -13.2 L42.2 -11.6 L40.6 -13.2 L39 -11.8 L37.6 -13.4 Z M-36.4 -15.6 C-40.6 -17.4 -46.4 -17.2 -49.6 -15 L-48.6 -12.2 L-47 -13.4 L-45.4 -11.6 L-43.8 -13.2 L-42.2 -11.6 L-40.6 -13.2 L-39 -11.8 L-37.6 -13.4 Z" fill="#c4a25f" stroke="#7a5f2c" stroke-width=".45"></path>
+    <!-- the chin cord, from the brim round his face to a knot under the chin -->
+    <path d="M-37 -48 C-41.6 -40 -40 -29.6 -29 -22.6 C-19 -17.6 -7 -16.6 0 -17 C7 -16.6 19 -17.6 29 -22.6 C40 -29.6 41.6 -40 37 -48" fill="none" stroke="#6e5526" stroke-width=".8" stroke-linecap="round" opacity=".75"></path>
+    <circle cx="0" cy="-17" r="1.5" fill="#5a4630"></circle><path d="M-.4 -16 L-1.4 -12.4 M.4 -16 L1.2 -12.6" stroke="#5a4630" stroke-width=".8" stroke-linecap="round"></path>
+    <!-- the hat: tips back on hover, wobbles on a tap -->
+    <g transform="translate(0 -50)"><g class="td-hat"><g transform="translate(0 50)">
+      <path d="M-65 -51.6 Q-33 -64 -5.5 -86.6 Q0 -90 5.5 -86.6 Q33 -64 65 -51.6 C42 -45.4 -42 -45.4 -65 -51.6Z" fill="url(#td5_straw)" stroke="#7a5f2c" stroke-width=".7"></path>
+      <path d="M-3.85 -86.85 L-61.52 -51.31 M-3.46 -86.96 L-55.43 -51.08 M-2.88 -87.14 L-46.04 -50.73 M-2.12 -87.36 L-33.91 -50.27 M-1.24 -87.63 L-19.78 -49.74 M-0.42 -87.87 L-6.69 -49.25 M0.42 -87.87 L6.69 -49.25 M1.24 -87.63 L19.78 -49.74 M2.12 -87.36 L33.91 -50.27 M2.88 -87.14 L46.04 -50.73 M3.46 -86.96 L55.43 -51.08 M3.85 -86.85 L61.52 -51.31" fill="none" stroke="#8e7034" stroke-width=".5" opacity=".45"></path>
+      <path d="M-50 -56.6 Q-25 -51.4 0 -51.2 Q25 -51.4 50 -56.6 M-34 -63.4 Q-17 -59.6 0 -59.4 Q17 -59.6 34 -63.4 M-19 -71.8 Q-9.5 -69.6 0 -69.4 Q9.5 -69.6 19 -71.8" fill="none" stroke="#8e7034" stroke-width=".6" opacity=".5"></path>
+      <path d="M-58 -54.4 Q-30 -64.6 -6 -84.4" fill="none" stroke="#f6e6bd" stroke-width="1" stroke-linecap="round" opacity=".55"></path>
+      <path d="M-65 -51.6 C-42 -45.4 42 -45.4 65 -51.6 C42 -47.8 -42 -47.8 -65 -51.6Z" fill="#6e5526"></path>
+      <ellipse cx="0" cy="-88.4" rx="3.4" ry="2.2" fill="#8e7034" stroke="#6e5526" stroke-width=".5"></ellipse>
+      <!-- rain gathering on the brim and dropping off -->
+      <g transform="translate(-57 -50.2)"><g class="td-drip d1"><path d="M0 -2.6 C1.3 -.7 1.7 .5 1.7 1.2 A1.7 1.7 0 0 1 -1.7 1.2 C-1.7 .5 -1.3 -.7 0 -2.6Z" fill="#dff1ee" opacity=".9"></path><circle cx="-.5" cy=".6" r=".45" fill="#ffffff"></circle></g></g><g transform="translate(-38 -47.6)"><g class="td-drip d2"><path d="M0 -2.6 C1.3 -.7 1.7 .5 1.7 1.2 A1.7 1.7 0 0 1 -1.7 1.2 C-1.7 .5 -1.3 -.7 0 -2.6Z" fill="#dff1ee" opacity=".9"></path><circle cx="-.5" cy=".6" r=".45" fill="#ffffff"></circle></g></g><g transform="translate(48 -48.6)"><g class="td-drip d3"><path d="M0 -2.6 C1.3 -.7 1.7 .5 1.7 1.2 A1.7 1.7 0 0 1 -1.7 1.2 C-1.7 .5 -1.3 -.7 0 -2.6Z" fill="#dff1ee" opacity=".9"></path><circle cx="-.5" cy=".6" r=".45" fill="#ffffff"></circle></g></g>
+    </g></g></g>
+    <!-- the water a shake throws off (only seen during the tap) -->
+    <g transform="translate(-62 -52)"><g class="td-fling f1"><path d="M0 -2.6 C1.3 -.7 1.7 .5 1.7 1.2 A1.7 1.7 0 0 1 -1.7 1.2 C-1.7 .5 -1.3 -.7 0 -2.6Z" fill="#dff1ee" opacity=".9"></path><circle cx="-.5" cy=".6" r=".45" fill="#ffffff"></circle></g></g><g transform="translate(-40 -48)"><g class="td-fling f2"><path d="M0 -2.6 C1.3 -.7 1.7 .5 1.7 1.2 A1.7 1.7 0 0 1 -1.7 1.2 C-1.7 .5 -1.3 -.7 0 -2.6Z" fill="#dff1ee" opacity=".9"></path><circle cx="-.5" cy=".6" r=".45" fill="#ffffff"></circle></g></g><g transform="translate(40 -48)"><g class="td-fling f3"><path d="M0 -2.6 C1.3 -.7 1.7 .5 1.7 1.2 A1.7 1.7 0 0 1 -1.7 1.2 C-1.7 .5 -1.3 -.7 0 -2.6Z" fill="#dff1ee" opacity=".9"></path><circle cx="-.5" cy=".6" r=".45" fill="#ffffff"></circle></g></g><g transform="translate(62 -52)"><g class="td-fling f4"><path d="M0 -2.6 C1.3 -.7 1.7 .5 1.7 1.2 A1.7 1.7 0 0 1 -1.7 1.2 C-1.7 .5 -1.3 -.7 0 -2.6Z" fill="#dff1ee" opacity=".9"></path><circle cx="-.5" cy=".6" r=".45" fill="#ffffff"></circle></g></g>
+  </g></g>
+  </g></svg>

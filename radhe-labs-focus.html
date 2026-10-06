@@ -4,14 +4,21 @@
 <meta name="theme-color" content="#f4efe6">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Focus">
+<meta name="apple-mobile-web-app-title" content="Catching Days">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icons/icon-192.png">
-<title>Focus</title>
+<title>Catching Days</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="reed-bugs.css?v=2">
+<link rel="stylesheet" href="projects.css?v=1">
+<link rel="stylesheet" href="toads.css?v=2">
+<link rel="stylesheet" href="toad-collection.css?v=2">
+<link rel="stylesheet" href="daily-letter.css?v=1">
+<link rel="stylesheet" href="task-finish.css?v=1">
+<link rel="stylesheet" href="pond-events.css?v=8">
 <style>
 :root{
   /* Koi Pond: warm paper around dark water. */
@@ -103,9 +110,16 @@ input[type=checkbox]{width:18px;height:18px;flex:none;accent-color:var(--focus);
 /* app shell / sidebar */
 @keyframes rl-fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 .fade-in{animation:rl-fadein .22s ease}
+/* one pace for changing screens: the screen's fade, the phone's screen strip,
+   and the sidebar's screen list opening and closing all use it */
+:root{--tabfade:.45s}
+#main>[id^="v-"].fade-in,#subnav.fade-in{animation-duration:var(--tabfade)}
 /* One place to switch motion off. Anything animated above should be listed
    here — colour/opacity changes stay, movement goes. */
 @media (prefers-reduced-motion:reduce){
+  .pf-swim,.pf-part,svg [style*="pf-wag"],svg [style*="pf-fin-stroke"]{animation:none!important}
+  .hl>*{animation:none}
+  #v-hello,.wordmark .cd-mark{transition:none}
   .fade-in{animation:none}
   .modal{animation:none}
   .veil{animation:none}
@@ -123,9 +137,17 @@ html[data-mode=hosted] .hide-hosted{display:none}
 #shell{display:flex;min-height:100vh}
 .sidebar{width:248px;flex:none;background:#ece6d9;border-right:1px solid #e0d8c8;
   padding:30px 18px 22px;display:flex;flex-direction:column;gap:30px;position:sticky;top:0;height:100vh;overflow-y:auto}
-.wordmark{padding:0 10px;display:flex;align-items:center;gap:10px}
-.wordmark .a{font-family:var(--serif);font-weight:400;font-size:25px;line-height:1;color:var(--tx)}
-.wordmark .b{font-size:10.5px;color:var(--eyebrow)}
+/* the title card: the mark, the name set in two lines, and a tagline */
+.wordmark{padding:0 6px;display:flex;align-items:center;gap:13px;border:none;background:none;border-radius:16px;
+  cursor:pointer;text-align:left;font:inherit;width:100%}
+.wordmark:hover{background:none}
+.wordmark:hover .cd-mark{transform:rotate(-8deg) scale(1.04)}
+.wordmark .cd-mark{flex:none;transition:transform .5s cubic-bezier(.3,1.4,.5,1);filter:drop-shadow(0 6px 10px rgba(15,59,65,.22))}
+.wordmark .a{font-family:var(--serif);font-weight:400;font-size:24px;line-height:.98;letter-spacing:-.035em;color:var(--tx)}
+.wordmark .a i{font-style:normal;color:var(--koi)}
+.wordmark .b{display:block;margin-top:7px;font:500 9.5px/1 'Outfit',sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--eyebrow);white-space:nowrap}
+.wordmark .wm-m{width:52px;height:52px;flex:none}
+@media (max-width:900px){ .wordmark{gap:10px} .wordmark .wm-m,.wordmark .cd-mark{width:42px;height:42px} .wordmark .a{font-size:21px} .wordmark .b{font-size:8.5px;letter-spacing:.06em} }
 .xpbar-track{height:5px;border-radius:999px;background:var(--track);overflow:hidden}
 .xpbar-fill{height:100%;border-radius:999px;background:var(--xpfill);transition:width .3s}
 /* five places, each may hold a few screens (see NAV in the script) */
@@ -141,8 +163,30 @@ html[data-mode=hosted] .hide-hosted{display:none}
 .navitem .pip{margin-left:auto;width:7px;height:7px;border-radius:50%;background:var(--koi)}
 .navitem.on .hint{display:none}
 .navitem:not(.on) .pip{display:none}
-.navsubs{display:none;flex-direction:column;gap:2px;padding:2px 0 6px 47px}
-.navsubs.open{display:flex}
+/* a hint comes back softly when you leave its place */
+@keyframes nv-hint-in{from{opacity:0}}
+.navitem:not(.on) .hint{animation:nv-hint-in var(--tabfade) ease}
+/* the narrow sidebar (≤900px): Journal's hint is the longest, so it sits a touch tighter */
+@media (min-width:761px) and (max-width:900px){ #grp-journal{gap:7px} #grp-journal .hint{font-size:10.5px} }
+/* Plan's hint names three screens, too long to sit beside the label, so it goes
+   under it, and folds away (rather than snapping) when Plan opens */
+.navitem .nv-two{display:flex;flex-direction:column;min-width:0}
+.navitem .nv-two .hint{display:grid;grid-template-rows:1fr;margin:5px 0 0;font-size:11.5px;line-height:1.2;white-space:normal;
+  transition:grid-template-rows var(--tabfade) ease,margin-top var(--tabfade) ease,opacity var(--tabfade) ease}
+.navitem .nv-two .hint>span{min-height:0;overflow:hidden;padding:0 2px 2px;margin:0 -2px -2px}   /* room for the text's soft edges */
+.navitem.on .nv-two .hint{display:grid;grid-template-rows:0fr;margin-top:0;opacity:0}
+/* a place's screens slide open under it, and the last place's slide shut,
+   instead of popping in. Collapsed it stays in the list, so margin-top:-4px
+   cancels the extra list gap and the inner top padding gives it back when open */
+.navsubs{display:grid;grid-template-rows:0fr;margin-top:-4px;opacity:0;visibility:hidden;
+  transition:grid-template-rows var(--tabfade) ease,opacity var(--tabfade) ease,visibility 0s linear var(--tabfade)}
+.navsubs.open{grid-template-rows:1fr;opacity:1;visibility:visible;transition-delay:0s}
+.navsubs-in{min-height:0;overflow:hidden}
+.navsubs-in>div{display:flex;flex-direction:column;gap:2px;padding:6px 0 6px 47px}
+@media (prefers-reduced-motion:reduce){
+  .navsubs,.navsubs.open,.navitem .nv-two .hint{transition:none}
+  .navitem:not(.on) .hint{animation:none}
+}
 .navsub{background:none;border:none;border-radius:8px;padding:7px 0;text-align:left;font:500 13.5px/1 'Outfit',sans-serif;color:var(--faint);cursor:pointer}
 .navsub:hover{background:none;color:var(--tx)}
 .navsub.on{color:var(--tx);font-weight:600}
@@ -760,10 +804,18 @@ th.r,td.r{text-align:right}
    The water, the fish and the plants are drawn by pond.js; these rules lay
    out the screens around them. Colours are the design's, used directly —
    the water only ever comes in one shade of teal. */
-@keyframes pf-swim{to{offset-distance:100%}}
+/* both ends spelled out: with only `to`, the start is the fish's inline
+   offset-distance, so one parked at 93% would crawl 7% of its loop per lap */
+@keyframes pf-swim{from{offset-distance:0%}to{offset-distance:100%}}
 @keyframes pf-wag{from{transform:rotate(-16deg)}to{transform:rotate(16deg)}}
 @keyframes pf-flap{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.72)}}
 @keyframes pf-paddle{from{transform:rotate(-22deg)}to{transform:rotate(22deg)}}
+@keyframes pf-fin-stroke{from{transform:rotate(-7deg) scaleY(.88)}to{transform:rotate(8deg) scaleY(1.06)}}
+/* the same three for a part lifted out of a mirrored group (pond.js · lift):
+   a reflection turns every rotation the other way */
+@keyframes pf-wag-m{from{transform:rotate(16deg)}to{transform:rotate(-16deg)}}
+@keyframes pf-paddle-m{from{transform:rotate(22deg)}to{transform:rotate(-22deg)}}
+@keyframes pf-fin-stroke-m{from{transform:rotate(7deg) scaleY(.88)}to{transform:rotate(-8deg) scaleY(1.06)}}
 @keyframes pf-in{from{opacity:0}to{opacity:1}}
 @keyframes pf-ripple{0%{transform:translate(-50%,-50%) scale(.2);opacity:.55}100%{transform:translate(-50%,-50%) scale(1.8);opacity:0}}
 @keyframes pf-tap{0%{transform:translate(-50%,-50%) scale(.1);opacity:.9}100%{transform:translate(-50%,-50%) scale(1);opacity:0}}
@@ -791,6 +843,218 @@ th.r,td.r{text-align:right}
 .eyebrow{font:600 10.5px/1 'Outfit',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
 .pbar{height:6px;border-radius:99px;background:var(--track);overflow:hidden}
 .pbar>i{display:block;height:100%;border-radius:99px;background:var(--focus)}
+
+/* ── the mark (pond.js · mark) ── */
+@keyframes cd-orbit{to{transform:rotate(360deg)}}
+@keyframes cd-surge{from{transform:rotate(-5deg)}to{transform:rotate(4deg)}}
+@keyframes cd-glow{0%,100%{transform:scale(1);opacity:.45}50%{transform:scale(1.25);opacity:.7}}
+
+/* ── Hello: the page you land on each time the app opens ──
+   A sheet of pond water over the whole app: who you are, what today holds,
+   and one question. Sits above the phone's nav bar (50) and under modals
+   (60) and toasts, so anything that pops at boot still shows on top. */
+/* The 20% shade over the gradient is how this water has always looked: it
+   used to come from the caustic sheets, drawn black (their filters were
+   missing) and, in this fixed layer, veiling the water instead of blending
+   away. It's kept as a still tint, so the page looks exactly as it did. */
+#v-hello{position:fixed;inset:0;z-index:55;overflow-y:auto;overscroll-behavior:contain;
+  background:linear-gradient(#0003,#0003),radial-gradient(ellipse at 50% 38%,#2a7d78 0%,#1a5c60 40%,#113f46 72%,#0b3036 100%);
+  display:flex;flex-direction:column;align-items:center;padding:36px 22px;
+  transition:opacity .7s ease,transform .7s ease}
+#v-hello.hide{display:none}
+#v-hello.out{opacity:0;transform:scale(1.035);pointer-events:none}
+#v-hello .amb{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+#v-hello .vig{position:fixed;inset:0;pointer-events:none;z-index:7;
+  background:radial-gradient(ellipse at 50% 46%,#0b303600 0%,#0b303600 34%,#0b3036b8 100%)}
+/* margin:auto centres it when it fits and lets it scroll from the top when it doesn't */
+.hl{position:relative;z-index:8;width:100%;max-width:700px;margin:auto 0;display:flex;flex-direction:column;align-items:center;text-align:center;gap:0}
+.hl>*{animation:hl-up .9s cubic-bezier(.2,.8,.2,1) both}
+@keyframes hl-up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+/* on the still pond disc only: a shadow over the moving layers would be recomputed every frame */
+.hl svg.cd-mark,.hl .cd-disc{filter:drop-shadow(0 18px 30px rgba(3,20,23,.55))}
+.hl-ey{margin-top:20px;font:500 12.5px/1 'Outfit',sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#9fc2bb}
+.hl-h{margin-top:12px;font:400 54px/1.04 var(--serif);color:#fbf8f2;letter-spacing:-.02em;text-wrap:balance}
+.hl-l{margin-top:12px;max-width:500px;font:400 18px/1.5 'Outfit',sans-serif;color:#d7e8e3;text-wrap:pretty}
+.hl-l b{font-weight:600;color:#f7c7a6}
+/* one fish per task on today's line: caught ones in their species' colours */
+.hl-catch{margin-top:20px;display:flex;flex-wrap:wrap;justify-content:center;gap:10px 12px;max-width:520px}
+.hl-catch span{width:46px;height:32px;border-radius:99px;display:flex;align-items:center;justify-content:center;
+  background:#ffffff0d;border:1.5px dashed #cfe9e340}
+.hl-catch span svg{opacity:.35}
+.hl-catch span.on svg{opacity:1}
+.hl-catch span.on{background:#0b303680;border:1.5px solid #f7c7a64d}
+.hl-catch span svg{width:34px;height:auto}
+.hl-tiles{margin-top:20px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;width:100%}
+.hl-tile{border-radius:20px;padding:16px 16px 15px;background:#0b30367a;border:1px solid #cfe9e324;backdrop-filter:blur(6px);
+  display:flex;flex-direction:column;gap:8px;text-align:left}
+.hl-tile .k{font:600 10.5px/1 'Outfit',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#9fc2bb}
+.hl-tile .v{font:400 30px/1 var(--serif);color:#fbf8f2}
+.hl-tile .v small{font:400 14px/1 'Outfit',sans-serif;color:#9fc2bb;margin-left:4px}
+.hl-tile .bar{height:5px;border-radius:99px;background:#ffffff1c;overflow:hidden}
+.hl-tile .bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#7fc79a,#f0b35a);width:0;transition:width 1.4s cubic-bezier(.2,.8,.2,1) .5s}
+.hl-tile .s{font:400 12.5px/1.35 'Outfit',sans-serif;color:#b9d3cd}
+.hl-nexts{margin-top:12px;width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.hl-next{width:100%;border-radius:20px;padding:14px 18px;display:flex;align-items:center;gap:14px;text-align:left;
+  background:#fbf8f2;color:var(--tx);box-shadow:0 18px 40px rgba(3,20,23,.35)}
+.hl-next .k{font:600 10.5px/1 'Outfit',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.hl-next .t{font:500 16px/1.3 'Outfit',sans-serif;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hl-next .m{font:400 13px/1.3 'Outfit',sans-serif;color:var(--dim);margin-top:3px}
+.hl-next .d{flex:none;margin-left:auto;font:600 13px/1 'Outfit',sans-serif;padding:7px 10px;border-radius:99px}
+/* today's bug in the reeds, a glassy row under the tiles */
+.hl-bug{margin-top:12px;width:100%;display:flex;align-items:center;gap:14px;padding:12px 16px 12px 12px;border-radius:20px;text-align:left;cursor:pointer;
+  background:#0b30367a;border:1px solid #cfe9e324;backdrop-filter:blur(6px);color:#fbf8f2;font:inherit;transition:background .2s,border-color .2s}
+.hl-bug:hover{background:#0b3036a8;border-color:#cfe9e355}
+.hl-bug .pad{width:58px;height:58px;flex:none;border-radius:50%;background:radial-gradient(circle at 50% 60%,#e3efe2,#f1ebdf 72%);display:flex;align-items:center;justify-content:center}
+.hl-bug.mv .pad svg{animation:hl-bug-bob 2.6s ease-in-out infinite alternate}
+@keyframes hl-bug-bob{from{transform:translateY(1.5px) rotate(-2deg)}to{transform:translateY(-2px) rotate(2deg)}}
+.hl-bug .tx{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
+.hl-bug .k{font:600 10.5px/1 'Outfit',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#9fc2bb}
+.hl-bug .t{font:400 21px/1.1 var(--serif);color:#fbf8f2}
+.hl-bug .m{font:400 12.5px/1.35 'Outfit',sans-serif;color:#b9d3cd}
+.hl-bug .c{flex:none;font:600 12.5px/1 'Outfit',sans-serif;color:#f7c7a6;white-space:nowrap}
+.hl-bug .c.ok{color:#9fdcb4}
+@media (max-width:760px){ .hl-bug .c{display:none} .hl-bug .pad{width:48px;height:48px} }
+.hl-q{margin-top:28px;font:400 30px/1.15 var(--serif);color:#fbf8f2}
+.hl-b{margin-top:18px;display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+.hl-b button{border-radius:99px;font:600 15.5px/1 'Outfit',sans-serif;padding:16px 28px;border:1px solid transparent}
+.hl-b .go{background:var(--koi);color:#2a1408;box-shadow:0 12px 30px #ec7a4555}
+.hl-b .go:hover{background:var(--koi2)}
+.hl-b .alt{background:transparent;border-color:#cfe9e366;color:#e6f5f1}
+.hl-b .alt:hover{background:#ffffff14;border-color:#cfe9e3aa}
+.hl-b button:focus{outline:none}
+.hl-b button:focus-visible{outline:2px solid #fbf8f2aa;outline-offset:4px}
+/* fish swim behind the words; a soft shadow keeps them readable */
+.hl-ey,.hl-h,.hl-l,.hl-q{text-shadow:0 2px 18px #0b3036,0 1px 3px #0b303699}
+.hl-k{margin-top:16px;font:400 12px/1 'Outfit',sans-serif;color:#9fc2bb99}
+.hl-k kbd{font:500 11px/1 'Outfit',sans-serif;padding:3px 6px;border-radius:5px;border:1px solid #9fc2bb55;color:#cfe2dd}
+.hl-foot{margin-top:22px;display:flex;align-items:center;gap:10px;font:400 12.5px/1 'Outfit',sans-serif;color:#9fc2bb}
+.hl-foot i{width:4px;height:4px;border-radius:50%;background:#9fc2bb66}
+@media (max-width:760px){
+  #v-hello{padding:34px 16px calc(30px + env(safe-area-inset-bottom))}
+  .hl-h{font-size:40px}
+  .hl-l{font-size:16px}
+  .hl-tiles{gap:8px}
+  .hl-tile{padding:12px 11px;border-radius:16px}
+  .hl-tile .v{font-size:23px}
+  .hl-tile .s{display:none}
+  .hl-q{font-size:25px;margin-top:28px}
+  .hl-b{flex-direction:column;width:100%}
+  .hl-b button{width:100%}
+  .hl-k{display:none}
+}
+
+/* ── New species: the unlock screen (unlockShow) ──
+   Above Hello (55) and the phone nav, under modals (60) and toasts. Every
+   movement is a transform or an opacity, so it runs on the compositor.
+   .moving carries the loops (rays, bob, bubbles, sparkles); .intro the
+   one-time reveal, which only ever ends on the plain resting styles, so
+   dropping .intro mid-way (a tap, Enter) just lands on the finished card.
+   With motion off neither class is set and the card simply appears. */
+#v-unlock{position:fixed;inset:0;z-index:58;overflow-y:auto;overscroll-behavior:contain;
+  --ul-glow:#7fc79a66;--ul-ray:#bfe8cf2e;--ul-hi:#bfe8cf;
+  background:radial-gradient(ellipse at 50% 32%,#246f6b 0%,#164e53 38%,#0d353b 70%,#082529 100%);
+  display:flex;flex-direction:column;align-items:center;padding:28px 20px;
+  animation:ul-in .4s ease;transition:opacity .45s ease}
+#v-unlock.hide{display:none}
+#v-unlock.out{opacity:0;pointer-events:none}
+@keyframes ul-in{from{opacity:0}}
+.ul-bubbles{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.ul-bubbles i{position:absolute;bottom:-24px;border-radius:50%;border:1.5px solid #cfe9e34d;background:#ffffff0d;opacity:0}
+.ul{position:relative;z-index:2;width:100%;max-width:540px;margin:auto 0;display:flex;flex-direction:column;align-items:center;text-align:center}
+.ul-ey{position:relative;height:14px;width:100%;font:600 12px/14px 'Outfit',sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#9fc2bb}
+.ul-ey span{position:absolute;left:0;right:0;top:0}
+.ul-ey .a{opacity:0}
+.ul-ey .b{color:var(--ul-hi)}
+.ul-stage{position:relative;width:min(100%,440px);height:240px;margin-top:8px;cursor:default}
+.ul-stage>*{position:absolute;left:50%;top:50%;pointer-events:none}
+.ul-rays{width:640px;height:640px;margin:-320px 0 0 -320px}
+.ul-rays i{position:absolute;inset:0;border-radius:50%;opacity:.6;
+  background:repeating-conic-gradient(from 0deg,var(--ul-ray) 0deg 7deg,transparent 7deg 22deg);
+  -webkit-mask:radial-gradient(circle,#000 0,#000 16%,transparent 60%);mask:radial-gradient(circle,#000 0,#000 16%,transparent 60%)}
+.ul-glow{width:380px;height:230px;margin:-115px 0 0 -190px}
+.ul-glow i{position:absolute;inset:0;border-radius:50%;background:radial-gradient(ellipse,var(--ul-glow) 0%,transparent 68%)}
+.ul-ring{width:300px;height:300px;margin:-150px 0 0 -150px;border-radius:50%;border:2px solid #e6f5f1;opacity:0}
+.ul-ring.idle{border-color:var(--ul-hi)}
+.ul-shadow,.ul-fish{transform:translate(-50%,-50%)}
+.ul-shadow{opacity:0}
+.ul-shadow svg{filter:blur(1.5px)}
+.ul-bob{display:block}
+.ul-flash{width:280px;height:280px;margin:-140px 0 0 -140px;border-radius:50%;opacity:0;
+  background:radial-gradient(circle,#ffffff 0%,#fffbe8cc 22%,#ffffff00 66%)}
+.ul-spark{width:16px;height:16px;margin:-8px 0 0 -8px;opacity:0;color:var(--ul-hi)}
+.ul-spark svg{display:block;width:100%;height:100%;filter:drop-shadow(0 0 3px var(--ul-hi))}
+.ul-meta{margin-top:6px;display:flex;align-items:center;gap:10px}
+.ul-no{font:500 12.5px/1 'Outfit',sans-serif;color:#9fc2bb;letter-spacing:.08em}
+.ul-rar{font:600 12px/1 'Outfit',sans-serif;font-style:normal;padding:5px 10px;border-radius:99px}
+.ul-name{margin:12px 0 0;font:400 52px/1.02 var(--serif);color:#fbf8f2;letter-spacing:-.02em;text-wrap:balance;text-shadow:0 2px 18px #0b3036}
+.ul-lore{margin:14px 0 0;max-width:450px;font:400 17px/1.55 'Outfit',sans-serif;color:#d7e8e3;text-wrap:pretty}
+.ul-how{margin-top:16px;padding:10px 16px;border-radius:14px;background:#0b303680;border:1px solid #cfe9e324;
+  font:400 13.5px/1.4 'Outfit',sans-serif;color:#b9d3cd;max-width:100%;overflow-wrap:anywhere}
+.ul-how b{font-weight:500;color:#fbf8f2}
+.ul-count{margin-top:18px;width:min(100%,300px);display:flex;flex-direction:column;gap:8px;align-items:center}
+.ul-count .bar{width:100%;height:5px;border-radius:99px;background:#ffffff1c;overflow:hidden}
+.ul-count .bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#7fc79a,#f0b35a);transform-origin:left;transform:scaleX(var(--to))}
+.ul-count span{font:400 12.5px/1 'Outfit',sans-serif;color:#9fc2bb}
+.ul-b{margin-top:22px;display:flex;flex-wrap:wrap;gap:12px;justify-content:center;width:100%}
+.ul-b button{border-radius:99px;font:600 15.5px/1 'Outfit',sans-serif;padding:16px 30px;border:1px solid transparent}
+.ul-b .go{background:var(--koi);color:#2a1408;box-shadow:0 12px 30px #ec7a4555}
+.ul-b .go:hover{background:var(--koi2)}
+.ul-b .alt{background:transparent;border-color:#cfe9e366;color:#e6f5f1}
+.ul-b .alt:hover{background:#ffffff14;border-color:#cfe9e3aa}
+.ul-b button:focus{outline:none}
+.ul-b button:focus-visible{outline:2px solid #fbf8f2aa;outline-offset:4px}
+.ul-k{flex-basis:100%;margin-top:2px;font:400 12px/1 'Outfit',sans-serif;color:#9fc2bb99}
+.ul-k kbd{font:500 11px/1 'Outfit',sans-serif;padding:3px 6px;border-radius:5px;border:1px solid #9fc2bb55;color:#cfe2dd}
+/* loops */
+#v-unlock.moving .ul-bubbles i{animation:ul-rise var(--t) linear var(--d) infinite}
+@keyframes ul-rise{0%{transform:translate(0,0);opacity:0}12%{opacity:.8}100%{transform:translate(var(--x),-112vh);opacity:0}}
+#v-unlock.moving .ul-rays i{animation:ul-spin 44s linear infinite}
+@keyframes ul-spin{to{transform:rotate(360deg)}}
+#v-unlock.moving .ul-glow i{animation:ul-pulse 3.6s ease-in-out 1.6s infinite}
+@keyframes ul-pulse{50%{transform:scale(1.12);opacity:.8}}
+#v-unlock.moving .ul-ring.idle{animation:ul-ring 3.4s ease-out 2.2s infinite}
+@keyframes ul-ring{0%{transform:scale(.25);opacity:.6}100%{transform:scale(1.35);opacity:0}}
+#v-unlock.moving .ul-bob{animation:ul-bob 3.4s ease-in-out 1.8s infinite}
+@keyframes ul-bob{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-9px) rotate(1.5deg)}}
+#v-unlock.moving .ul-spark{animation:ul-twinkle var(--t) ease-in-out var(--d) infinite}
+@keyframes ul-twinkle{0%,100%{opacity:0;transform:translate(var(--x),var(--y)) scale(.15)}50%{opacity:1;transform:translate(var(--x),var(--y)) scale(1)}}
+/* the reveal: a shadow surfaces, rings spread, a flash, and it's there */
+#v-unlock.intro .ul-ey .a{animation:ul-ey 1.2s ease both}
+@keyframes ul-ey{0%{opacity:0}18%,72%{opacity:1}100%{opacity:0}}
+#v-unlock.intro .ul-ey .b{animation:ul-up .6s ease 1.15s both}
+#v-unlock.intro .ul-shadow{animation:ul-shadow 1.3s ease both}
+@keyframes ul-shadow{0%{opacity:0;transform:translate(-50%,-38%) scale(.8)}28%{opacity:.85}62%{transform:translate(-50%,-53%) scale(.96)}82%{opacity:.85;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.06)}}
+#v-unlock.intro .ul-ring.r1{animation:ul-ring 1.4s ease-out .15s both}
+#v-unlock.intro .ul-ring.r2{animation:ul-ring 1.4s ease-out .5s both}
+#v-unlock.intro .ul-ring.r3{animation:ul-ring 1.4s ease-out .85s both}
+#v-unlock.intro .ul-rays,#v-unlock.intro .ul-glow{animation:ul-fade 1s ease 1.05s both}
+@keyframes ul-fade{from{opacity:0}}
+#v-unlock.intro .ul-flash{animation:ul-flash .85s ease-out 1.02s both}
+@keyframes ul-flash{0%{opacity:0;transform:scale(.3)}28%{opacity:1}100%{opacity:0;transform:scale(2.4)}}
+#v-unlock.intro .ul-fish{animation:ul-pop .95s cubic-bezier(.2,1.45,.4,1) 1.1s both}
+@keyframes ul-pop{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}35%{opacity:1}100%{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+#v-unlock.intro .ul-meta{animation:ul-up .7s cubic-bezier(.2,.8,.2,1) 1.3s both}
+#v-unlock.intro .ul-name{animation:ul-up .7s cubic-bezier(.2,.8,.2,1) 1.4s both}
+#v-unlock.intro .ul-lore{animation:ul-up .7s cubic-bezier(.2,.8,.2,1) 1.55s both}
+#v-unlock.intro .ul-how{animation:ul-up .7s cubic-bezier(.2,.8,.2,1) 1.68s both}
+#v-unlock.intro .ul-count{animation:ul-up .7s cubic-bezier(.2,.8,.2,1) 1.78s both}
+#v-unlock.intro .ul-count .bar i{animation:ul-bar 1.3s cubic-bezier(.2,.8,.2,1) 2s both}
+@keyframes ul-bar{from{transform:scaleX(var(--from))}}
+#v-unlock.intro .ul-b{animation:ul-up .7s cubic-bezier(.2,.8,.2,1) 1.9s both}
+@keyframes ul-up{from{opacity:0;transform:translateY(14px)}}
+/* closing: the fish swims off into the pond as the water fades */
+.ul-fish{transition:transform .45s ease-in,opacity .45s ease-in}
+#v-unlock.out .ul-fish{transform:translate(30%,-62%) scale(.55);opacity:0}
+@media (max-width:760px){
+  #v-unlock{padding:24px 16px calc(24px + env(safe-area-inset-bottom))}
+  .ul-stage{height:200px}
+  .ul-rays{transform:scale(.75)}
+  .ul-name{font-size:40px}
+  .ul-lore{font-size:15.5px}
+  .ul-b{flex-direction:column;width:100%}
+  .ul-b button{width:100%}
+  .ul-k{display:none}
+}
 
 /* ── Today ── */
 #v-daily{display:flex;flex-direction:column;gap:26px}
@@ -842,30 +1106,89 @@ th.r,td.r{text-align:right}
 .td-add input:focus{box-shadow:none}
 .td-add kbd{font:500 12px/1 'Outfit',sans-serif;color:#a8a898}
 .td-empty{padding:18px 12px;font:400 15px/1.5 'Outfit',sans-serif;color:var(--dim)}
-.reeds{margin-top:22px;padding-top:20px;border-top:1px solid #ebe4d6;display:flex;flex-direction:column;gap:2px}
+.reeds{margin-top:40px;padding-top:20px;border-top:1px solid #ebe4d6;display:flex;flex-direction:column;gap:2px;position:relative}
 .reeds-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:6px;flex-wrap:wrap}
 .reeds-h b{font:400 20px/1 var(--serif);color:#b0524a}
 .reeds-h em{font:500 12px/1 'Outfit',sans-serif;font-style:normal;color:#b0524a;background:#d9695f1a;padding:4px 8px;border-radius:99px;margin-left:10px}
 .reeds-h span{font:400 13px/1 'Outfit',sans-serif;color:var(--faint)}
-.rd{display:flex;align-items:center;gap:16px;padding:11px 12px;border-radius:14px;cursor:pointer}
+.rd{display:flex;align-items:center;gap:16px;padding:9px 12px;border-radius:14px;cursor:pointer;transition:background .2s}
 .rd:hover{background:#f1ebdf}
-.rd-ic{width:38px;height:34px;flex:none;display:flex;align-items:flex-end;justify-content:center;gap:3px;position:relative}
-.rd-ic span{width:2.5px;border-radius:2px;background:#8fae7c;transform-origin:bottom}
-.rd-ic span:nth-child(2){background:#6f9e7a}
-.rd-ic b{position:absolute;left:50%;top:50%;width:26px;height:26px;margin:-15px 0 0 -13px;border-radius:50%;border:1.5px solid var(--koi);background:#fbf8f2;opacity:0;transition:opacity .15s}
-.rd:hover .rd-ic b{opacity:1}
+/* ── the reeds (reedClump) ──
+   Each overdue task is a clump of reeds with a fish caught in it: leaves,
+   a cattail or two, a patch of water. The longer it's waited, the thicker
+   the clump. Every leaf is its own box, so the idle sway (.rs) and the
+   parting on hover (.rp, nested inside it) are plain transforms. */
+.rd-ic{width:50px;height:44px;flex:none;position:relative}
+.rd-ic .rw{position:absolute;left:2px;right:2px;bottom:0;height:9px;border-radius:50%;
+  background:radial-gradient(ellipse at 50% 45%,#cde6df 0%,#b5d8cf 55%,#b5d8cf00 72%)}
+.rd-ic .rr{position:absolute;left:50%;bottom:0;width:48px;height:10px;margin-left:-24px;border-radius:50%;border:1.5px solid #6fa89d;opacity:0}
+.rd-ic .rs{position:absolute;bottom:3px;transform-origin:50% 100%;transform:rotate(var(--r))}
+.rd-ic .rp{position:absolute;inset:0;transform-origin:50% 100%;transition:transform .5s cubic-bezier(.3,1.7,.45,1)}
+.rd-ic .rp svg{display:block;width:100%;height:100%;overflow:visible}
+.rd-ic .rf{position:absolute;left:11px;bottom:1px;opacity:.28;transform:translateX(-3px);transition:opacity .35s,transform .6s cubic-bezier(.3,1.5,.45,1)}
+.rd-ic .rb{position:absolute;bottom:6px;width:4px;height:4px;border-radius:50%;border:1px solid #6fa89d;opacity:0}
+.rd-ic.sw .rs{animation:rd-sway var(--t) ease-in-out var(--d) infinite alternate}
+@keyframes rd-sway{from{transform:rotate(calc(var(--r) - var(--a)))}to{transform:rotate(calc(var(--r) + var(--a)))}}
+.rd:hover .rd-ic .rp{transform:rotate(var(--p))}
+.rd:hover .rd-ic .rf{opacity:.6;transform:translateX(6px)}
+.rd:hover .rd-ic .rr{animation:rd-ring 1.2s ease-out}
+.rd:hover .rd-ic .rb{animation:rd-bub 1.3s ease-out var(--d) both}
+@keyframes rd-ring{0%{transform:scale(.3);opacity:.9}100%{transform:scale(1.15);opacity:0}}
+@keyframes rd-bub{0%{transform:translateY(0) scale(.6);opacity:0}25%{opacity:.9}100%{transform:translateY(-26px) scale(1);opacity:0}}
+.rd-go{font:500 12px/1 'Outfit',sans-serif;color:var(--koi);flex:none;width:0;opacity:0;overflow:hidden;white-space:nowrap;transition:opacity .2s,width .25s}
+.rd:hover .rd-go{opacity:1;width:62px}
+.reeds-vis{position:absolute;right:178px;top:-22px;font:italic 400 12.5px/1 'Outfit',sans-serif;color:var(--faint);white-space:nowrap;pointer-events:none}
+.reeds-vis.got{color:#3f7d6f;font-style:normal}
+.reeds.calm .reeds-h b{color:#3f7d6f}
+@media (max-width:560px){ .reeds-vis{display:none} }
+/* the catch: a little burst where you tapped, and the bug's card */
+.bug-burst{position:fixed;width:0;height:0;z-index:62;pointer-events:none}
+.bug-burst i{position:absolute;left:-14px;top:-14px;width:28px;height:28px;border-radius:50%;border:2px solid #7fc79a;animation:bb-ring .7s ease-out forwards}
+.bug-burst i.two{border-color:#f0c26a;animation-delay:.12s;opacity:0}
+.bug-burst s{position:absolute;left:-2px;top:-2px;width:4px;height:4px;border-radius:50%;background:#f0c26a;transform:rotate(var(--a)) translateY(-4px);animation:bb-spark .7s ease-out forwards}
+@keyframes bb-ring{0%{transform:scale(.3);opacity:1}100%{transform:scale(1.6);opacity:0}}
+@keyframes bb-spark{0%{opacity:1}100%{transform:rotate(var(--a)) translateY(-26px) scale(.4);opacity:0}}
+#bug-card{position:fixed;right:24px;bottom:24px;z-index:59;width:min(380px,calc(100vw - 32px));display:flex;gap:16px;align-items:flex-start;padding:18px 18px 16px;
+  background:var(--panel);border-radius:22px;box-shadow:0 18px 50px rgba(31,46,44,.22),0 2px 6px rgba(31,46,44,.08);transform:translateY(24px);opacity:0;pointer-events:none;transition:transform .35s cubic-bezier(.3,1.4,.5,1),opacity .25s}
+#bug-card.show{transform:none;opacity:1;pointer-events:auto}
+#bug-card.out{transition:transform .3s ease-in,opacity .25s}
+.bc-art{width:84px;height:84px;flex:none;border-radius:50%;background:radial-gradient(circle at 50% 60%,#e3efe2,#f1ebdf 70%);display:flex;align-items:center;justify-content:center}
+.bc-art.new{box-shadow:0 0 0 3px #f0c26a55}
+.bc-b{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1}
+.bc-ey{font:600 11px/1.2 'Outfit',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#3f7d6f}
+.bc-b b{font:400 24px/1.1 var(--serif);color:var(--tx);font-weight:400}
+.bc-b p{margin:0;font:400 13.5px/1.45 'Outfit',sans-serif;color:var(--dim)}
+.bc-f{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:4px}
+.bc-f span{font:500 12px/1 'Outfit',sans-serif;color:var(--faint)}
+.bc-f button{font:600 12.5px/1 'Outfit',sans-serif;color:var(--koi);background:none;border:none;padding:4px 0;cursor:pointer}
+.bc-x{position:absolute;right:10px;top:8px;background:none;border:none;color:var(--faint);font-size:14px;cursor:pointer;padding:4px 6px}
+@media (max-width:560px){ #bug-card{right:16px;bottom:84px} }
+/* the bug collection */
+.co-kind{align-self:flex-start}
+.bx-leg{font-style:normal;font-weight:600;color:#8a6aa8}
+.bdex{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:14px}
+.bx{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 14px;border-radius:20px;background:var(--panel);text-align:center;transition:transform .2s,box-shadow .2s}
+.bx.got{cursor:pointer}
+.bx.got:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(31,46,44,.1)}
+.bx-art{position:relative;width:100px;height:84px;flex:none;border-radius:50%;background:radial-gradient(circle at 50% 62%,#e3efe2,#f1ebdf00 70%);display:flex;align-items:center;justify-content:center}
+.bx-q{position:absolute;font:400 26px/1 var(--serif);color:#b9b3a4}
+.bx-no{font:500 11px/1 'Outfit',sans-serif;color:var(--faint);letter-spacing:.04em}
+.bx b{font:400 18px/1.15 var(--serif);color:var(--tx);font-weight:400}
+.bx:not(.got) b{color:var(--faint);letter-spacing:.1em}
+.bx p{margin:0;font:400 12.5px/1.4 'Outfit',sans-serif;color:var(--dim)}
+.bg-today{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.bg-t{display:flex;flex-direction:column;gap:6px;flex:1;min-width:200px}
+.bg-t b{font:400 26px/1.1 var(--serif);color:var(--tx);font-weight:400}
+.bg-t p{margin:0;font:400 14px/1.45 'Outfit',sans-serif;color:var(--dim)}
+.bg-ok{font:600 13px/1 'Outfit',sans-serif;color:#3f7d6f;background:#3f7d6f1a;padding:9px 14px;border-radius:99px}
 .rd-t{flex:1;min-width:0;font:400 15px/1.3 'Outfit',sans-serif;color:#3a4643;word-break:break-word}
 .rd-c{font:400 13px/1 'Outfit',sans-serif;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px}
 .rd-l{font:500 12.5px/1 'Outfit',sans-serif;color:#b0524a;width:70px;text-align:right;flex:none}
 .rd-more{padding:8px 12px 0 66px;font:500 13.5px/1 'Outfit',sans-serif;color:var(--label);background:none;border:none;text-align:left;cursor:pointer}
 .rd-more:hover{background:none;color:var(--tx)}
 .lotus-card{display:flex;flex-direction:column;align-items:center;gap:16px}
-.lotus{position:relative;width:200px;height:170px;border-radius:50%/42%;background:radial-gradient(ellipse at 50% 55%,#23706f,#0f3b41 75%);overflow:hidden}
-.lotus .lf{position:absolute;left:50%;top:62%;width:150px;height:60px;margin-left:-75px;margin-top:-30px;border-radius:50%;background:#5f9470;z-index:2}
-.lotus .pb,.lotus .pf{position:absolute;z-index:3;left:50%;border-radius:50% 50% 45% 45%/60% 60% 40% 40%;transform-origin:50% 100%;transition:transform .8s cubic-bezier(.2,.8,.3,1.2)}
-.lotus .pb{top:56%;width:26px;height:56px;margin-left:-13px;margin-top:-56px;background:linear-gradient(180deg,#f7c7a6,#f3a47c);box-shadow:inset 0 -6px 10px #ec7a4533}
-.lotus .pf{top:58%;width:24px;height:44px;margin-left:-12px;margin-top:-44px;background:linear-gradient(180deg,#fde3d0,#f7b891)}
-.lotus .ctr{position:absolute;z-index:3;left:50%;top:58%;width:18px;height:18px;margin:-12px 0 0 -9px;border-radius:50%;background:#f0b35a;box-shadow:0 0 12px #f0b35a}
+.lotus{position:relative;width:min(100%,280px);aspect-ratio:7/5;isolation:isolate}
+.lotus svg{display:block;width:100%;height:100%;overflow:visible}
 .lotus-n{display:flex;flex-direction:column;align-items:center;gap:4px}
 .lotus-n b{font:400 40px/1 var(--serif);color:var(--tx)}
 .lotus-n span{font:400 15px/1 'Outfit',sans-serif;color:var(--dim)}
@@ -874,6 +1197,72 @@ th.r,td.r{text-align:right}
 .lotus-go:hover{background:var(--koi2)}
 .lotus-go:active{transform:scale(.98)}
 .lotus-note{font:400 12.5px/1.3 'Outfit',sans-serif;color:var(--faint);margin-top:-6px;text-align:center}
+/* ── the lotus path (a focus streak): Today's card and its moment ── */
+.path-card{display:flex;flex-direction:column;gap:12px;padding:22px}
+.pth{height:118px;border-radius:20px;flex:none}
+.pth>.amb{z-index:1}      /* glints, ripples and the deep koi stay under the pads */
+.pth.more::before{content:'';position:absolute;left:0;top:0;bottom:0;width:30px;z-index:9;pointer-events:none;background:linear-gradient(90deg,#0f3b41,#0f3b4100)}
+.pth-s{position:absolute;width:0;height:0;z-index:5}
+.pth-b{position:absolute;left:0;top:0}
+.pth.mv .pth-b{animation:pf-bob 6s ease-in-out infinite}
+.pth-pad{position:absolute;left:-15px;top:-15px;width:30px;height:30px}
+.pth-pad.big{left:-17px;top:-17px;width:34px;height:34px}
+.pth-pad.old{opacity:.45}
+.pth-pad i,.pa-pad i{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 26deg,var(--c) 26deg 360deg);filter:drop-shadow(0 6px 5px rgba(5,25,28,.35))}
+.pth-pad i::after,.pa-pad i::after{content:'';position:absolute;inset:22%;border-radius:50%;border:1px solid #ffffff22}
+.pth-gap{position:absolute;left:-11px;top:-11px;width:22px;height:22px;border-radius:50%;border:1.5px dashed #ffffff2b}
+.pth-gap.now{left:-16px;top:-16px;width:32px;height:32px;border-color:#f7c7a699}
+.pth-bud{position:absolute;left:-11px;top:-22px;transform-origin:50% 100%}
+.pth.mv .pth-bud{animation:pth-bud 3.4s ease-in-out infinite}
+@keyframes pth-bud{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg) translateY(-1.5px)}}
+.pth-fl{position:absolute}
+.pth-hop{position:absolute;left:0;top:0;transform:rotate(var(--r,-14deg))}
+.pth-hop.go{animation:pth-hop .75s cubic-bezier(.3,.6,.4,1) .45s both}
+@keyframes pth-hop{0%{transform:translate(calc(var(--dx) * -1),2px) rotate(var(--r))}50%{transform:translate(calc(var(--dx) * -.5),-20px) rotate(var(--r)) scale(1.12)}100%{transform:rotate(var(--r))}}
+.pth-wait{position:absolute;z-index:4;opacity:.8}
+.pth-eyes{position:absolute;z-index:6;display:flex;gap:3px;transform:translateX(-50%)}
+.pth-eyes::before{content:'';position:absolute;left:-7px;right:-7px;top:-3px;bottom:-4px;border-radius:50%;border:1px solid #cfe9e333}
+.pth-eyes i{position:relative;width:7px;height:6px;border-radius:50% 50% 40% 40%;background:#87a17a;box-shadow:0 1px 2px rgba(5,25,28,.4)}
+.pth-eyes i::after{content:'';position:absolute;left:2px;top:1.5px;width:3px;height:3px;border-radius:50%;background:#1f2e2c}
+.pth-eyes.mv i{animation:pth-blink 5s infinite}
+@keyframes pth-blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.15)}}
+.pth-fly{position:absolute;z-index:8;transform:translate(-50%,-50%) rotate(62deg)}
+.pth.mv .pth-fly{animation:pth-fly 5.5s ease-in-out infinite}
+@keyframes pth-fly{0%,100%{transform:translate(-50%,-50%) rotate(62deg)}30%{transform:translate(calc(-50% + 9px),calc(-50% - 5px)) rotate(70deg)}60%{transform:translate(calc(-50% - 4px),calc(-50% + 3px)) rotate(55deg)}}
+.pth-ff{position:absolute;z-index:8;width:4px;height:4px;border-radius:50%;background:#f6f3a1;box-shadow:0 0 6px 2px #e9f27a88;opacity:.85}
+.pth.mv .pth-ff{animation:pth-glow 3.8s ease-in-out infinite,pth-drift 9s ease-in-out infinite alternate}
+@keyframes pth-glow{0%,100%{opacity:.12}45%,60%{opacity:1}}
+@keyframes pth-drift{from{translate:0 0}to{translate:14px -9px}}
+.pth-moon{position:absolute;right:8%;top:12px;z-index:4;width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 40% 40%,#fffbe8,#f3e7bf);box-shadow:0 0 14px 4px #fff6d455;opacity:.85}
+.pth-moon::after{content:'';position:absolute;left:-5px;right:-5px;top:23px;height:2px;border-radius:2px;background:#fff6d44d;box-shadow:0 5px 0 -.5px #fff6d433}
+.pth-ring{position:absolute;left:-16px;top:-16px;width:32px;height:32px;border-radius:50%;border:1.5px solid #cfe9e3;opacity:0;z-index:-1;animation:pth-ring 4s ease-out infinite}
+.pth-ring.two{animation-delay:2s}
+@keyframes pth-ring{0%{transform:scale(.6);opacity:.6}100%{transform:scale(2.2);opacity:0}}
+.pth-wd{position:relative;height:13px;margin-top:-4px}
+.pth-wd span{position:absolute;top:0;transform:translateX(-50%);font:500 11px/1 'Outfit',sans-serif;color:var(--faint);white-space:nowrap}
+.pth-wd span.on{color:var(--koi);font-weight:600}
+.pth-n{display:flex;align-items:baseline;gap:8px;margin-top:2px}
+.pth-n b{font:400 40px/1 var(--serif);color:var(--tx)}
+.pth-n span{font:400 15px/1 'Outfit',sans-serif;color:var(--dim)}
+.pth-l{margin:-4px 0 0;font:400 13px/1.45 'Outfit',sans-serif;color:var(--dim)}
+.pth-next{display:flex;align-items:center;gap:10px;font:500 12px/1 'Outfit',sans-serif;color:var(--faint)}
+.pth-next .pbar{flex:1;height:6px;background:#ebe4d6}
+.pth-next span:first-child{color:var(--label)}
+#path-card{position:fixed;right:24px;bottom:24px;z-index:59;width:min(380px,calc(100vw - 32px));display:flex;gap:16px;align-items:flex-start;padding:18px 18px 16px;
+  background:var(--panel);border-radius:22px;box-shadow:0 18px 50px rgba(31,46,44,.22),0 2px 6px rgba(31,46,44,.08);transform:translateY(24px);opacity:0;pointer-events:none;transition:transform .35s cubic-bezier(.3,1.4,.5,1),opacity .25s}
+#path-card.show{transform:none;opacity:1;pointer-events:auto}
+#path-card.out{transition:transform .3s ease-in,opacity .25s}
+.pth-art{position:relative;width:84px;height:84px;flex:none;border-radius:50%;overflow:hidden;background:radial-gradient(ellipse at 60% 45%,#2a7d78 0%,#1a5c60 50%,#0f3b41 100%);box-shadow:inset 0 0 22px #07252a}
+.pa-pad{position:absolute;left:18px;top:24px;width:46px;height:46px}
+.pa-ring{position:absolute;left:21px;top:27px;width:40px;height:40px;border-radius:50%;border:1.5px solid #cfe9e3;opacity:0}
+.pa-fl{position:absolute;left:17px;top:15px}
+.pa-hop{position:absolute;left:47px;top:51px;transform:rotate(-18deg)}
+.pth-art.mv .pa-hop{animation:pa-hop .8s cubic-bezier(.3,.6,.4,1) .35s both}
+@keyframes pa-hop{0%{transform:translate(-46px,18px) rotate(-18deg) scale(.85)}55%{transform:translate(-20px,-14px) rotate(-18deg) scale(1.15)}100%{transform:rotate(-18deg)}}
+.pth-art.mv .pa-fl{animation:pa-open .7s cubic-bezier(.3,1.5,.5,1) 1s both}
+@keyframes pa-open{from{transform:scale(0);opacity:0}}
+.pth-art.mv .pa-ring{animation:pth-ring 1.2s ease-out 1.05s both}
+@media (max-width:560px){ #path-card{right:16px;bottom:84px} }
 .mdex{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
 .mdex i{aspect-ratio:1;border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .nextc{display:flex;gap:14px;align-items:center;padding:12px;border-radius:16px;background:#f1ebdf}
@@ -1037,6 +1426,7 @@ th.r,td.r{text-align:right}
 .dex{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
 .dx{background:var(--panel);border:1px solid var(--line);border-radius:24px;overflow:hidden;display:flex;flex-direction:column;transition:transform .2s,box-shadow .2s;content-visibility:auto;contain-intrinsic-size:auto 260px}
 .dx:hover{transform:translateY(-3px);box-shadow:0 14px 28px rgba(15,59,65,.14)}
+.dx.open{cursor:pointer}
 .dx-w{height:150px}
 .dx-w.hid{background:radial-gradient(ellipse at 50% 55%,#1d5358 0%,#133f45 60%,#0c2f34 100%)}
 .dx-w.fnd{background:radial-gradient(ellipse at 50% 55%,#2a7d78 0%,#175459 60%,#0f3b41 100%)}
@@ -1077,6 +1467,8 @@ th.r,td.r{text-align:right}
   .cr-detail{margin-left:12px}
   .rd{gap:12px;padding:10px 6px}
   .rd-c{display:none}
+  .rd-go{display:none}
+  .reeds-bed{right:4px}
   .calp{padding:18px 14px 18px;border-radius:24px}
   .lp .nm span{font-size:12px}
   .lp.fl .nm span{font-size:10px}
@@ -1099,7 +1491,7 @@ th.r,td.r{text-align:right}
    draws the scenes still (Pond.PF.motion), this catches the CSS-only bits */
 @media (prefers-reduced-motion:reduce){
   .lp .orb,.tap-ring,.cr.done .cr-ic{animation:none}
-  .dx,.lotus .pb,.lotus .pf{transition:none}
+  .dx{transition:none}
   .dx:hover{transform:none}
 }
 
@@ -1154,6 +1546,35 @@ th.r,td.r{text-align:right}
 .rn-b3{font:500 15px/1 'Outfit',sans-serif;color:#cfe2dd;padding:16px 18px;border-radius:99px;background:transparent;border:none}
 .rn-b3:hover{color:#fbf8f2;background:transparent}
 .rn-grid{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:22px;align-items:start}
+/* rain (rain.js): the sky over the session water, the drops, and the page */
+.rain-veil{position:absolute;inset:0;z-index:5;pointer-events:none;opacity:0;transition:opacity 2.4s ease;
+  background:linear-gradient(180deg,rgba(15,27,35,.62) 0%,rgba(14,30,38,.3) 55%,rgba(8,22,28,.52) 100%)}
+.rain-cv{position:absolute;inset:0;width:100%;height:100%;z-index:5;pointer-events:none;opacity:0;transition:opacity 1.2s ease}
+.rain-page{position:fixed;inset:0;width:100vw;height:100vh;z-index:-1;pointer-events:none;opacity:0;transition:opacity 2s ease;
+  background:rgba(52,74,86,var(--rain-veil,0))}
+.rain-ui{position:absolute;left:50%;top:28px;transform:translateX(-50%);z-index:9;display:flex;gap:6px;align-items:center}
+.rain-ui>button{display:flex;align-items:center;gap:8px;font:500 13.5px/1 'Outfit',sans-serif;color:#d7e8e3;background:#ffffff14;
+  border:1px solid #ffffff26;border-radius:99px;padding:8px 12px 8px 10px}
+.rain-ui>button:hover{background:#ffffff24;border-color:#ffffff40}
+.rain-ui>button svg{flex:none}
+.rain-ui .rr-sw{width:26px;height:15px;border-radius:99px;background:#ffffff2e;position:relative;transition:background .2s}
+.rain-ui .rr-sw::after{content:'';position:absolute;left:2px;top:2px;width:11px;height:11px;border-radius:50%;background:#cfe2dd;transition:transform .2s,background .2s}
+.rain-ui.on .rr-tog{color:#fbf8f2;background:#9fc2bb2e;border-color:#9fc2bb66}
+.rain-ui.on .rr-sw{background:#9fd8c8}
+.rain-ui.on .rr-sw::after{transform:translateX(11px);background:#0f3b41}
+.rain-ui .rr-more{display:none;padding:8px 12px}
+.rain-ui.on .rr-more{display:flex}
+.rr-pop{position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);width:280px;padding:14px;border-radius:18px;
+  background:#0d2f35f2;border:1px solid #ffffff22;box-shadow:0 16px 40px #04161acc;display:none;flex-direction:column;gap:12px}
+.rain-ui.open .rr-pop{display:flex}
+.rr-lv{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:#ffffff10;border-radius:12px;padding:3px}
+.rr-lv button{font:500 12.5px/1 'Outfit',sans-serif;color:#cfe2dd;background:transparent;border:none;border-radius:9px;padding:9px 2px}
+.rr-lv button:hover{background:#ffffff14}
+.rr-lv button.on{background:#9fd8c8;color:#0f3b41}
+.rr-vol{display:flex;align-items:center;gap:10px;color:#cfe2dd;font:500 12.5px/1 'Outfit',sans-serif}
+.rr-vol input{flex:1;accent-color:#9fd8c8}
+.rr-hint{font:400 12px/1.45 'Outfit',sans-serif;color:#9fc2bb}
+@media (max-width:760px){ .rain-ui{top:78px} .rr-pop{width:min(280px,calc(100vw - 48px))} }
 .rn-plan{font:500 13px/1 'Outfit',sans-serif;color:var(--label);background:none;border:none;padding:8px 4px}
 .rn-plan:hover{background:none;color:var(--tx)}
 .rt{display:flex;align-items:center;gap:14px;padding:12px;border-radius:16px}
@@ -1199,8 +1620,8 @@ th.r,td.r{text-align:right}
 .tg-t{font:400 20px/1 var(--serif)}
 .tg-n{font:500 12px/1 'Outfit',sans-serif;padding:4px 8px;border-radius:99px}
 .tg-note{margin-left:auto;font:400 13px/1 'Outfit',sans-serif;color:var(--faint)}
-.gm-reeds{display:flex;align-items:flex-end;gap:2px;height:18px}
-.gm-reeds i{width:2.5px;border-radius:2px;background:#8fae7c}
+.gm-reeds{display:block;width:24px;height:22px;flex:none}
+.gm-reeds svg{display:block;width:100%;height:100%;overflow:visible}
 .gm-dot{width:10px;height:10px;border-radius:50%}
 .tg-more{padding:6px 10px 4px 56px;font:500 13.5px/1 'Outfit',sans-serif;color:var(--focus);background:none;border:none;text-align:left}
 .tg-more:hover{background:none;color:#286a65}
@@ -1442,31 +1863,48 @@ button.set-row:hover{background:#ebe3d4}
 <!-- ════ ONBOARDING ════ -->
 <div id="v-onboard" class="hide">
   <div class="ob-card">
-    <h1 style="font-size:30px;margin:0 0 8px">Focus</h1>
-    <p style="font-size:14px;color:var(--label);margin:0 0 30px;line-height:1.6">Your own calm corner for focus.</p>
+    <div id="ob-mark" style="width:112px;height:112px;margin:0 auto 22px"></div>
+    <h1 style="font-size:34px;margin:0 0 8px;letter-spacing:-.03em">Catching <span style="color:var(--koi)">Days</span></h1>
+    <p style="font-size:14px;color:var(--label);margin:0 0 30px;line-height:1.6">A calm pond for your tasks. Every one you finish swims in.</p>
     <button class="primary" style="width:100%;padding:14px;font-size:15px" onclick="beginApp()">Begin</button>
   </div>
 </div>
 
+<!-- ════ HELLO ════ Shown over the app each time it opens: a summary of the
+     day and one question. helloShow() builds it; nothing here is saved. -->
+<div id="v-hello" class="hide" role="dialog" aria-modal="true" aria-labelledby="hl-h">
+  <div class="amb" id="hl-scene"></div>
+  <div class="vig"></div>
+  <div class="hl" id="hl-body"></div>
+</div>
+
+<!-- ════ NEW SPECIES ════ The moment a fish you've never had swims in: it
+     surfaces as a shadow, flashes into colour, and its field-guide entry
+     appears. unlockShow() builds it; it only reads, never saves. -->
+<div id="v-unlock" class="hide" role="dialog" aria-modal="true" aria-labelledby="ul-name"></div>
+
 <!-- ════ APP SHELL ════ -->
 <div id="shell" class="hide">
   <div class="sidebar">
-    <div class="wordmark">
-      <svg width="34" height="18" viewBox="-32 -12 56 24" aria-hidden="true"><path d="M-17 0 L-30 -8 Q-26 0 -30 8 Z" fill="#ec7a45" opacity=".85"/><ellipse cx="-2" cy="0" rx="17" ry="7" fill="#ec7a45"/><ellipse cx="9" cy="0" rx="10" ry="6.5" fill="#ec7a45"/><ellipse cx="-3" cy="-1" rx="6" ry="3.5" fill="#fbf8f2"/></svg>
-      <div class="a">Focus</div>
-    </div>
+    <!-- the title card; tapping it brings back the Hello page. The mark is
+         drawn by pond.js (Pond.mark) once the script runs. -->
+    <button class="wordmark" onclick="helloShow(true)" title="Your day at a glance">
+      <span id="wm-mark" class="wm-m"></span>
+      <span><span class="a">Catching<br><i>Days</i></span><span class="b">a pond for your days</span></span>
+    </button>
     <span id="live" class="hide"></span>
 
-    <!-- Five places. Plan, Journal and You each hold a few screens, listed
+    <!-- Six places. Plan, Journal and You each hold a few screens, listed
          under the place while you're in it (on a phone: a strip at the top
          of the page, see paintSubnav). NAV in the script is the map. -->
     <nav class="navlist" id="navlist">
       <button id="grp-today" class="navitem" onclick="navGo('today')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="15" rx="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M8 3.4v3.2M16 3.4v3.2M4 10h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9.4 14.4l1.9 1.9 3.3-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Today<span class="pip"></span></button>
       <button id="grp-focus" class="navitem" onclick="navGo('focus')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Focus<span class="pip"></span></button>
-      <button id="grp-plan" class="navitem" onclick="navGo('plan')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 7h14M5 12h14M5 17h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Plan<span class="hint">Tasks · Journeys</span><span class="pip"></span></button>
+      <button id="grp-plan" class="navitem" onclick="navGo('plan')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 7h14M5 12h14M5 17h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span class="nv-two">Plan<span class="hint"><span>Tasks · Journeys · Projects</span></span></span><span class="pip"></span></button>
       <div class="navsubs" id="subs-plan"></div>
-      <button id="grp-journal" class="navitem" onclick="navGo('journal')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 19.5V6a2 2 0 0 1 2-2h13v14.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 22a2 2 0 0 1-2-2M4 20h15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 8h7M8 11.5h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Journal<span class="pip"></span></button>
+      <button id="grp-journal" class="navitem" onclick="navGo('journal')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 19.5V6a2 2 0 0 1 2-2h13v14.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 22a2 2 0 0 1-2-2M4 20h15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 8h7M8 11.5h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Journal<span class="hint">Calendar · Vault</span><span class="pip"></span></button>
       <div class="navsubs" id="subs-journal"></div>
+      <button id="grp-stk" class="navitem" onclick="navGo('stk')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 6.5A2.5 2.5 0 0 1 7.5 4h9A2.5 2.5 0 0 1 19 6.5V14l-6 6H7.5A2.5 2.5 0 0 1 5 17.5v-11z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M19 14h-4a2 2 0 0 0-2 2v4" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.5 8.5h7M8.5 11.5h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Sticky notes<span class="pip"></span></button>
       <button id="grp-you" class="navitem" onclick="navGo('you')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8.2" r="3.6" stroke="currentColor" stroke-width="1.8"/><path d="M5 20c0-3.6 3.1-5.6 7-5.6s7 2 7 5.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>You<span class="hint">Bio · Collection</span><span class="pip"></span></button>
       <div class="navsubs" id="subs-you"></div>
     </nav>
@@ -1514,6 +1952,7 @@ button.set-row:hover{background:#ebe3d4}
         </div>
         <div class="td-side">
           <div class="pcard lotus-card" id="td-lotus"></div>
+          <div class="pcard path-card" id="td-path"></div>
           <div class="pcard" id="td-coll" style="padding:22px;display:flex;flex-direction:column;gap:14px;cursor:pointer" onclick="tab('coll')"></div>
           <div class="pcard" id="td-up" style="padding:22px 22px 10px;display:flex;flex-direction:column"></div>
         </div>
@@ -1541,11 +1980,17 @@ button.set-row:hover{background:#ebe3d4}
 
     <!-- ════ SETTINGS ════ paintSettings() -->
     <div id="v-set" class="hide"><div id="set-body"></div></div>
+    <!-- ════ PROJECTS ════ projects.js (self-contained) -->
+    <div id="v-proj" class="hide"><div id="proj-body"></div></div>
   </div>
 </div>
 <div id="modals"></div>
 
-<script src="pond.js"></script>
+<script src="pond-catalog.js?v=385"></script>
+<script src="pond.js?v=385"></script>
+<script src="pond-lore.js?v=4"></script>
+<script src="reed-bugs.js?v=2"></script>
+<script src="rain.js?v=2"></script>
 <script>
 /* ═══════════════ store ═══════════════ */
 const clone=o=>typeof structuredClone==='function'?structuredClone(o):JSON.parse(JSON.stringify(o));
@@ -1669,7 +2114,8 @@ const blank={v:3,settings:{focus:25,brk:5,sound:true,notify:false,tz:'America/Ne
      collection is worked out from tasks, sessions and the journal; this only
      keeps what can't be: which species each class adopted, and when each
      species was first found, so a catch is never taken back. */
-  pond:{adopt:{}, seen:{}}};
+  pond:{adopt:{}, seen:{}, bugs:{}},
+  pondEvents:{v:1,invitations:true,records:[]}};
 
 /* The generalized (non-Spanish) course progress shape — trimmed of every
    language-only field (no verbs, no accent/TTS settings). "vocab" here means
@@ -1706,6 +2152,9 @@ function ensureSettings(d){
   ensureBio(d);
   ensureVault(d);
   ensurePond(d);
+  const moments=d.pondEvents&&typeof d.pondEvents==='object'&&!Array.isArray(d.pondEvents)?d.pondEvents:{};
+  d.pondEvents={...moments,v:1,invitations:moments.invitations!==false,
+    records:Array.isArray(moments.records)?moments.records.filter(r=>r&&typeof r.id==='string'):[]};
   d.v=blank.v;   // stamp the shape we just brought it up to, so `v` stays truthful
   return d;
 }
@@ -1752,6 +2201,9 @@ function ensurePond(d){
   const p=ok(d.pond)?d.pond:{};
   if(!ok(p.adopt)) p.adopt={};
   if(!ok(p.seen)) p.seen={};
+  if(!ok(p.bugs)) p.bugs={};           // the bug collection: key -> {first,last,days}
+  if(!ok(p.path)) p.path={};           // the lotus path (focus streak), see pathState
+  if(!ok(p.path.hit)) p.path.hit={};
   d.pond=p;
   return d;
 }
@@ -1781,7 +2233,7 @@ function storageProbe(){
 const HEALTH=storageProbe();
 const originLabel=()=>HEALTH.file?'file:// (local disk)':(location.origin||location.host||'unknown');
 /* Where is this page running?
-     'server' — http://localhost or 127.0.0.1, i.e. launched via Start Focus.bat.
+     'server' — http://localhost or 127.0.0.1, i.e. launched via Start Catching Days.bat.
                 server.py/server.js is alive and writes focus-data.json on every save.
      'hosted' — any other origin (GitHub Pages, or the installed home-screen app).
                 There is no write endpoint: data lives in this browser and moves
@@ -2264,10 +2716,11 @@ function doBadge(score){
 function subToggle(aid,sid,on){
   const a=asg(aid); if(!a) return; fix(a);
   const s=a.subs.find(x=>x.id===sid); if(!s) return;
+  const subtaskPrevious={done:s.done,doneAt:s.doneAt};
   s.done=on; s.doneAt=on?Date.now():null;
   // finishing the last subtask finishes the assignment
   if(a.subs.length&&a.subs.every(x=>x.done)&&!a.done)
-    toggleAsg(aid,true,A?A.id:null,A?A.cycles.length+(A.phase==='break'?0:1):null);
+    toggleAsg(aid,true,A?A.id:null,A?A.cycles.length+(A.phase==='break'?0:1):null,{subtaskId:s.id,subtaskPrevious});
   else if(a.done&&!on) toggleAsg(aid,false);
   save(); repaint();
 }
@@ -2995,7 +3448,7 @@ function commitImport(){
 }
 
 /* ═══════════════ server-backed save ═══════════════
-   Start Focus.bat runs server.py (or server.js), a tiny local server that,
+   Start Catching Days.bat runs server.py (or server.js), a tiny local server that,
    unlike a plain static server, also accepts POST to write a file into this
    folder. As long as SERVER is true we're talking to it, so focus-data.json
    just IS the save file — no folder picker, no permissions, nothing to
@@ -3072,8 +3525,10 @@ async function adoptFromFile(){
   return 'loaded';
 }
 function rehydrate(){
+  window.PondEvents?.reconcile();
   clearInterval(tick); tick=null;
   A=db.active||null;
+  paintMarks();
   if(db.onboarded){
     $('v-onboard').classList.add('hide'); $('shell').classList.remove('hide');
     /* A live session always wins the boot, whatever tab was last active —
@@ -3086,6 +3541,7 @@ function rehydrate(){
     }
     else tab(cur);
     repaint();
+    if(!_helloDay) helloShow();     // once per launch; rehydrate can run twice
   } else {
     $('shell').classList.add('hide'); $('v-onboard').classList.remove('hide');
   }
@@ -3133,7 +3589,7 @@ function toast(msg){
 }
 
 function agentBrief(){
-  return `# Focus · instructions for an AI agent
+  return `# Catching Days · instructions for an AI agent
 
 You are helping with a study-tracking app. Three jobs, all described below:
 **planning tasks**, **reading the journal**, and **organizing the journal vault**.
@@ -3459,7 +3915,7 @@ function bioMd(full,opt){
   if(has(p.summary)){ P(p.summary.trim()); P(''); }
 
   if(full&&!plain){
-    P('> Generated by Focus from the Bio tab. This is the user writing about');
+    P('> Generated by Catching Days from the Bio tab. This is the user writing about');
     P('> themselves — treat it as fact about them, and prefer it over guessing.');
     P('> Entries marked _(private)_ are personal context for your reasoning only:');
     P('> never copy them into anything outward-facing — an application, an email,');
@@ -3527,7 +3983,7 @@ function agentContext(){
     return out;
   };
 
-  P('# Focus · current state');
+  P('# Catching Days · current state');
   P('');
   P(`Snapshot taken **${dDayName(t)}** (${t}), timezone ${TZ()}.`);
   P('The app rewrites this file every time it saves. Read-only —');
@@ -3707,6 +4163,8 @@ function agentContext(){
   P(`- Exams tracked: ${(db.exams||[]).length} (${exams.length} still ahead)`);
   P(`- Focus sessions logged: ${(db.sessions||[]).length}, ~${mins} minutes total`);
   P(`- Daily goal: ${db.settings.goal} minutes of net focus`);
+  { const ps=pathState(true);
+    P(`- Lotus path (focus streak: days in a row at the daily goal): ${ps.cur} day${ps.cur===1?'':'s'}${ps.met?', today already counts':ps.cur?`, ${ps.left} more minutes today keeps it going`:''}; best ${ps.best}`); }
   P('');
   return L.join('\n');
 }
@@ -3721,16 +4179,19 @@ function downloadBrief(){
   a.download='AGENTS.md'; a.click();
 }
 
-function toggleAsg(id,on,sessionId,cycle){
+function toggleAsg(id,on,sessionId,cycle,origin){
   const a=asg(id); if(!a) return;
   if(a.ann) return;        // announcements are reminders, not work — never completable
-  if(a.habitId){ on?completeHabitAsg(id,sessionId,cycle):uncompleteHabitAsg(id); if(on) pondReleased(a); return; }
+  if(on&&a.done) return;
+  const finishSnapshot=on&&window.TaskFinish?TaskFinish.capture(a,origin):null;
+  if(!on&&window.TaskFinish) TaskFinish.cancel(id);
+  if(a.habitId){ on?completeHabitAsg(id,sessionId,cycle):uncompleteHabitAsg(id); if(on) pondReleased(a,finishSnapshot); return; }
   a.done=on;
   a.doneAt=on?Date.now():null;
   a.doneSession=on?(sessionId||null):null;
   a.doneCycle=on?(cycle||null):null;
   save();
-  if(on) pondReleased(a);      // every finished task swims into the pond
+  if(on) pondReleased(a,finishSnapshot);      // every finished task swims into the pond
 }
 
 /* ═══════════════ Plan · Tasks ═══════════════
@@ -3768,8 +4229,7 @@ function paintAsg(){
   const nOpen=k=>openAll.filter(a=>(a.classId||'none')===k).length;
   const chips=[['all','All classes',openAll.length,'#1f2e2c'],...activeClasses().map(c=>[c.id,clsShort(c.id),nOpen(c.id),c.color]),
     ...(openAll.some(a=>!a.classId)?[['none','Unfiled',nOpen('none'),'#7a817d']]:[])];
-  const reeds=`<span class="gm-reeds"><i style="height:16px"></i><i style="height:20px;background:#6f9e7a"></i><i style="height:13px"></i></span>`;
-  const mark={o:reeds,w:'<span class="gm-dot" style="background:#ec7a45"></span>',l:'<span class="gm-dot" style="background:#2f7a74"></span>',n:'<span class="gm-dot" style="background:#cfc6b4"></span>'};
+  const mark={o:reedMark(),w:'<span class="gm-dot" style="background:#ec7a45"></span>',l:'<span class="gm-dot" style="background:#2f7a74"></span>',n:'<span class="gm-dot" style="background:#cfc6b4"></span>'};
   const st=rows.some(a=>a.done)?pondState():null;
   const row=a=>{ fix(a); const d=a.done, k=d&&st?st.rel.get(a.id):null, sc=d?null:doScore(a);
     const meta=[a.est?'est '+a.est+'m':'',a.imp?IMP[a.imp].t:'',subProg(a)?subProg(a)+' subtasks':'',a.habitId?'↻ journey':''].filter(Boolean).join(' · ');
@@ -4564,7 +5024,8 @@ function drawDiaryStats(){
   const el=$('dm-stats'); if(!el) return;
   if(diaryDraft.tagId!=='daily'){ el.innerHTML=''; return; }
   const dk=$('dm-date')?.value||diaryDraft.date;
-  el.innerHTML=`<span class="lbl">This day</span>${dayStatsStrip(dk)}`;
+  el.innerHTML=window.DailyLetter?DailyLetter.render(dk,{mood:diaryDraft.mood})
+    :`<span class="lbl">This day</span>${dayStatsStrip(dk)}`;
 }
 function drawDiaryTags(){
   const el=$('dm-tags'); if(!el) return;
@@ -4583,13 +5044,14 @@ function pickDiaryTag(id){ diaryDraft.tagId=diaryDraft.tagId===id?null:id; drawD
 function pickDiaryMood(k){
   diaryDraft.mood=diaryDraft.mood===k?null:k;
   document.querySelectorAll('#dm-moods .tile').forEach(b=>b.classList.toggle('on',b.dataset.k===diaryDraft.mood));
+  if(window.DailyLetter) DailyLetter.mood(diaryDraft.mood);
 }
 /* Templates never clobber writing that's already there — they append instead. */
 function applyDiaryTemplate(id){
   const t=(db.journalTemplates||[]).find(x=>x.id===id); if(!t) return;
   const ta=$('dm-text'), cur=ta.value.trim();
   ta.value=cur?`${cur}\n\n${t.body}`:t.body;
-  if(t.tagId){ diaryDraft.tagId=t.tagId; drawDiaryTags(); }
+  if(t.tagId){ diaryDraft.tagId=t.tagId; drawDiaryTags(); drawDiaryStats(); }
   if(!$('dm-title').value.trim()&&t.name) $('dm-title').value=t.name;
   ta.focus();
 }
@@ -4830,7 +5292,10 @@ function entryStatTiles(dk){
 }
 function paintDiary(){
   navSync();
-  if(diaMode==='vault'){ paintVault(); return; }
+  /* Calendar <-> Vault swaps in place, so give it the fade a tab switch gets
+     (tab() fades the whole view itself and sets diaShownMode first) */
+  const swap=cur==='dia'&&diaShownMode!==diaMode; diaShownMode=diaMode;
+  if(diaMode==='vault'){ paintVault(); if(swap) flashIn($('v-dia')); return; }
   if(!diaCal) diaCal=today().slice(0,7);
   const y=+diaCal.slice(0,4), mo=+diaCal.slice(5,7);
   const firstWd=weekdayOf(`${diaCal}-01`);
@@ -4886,7 +5351,7 @@ function paintDiary(){
           </div>
         </div>
       </div>
-      ${entryStatTiles(e.date)}
+      ${e.tagId==='daily'&&window.DailyLetter?DailyLetter.render(e.date,{mood:e.mood,reader:true}):entryStatTiles(e.date)}
       <p class="jr-body">${vaultBodyHTML(e.body)}</p>
       ${e.photos.length?`<div class="row wrapf" style="gap:8px">${e.photos.map(ph=>`<div class="dia-photo"><img src="${ph}"></div>`).join('')}</div>`:''}
       ${vaultEntryMeta(e)}`;
@@ -4954,6 +5419,7 @@ function paintDiary(){
     </div>
     <div class="jr-panel fade-in">${panel}</div>
   </div></div>`;
+  if(swap) flashIn($('v-dia'));
 }
 
 /* ═══════════════ vault (Journal → Vault) ═══════════════
@@ -5144,7 +5610,7 @@ function vaultLinkSave(entryId){
 }
 
 /* ── navigation between the calendar and the vault ── */
-let diaMode='cal', diaFromVault=false;
+let diaMode='cal', diaFromVault=false, diaShownMode='cal';
 let vaultSel=null, vaultQ='', vaultShowEntries=true;
 function diaSetMode(m){ diaMode=m; diaFromVault=false; if(m==='vault'){ diaSel=null; diaEntrySel=null; } paintDiary(); }
 function vaultOpenTopic(id){
@@ -5275,7 +5741,7 @@ function vaultOverview(){
     </div></div>`;
 }
 function vaultCopyAsk(btn){
-  const txt='Open my Focus folder, read AGENTS.md and agent-context.md, and do Job 3: organize my journal vault. '+
+  const txt='Open my Catching Days folder, read AGENTS.md and agent-context.md, and do Job 3: organize my journal vault. '+
     'Tag the entries that are not in the vault yet, connect entries that belong together, and write everything to inbox.json.';
   navigator.clipboard.writeText(txt).then(()=>{ const o=btn.textContent; btn.textContent='Copied'; setTimeout(()=>btn.textContent=o,1400); })
     .catch(()=>toast('Copy failed.'));
@@ -5762,8 +6228,8 @@ async function vaultInboxClear(){
 /* ═══════════════ Collection ═══════════════
    The pond's field guide. Tiles are drawn a dozen at a time ("Show 12
    more"), and each tile's water skips rendering while off screen
-   (content-visibility), so 250 species never means 250 ponds animating. */
-let collFilter='all', collN=12;
+   (content-visibility), so the full catalog never means every pond animating. */
+let collFilter='all', collN=12, collKind='fish';
 const GOAL_UNIT={tasks:'tasks',focusH:'hours',jdays:'days',fstreak:'days',streak:'days',blooms:'blooms',bloomRun:'days',noon:'tasks',late:'tasks',reeds:''};
 const lowerFirst=s=>s.charAt(0).toLowerCase()+s.slice(1);
 /* where a found species came from, in a line */
@@ -5777,8 +6243,13 @@ function speciesLine(sp,st){
   return `Found ${when}${rel}`;
 }
 function collSet(f){ collFilter=f; collN=12; paintCollection(); }
+function collKindSet(k){ collKind=k; paintCollection(); }
 function paintCollection(){
   const el=$('coll-body'); if(!el) return;
+  /* Fish | Bugs | Toads: discoveries, visitors, and the always-readable cast. */
+  const kindSw=`<div class="co-filt co-kind">${[['fish','Fish'],['bugs','Bugs'],['toads','Toads']].map(([k,l])=>`<button class="${collKind===k?'on':''}" aria-pressed="${collKind===k}" onclick="collKindSet('${k}')">${l}</button>`).join('')}</div>`;
+  if(collKind==='toads'){ window.ToadCollection.render(el,kindSw); window.PondEvents?.refresh(true); return; }
+  if(collKind==='bugs'){ paintBugCollection(el,kindSw); window.PondEvents?.refresh(true); return; }
   const st=pondState(), P=PondArt; P.PF.motion=pondMotionOn();
   const pct=Math.round(st.foundN/st.total*100);
   /* next to find */
@@ -5800,7 +6271,7 @@ function paintCollection(){
       </div></div>`
     :`<div class="co-feat water"><div class="amb">${P.caustics(820,230,.22)}${P.glints(820,230,6)}</div><div class="shade"></div>
       <div class="cp"><div style="display:flex;flex-direction:column;gap:10px"><span class="eyebrow ey">The whole field guide</span>
-        <span class="nm">Every species found</span><p>There is nothing left circling. The pond is complete.</p></div></div></div>`;
+        <span class="nm">${st.foundN===st.total?'Every species found':'More fish to discover'}</span><p>${st.foundN===st.total?'There is nothing left circling. The pond is complete.':'Keep finishing tasks. New species can still swim into your pond.'}</p></div></div></div>`;
   /* rarity + the latest find */
   const last=Object.keys(st.found).filter(k=>st.found[k].how!=='adopt'&&st.found[k].at).sort((a,b)=>st.found[b].at-st.found[a].at)[0];
   const lastLine=last?(()=>{ const sp=P.SP[last], f=st.found[last];
@@ -5823,7 +6294,7 @@ function paintCollection(){
     const req=sp.goal?(sp.goal.m==='reeds'?`${sp.goal.t}${st.overdueN?` · ${st.overdueN} still there`:''}`:sp.goal.t)
       :'Turns up when you finish tasks';
     const tip=f?speciesLine(sp,st).replace(/<[^>]+>/g,''):req;
-    return `<div class="dx" title="${esc(tip)}">
+    return `<div class="dx${f?' open':''}" title="${esc(tip)}"${f?` onclick="unlockView('${sp.k}')"`:''}>
       <div class="dx-w water ${f?'fnd':'hid'}" style="box-shadow:none">
         <div class="amb" style="width:300px;left:50%;margin-left:-150px">${water.join('')}</div>
         <span class="dx-r" style="color:${R.ink};background:${R.bg}">${sp.rar}</span>
@@ -5836,7 +6307,7 @@ function paintCollection(){
   }).join('');
   const more=Math.min(12,src.length-collN);
   const nF=st.foundN;
-  el.innerHTML=`<div class="co">
+  el.innerHTML=`<div class="co">${kindSw}
     <div class="phead">
       <div><h1 class="ptitle">Collection</h1>
         <div class="psub" style="max-width:560px">Every class adopts a species. Keep your habits going and new ones find their way into the pond.</div></div>
@@ -5848,11 +6319,12 @@ function paintCollection(){
     <div class="co-bar">
       <div class="co-filt">${[['all',`All ${st.total}`],['found',`Found ${nF}`],['hidden',`Still hidden ${st.total-nF}`]].map(([k,l])=>
         `<button class="${collFilter===k?'on':''}" onclick="collSet('${k}')">${l}</button>`).join('')}</div>
-      <span class="pcard-s">Hover a tile to see where it comes from</span>
+      <span class="pcard-s">Tap a fish you’ve found to read its entry</span>
     </div>
     ${tiles?`<div class="dex">${tiles}</div>`:`<p class="td-empty">${collFilter==='found'?'Nothing found yet. Finish a task and see what swims in.':'Nothing hidden. You found them all.'}</p>`}
     ${more>0?`<div style="display:flex;justify-content:center"><button class="pbtn" style="background:var(--panel);color:var(--tx);font-weight:600" onclick="collN+=12;paintCollection()">Show ${more} more · ${src.length-collN} still unseen</button></div>`:''}
   </div>`;
+  window.PondEvents?.refresh(true);
 }
 
 /* ═══════════════ sticky notes ═══════════════
@@ -7334,6 +7806,7 @@ function pondMotionOn(){
   let reduce=false; try{ reduce=matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){}
   PondArt.PF.ripples=db.settings.pondRipples!==false;
   PondArt.PF.petals=db.settings.pondPetals!==false;
+  PondArt.PF.light=db.settings.pondLight===true;     // opt-in: off keeps the ponds exactly as they've always looked
   return db.settings.pondMotion!==false&&!reduce;
 }
 function togglePondMotion(){
@@ -7352,22 +7825,48 @@ function pondAdopt(){
     const k=ADOPT_ORDER.find(x=>!taken.has(x)); if(k) give(c,k); });
   return ch;
 }
-const pondRoll=a=>PondArt.rollSpecies(a.id,db.pond.adopt[a.classId]||null);
+/* A finished task rolls from the catalog as it stood when it was done, so
+   adding species never re-rolls a fish you already have. Each expansion is
+   stamped the first time the pond is worked out after it arrives
+   (pondState); a new one is a new row here plus its stamp there. */
+const POND_EDITIONS=[[385,'catalog385At'],[380,'catalog380At'],[376,'catalog376At'],[375,'catalog375At'],[275,'catalog275At']];
+const pondRoll=a=>PondArt.rollSpecies(a.id,db.pond.adopt[a.classId]||null,
+  (POND_EDITIONS.find(([,k])=>a.doneAt>(db.pond[k]||Infinity))||[250])[0]);
 
 /* The whole collection, worked out fresh — cached until the next save. */
 let _pondCache=null, _pondKey='';
+/* _pondLiveDb: the db the pond has already been worked out for once, so
+   a first sighting on it is a real find (see pondState). The unlock queue
+   lives here too: pondState can run before the rest of the script has. */
+let _pondLiveDb=null, _ulQ=[], _ulCur=null, _ulT=null, _ulFocusT=null, _ulAt=0;
 function pondState(){
-  const key=(db.savedAt||0)+'|'+today()+'|'+db.settings.goal+'|'+db.assignments.length;
+  // One-time fresh collection. Study records stay intact; old sightings remain
+  // recoverable but no longer count toward this collection's discoveries.
+  let reset=false;
+  // Keep existing task catches stable when extending the random encounter pool.
+  if(!db.pond.catalog275At){ db.pond.catalog275At=Date.now(); reset=true; }
+  if(!db.pond.catalog375At){ db.pond.catalog375At=Date.now(); reset=true; }
+  if(!db.pond.catalog376At){ db.pond.catalog376At=Date.now(); reset=true; }
+  if(!db.pond.catalog380At){ db.pond.catalog380At=Date.now(); reset=true; }
+  if(!db.pond.catalog385At){ db.pond.catalog385At=Date.now(); reset=true; }
+  if(!db.pond.collectionStartedAt){
+    db.pond.collectionStartedAt=Date.now();
+    db.pond.previousSeen={...db.pond.seen};
+    db.pond.seen={};
+    reset=true;
+  }
+  const since=db.pond.collectionStartedAt;
+  const key=(db.savedAt||0)+'|'+since+'|'+today()+'|'+db.settings.goal+'|'+db.assignments.length;
   if(_pondCache&&key===_pondKey) return _pondCache;
-  let changed=pondAdopt();
+  let changed=pondAdopt()||reset;
   const t=today(), goalMs=(+db.settings.goal||0)*MIN;
-  const done=db.assignments.filter(a=>a.done&&!a.ann);
+  const done=db.assignments.filter(a=>a.done&&!a.ann&&a.doneAt>since);
   /* habits */
   const netBy={};
-  db.sessions.forEach(s=>{ const k=dayKey(s.started); netBy[k]=(netBy[k]||0)+summarize(s).net; });
+  db.sessions.filter(s=>s.started>since).forEach(s=>{ const k=dayKey(s.started); netBy[k]=(netBy[k]||0)+summarize(s).net; });
   const focusDays=Object.keys(netBy).filter(k=>netBy[k]>0);
   const focusMs=Object.values(netBy).reduce((x,y)=>x+Math.max(0,y),0);
-  const jdays=[...new Set((db.diary||[]).map(e=>e.date).filter(Boolean))];
+  const jdays=[...new Set((db.diary||[]).filter(e=>e.created>since).map(e=>e.date).filter(Boolean))];
   const bloomDays=goalMs>0?Object.keys(netBy).filter(k=>netBy[k]>=goalMs).sort():[];
   let bloomRun=0, run=0;
   bloomDays.forEach((k,i)=>{ run=i&&daysBetween(bloomDays[i-1],k)===1?run+1:1; bloomRun=Math.max(bloomRun,run); });
@@ -7378,19 +7877,26 @@ function pondState(){
     blooms:bloomDays.length, bloomRun, noon:done.filter(a=>a.doneAt&&etHour(a.doneAt)<12).length, late,
     reeds:overdue.length===0&&late>0?1:0};
   /* releases */
-  const rel=new Map(), count={}, first={};
+  const rel=new Map(), count={}, first={}, firstBy={};
   done.forEach(a=>{ const k=pondRoll(a); rel.set(a.id,k); count[k]=(count[k]||0)+1;
-    const ts=a.doneAt||Date.now(); if(!first[k]||ts<first[k]) first[k]=ts; });
+    const ts=a.doneAt||Date.now(); if(!first[k]||ts<first[k]){ first[k]=ts; firstBy[k]=a; } });
   /* who's found, and how */
   const found={}, adoptBy={};
-  activeClasses().forEach(c=>{ const k=db.pond.adopt[c.id]; if(k){ (adoptBy[k]=adoptBy[k]||[]).push(c.id); found[k]={how:'adopt'}; } });
+  activeClasses().forEach(c=>{ const k=db.pond.adopt[c.id]; if(k) (adoptBy[k]=adoptBy[k]||[]).push(c.id); });
   Object.keys(count).forEach(k=>{ if(!found[k]) found[k]={how:'task'}; });
   PondArt.SPEC.forEach(sp=>{ if(!found[sp.k]&&sp.goal&&M[sp.goal.m]>=sp.goal.n) found[sp.k]={how:'goal'}; });
-  Object.keys(db.pond.seen).forEach(k=>{ if(PondArt.SP[k]&&!found[k]) found[k]={how:'kept'}; });
+  Object.keys(db.pond.seen).forEach(k=>{ if(PondArt.SP[k]&&db.pond.seen[k]>since&&!found[k]) found[k]={how:'kept'}; });
+  const fresh=[];
   Object.keys(found).forEach(k=>{
-    if(!db.pond.seen[k]){ db.pond.seen[k]=found[k].how==='task'?first[k]:Date.now(); changed=true; }
+    if(!(db.pond.seen[k]>since)){ db.pond.seen[k]=found[k].how==='task'?first[k]:Date.now(); changed=true; fresh.push(k); }
     found[k].at=db.pond.seen[k];
   });
+  /* A first sighting on a pond that was already open is a real find, and
+     gets its moment (the unlock screen). The first look at a pond just
+     loaded, synced in or reset only takes stock, so opening the app never
+     sets off a parade of old finds. */
+  if(_pondLiveDb===db&&!reset) fresh.forEach(k=>unlockQueue(k,found[k].how,found[k].how==='task'?firstBy[k]:null));
+  _pondLiveDb=db;
   /* progress towards everything still hidden */
   const prog=sp=>{ if(!sp.goal) return null;
     const cur=sp.goal.m==='reeds'?(found[sp.k]?1:0):Math.floor(M[sp.goal.m]||0);
@@ -7408,16 +7914,24 @@ function pondState(){
   return st;
 }
 /* a task was just finished: say what swam in, and anything it unlocked */
-function pondReleased(a){
+function pondReleased(a,finishSnapshot){
   const before=new Set(Object.keys(db.pond.seen));
   _pondCache=null;
   const st=pondState(), k=st.rel.get(a.id); if(!k) return;
   const sp=PondArt.SP[k];
-  const fresh=Object.keys(db.pond.seen).filter(x=>!before.has(x)&&x!==k).map(x=>PondArt.SP[x].name);
-  toast(before.has(k)
-    ? `A ${sp.name} swam into the pond.${fresh.length?` And you found the ${fresh[0]}!`:''}`
-    : `New species! A ${sp.name} swam into the pond.${fresh.length?` You also found the ${fresh[0]}.`:''}`);
+  if(window.TaskFinish) TaskFinish.show(a,k,finishSnapshot,!!(_ulQ.length||_ulCur));
+  /* a new species has the unlock screen to itself; a fish you already have
+     just swims in, with a word at the bottom of the screen */
+  if(!window.TaskFinish&&!unlockPending(k)&&!_ulQ.length&&!_ulCur){
+    const fresh=Object.keys(db.pond.seen).filter(x=>!before.has(x)&&x!==k&&!unlockPending(x)).map(x=>PondArt.SP[x].name);
+    toast(before.has(k)
+      ? `A ${sp.name} swam into the pond.${fresh.length?` And you found the ${fresh[0]}!`:''}`
+      : `New species! A ${sp.name} swam into the pond.${fresh.length?` You also found the ${fresh[0]}.`:''}`);
+  }
   paintPondCard();
+  /* mid-session, the fish joins the Focus water too */
+  const rh=$('run-hero'), rw=$('run-water');
+  if(cur==='run'&&A&&rh&&rw){ const W=Math.round(rh.clientWidth); PondArt.morph(rw,runWater(W)); _runSig=W+'|'+A.id; }
 }
 /* the level card under the nav */
 function paintPondCard(){
@@ -7427,33 +7941,172 @@ function paintPondCard(){
       <span class="t">${st.lvName}</span><span class="lv">Pond Lv ${st.lv}</span></div>
     <div class="bar"><i style="width:${pct}%"></i></div>
     <div class="s">${n} released today · ${st.lvTo-st.M.tasks} more task${st.lvTo-st.M.tasks===1?'':'s'} to Lv ${st.lv+1}</div>`;
+  pathCheck();
+}
+
+/* ═══════════════ the lotus path · a focus streak ═══════════════
+   Each day the lotus reaches full bloom (net focus at or over the daily
+   goal), a lily pad floats onto the water. Pads on days in a row make a
+   path, and its length is the streak. Miss a day and the path breaks; the
+   next bloom starts a new one. Today never breaks it: until midnight its
+   spot is a bud, still waiting. The longer the path, the more of the pond
+   comes to it (PATH_STAGES).
+   db.pond.path.hit = {day: that day's goal in minutes}. A day is stamped the
+   first time it's seen in bloom and stays stamped, so raising the goal later
+   never takes back a path already walked. path.cheer = the last day whose
+   moment (the card) was shown. */
+const PATH_STAGES=[
+  {n:1,  nx:'the first pad', t:'The first pad',     s:'The first pad is down. Tomorrow’s floats in beside it.'},
+  {n:3,  nx:'a frog',        t:'A frog climbs on',  s:'Three pads in a row, close enough for a frog to hop across.'},
+  {n:7,  nx:'a dragonfly',   t:'A dragonfly',       s:'A week of open pads. A dragonfly has started resting on the path.'},
+  {n:14, nx:'lotus flowers', t:'Lotus flowers',     s:'Two weeks. Lotus flowers are opening along the path.'},
+  {n:21, nx:'fireflies',     t:'Fireflies',         s:'Three weeks. Fireflies come out over the path at dusk.'},
+  {n:30, nx:'the turtle',    t:'The turtle',        s:'A month across the water. A turtle has hauled out to bask on it.'},
+  {n:50, nx:'the moon',      t:'Moon on the water', s:'Fifty days. The path is long enough to hold the moon.'},
+  {n:100,nx:'the old pond',  t:'The old pond',      s:'A hundred days. An old pond, a frog jumps in, the sound of water.'}];
+let _pathKey='', _pathCache=null, _pathLiveDb=null, _pathSig='', _pathHop='', _pathWait=null, _pathCardT=null;
+function pathState(noSave){
+  const goal=+db.settings.goal||0, t=today(), hit=db.pond.path.hit;
+  const key=(db.savedAt||0)+'|'+t+'|'+goal+'|'+db.sessions.length;
+  if(_pathCache&&_pathKey===key&&_pathCache.hit===hit) return _pathCache;
+  const by={}; let changed=false;
+  db.sessions.forEach(s=>{ const k=dayKey(s.started); by[k]=(by[k]||0)+summarize(s).net; });
+  if(goal>0) Object.keys(by).forEach(k=>{ if(!hit[k]&&k<=t&&by[k]>=goal*MIN){ hit[k]=goal; changed=true; } });
+  const met=!!hit[t], end=met?t:addDays(t,-1);
+  let cur=0; for(let d=end;hit[d];d=addDays(d,-1)) cur++;
+  const start=cur?addDays(end,1-cur):t;
+  const days=Object.keys(hit).filter(k=>k<=t).sort();
+  let best=0, run=0;
+  days.forEach((k,i)=>{ run=i&&daysBetween(days[i-1],k)===1?run+1:1; best=Math.max(best,run); });
+  /* the path before this one, for "your last one reached N days" */
+  let prev=0; const pe=days.filter(k=>k<start).pop(); if(pe) for(let d=pe;hit[d];d=addDays(d,-1)) prev++;
+  const todayMin=Math.round(Math.max(0,by[t]||0)/MIN);
+  const st={goal,cur,best,prev,met,end,start,todayMin,left:Math.max(0,goal-todayMin),hit,
+    next:PATH_STAGES.find(s=>s.n>cur)||null, mark:PATH_STAGES.find(s=>s.n===cur)||null};
+  _pathCache=st; _pathKey=key;
+  if(changed){ if(noSave) _pathKey=''; else save(); }
+  return st;
+}
+/* runs with every screen change (paintPondCard). The first time today is
+   seen in bloom on an app that was already open, the path gets its moment.
+   The first look after a load or a sync only takes stock, so opening the
+   app never replays a moment that already happened. */
+function pathCheck(){
+  const st=pathState(), t=today(), P=db.pond.path, live=_pathLiveDb===db;
+  _pathLiveDb=db;
+  if(!st.met||P.cheer===t) return;
+  P.cheer=t; save();
+  if(live){ _pathHop=t; clearTimeout(_pathWait); _pathWait=setTimeout(pathCheer,900); }
+}
+/* the moment: a card in the corner, after anything else that's speaking */
+function pathCheer(){
+  clearTimeout(_pathWait);
+  if(unlockOpen()||_ulQ.length||_ulCur||helloOpen()||$('modals').innerHTML.trim()){ _pathWait=setTimeout(pathCheer,800); return; }
+  const st=pathState(); if(!st.met) return;
+  const s=n=>n===1?'':'s', ms=st.cur>1?st.mark:null;
+  const title=st.cur===1?(st.prev?'A new path':'The first pad'):ms?ms.t:'Today’s pad is open';
+  const text=st.cur===1?(st.prev?`You reached ${st.goal} minutes, so a new pad floated in. Your last path reached ${st.prev} day${s(st.prev)}.`
+      :`You reached ${st.goal} minutes, so the first pad floated in. Bloom again tomorrow and it becomes a path.`)
+    :ms?ms.s:`You reached ${st.goal} minutes, so today’s lotus opened and the path grew to ${st.cur} days.`;
+  let c=$('path-card'); if(!c){ c=document.createElement('div'); c.id='path-card'; document.body.appendChild(c);
+    c.addEventListener('mouseenter',()=>clearTimeout(_pathCardT)); c.addEventListener('mouseleave',()=>{ _pathCardT=setTimeout(pathCardClose,4000); }); }
+  const mv=pondMotionOn(); PondArt.PF.motion=mv;
+  c.innerHTML=`<div class="pth-art${mv?' mv':''}">${pathArt(st)}</div>
+    <div class="bc-b"><span class="bc-ey">The lotus path · day ${st.cur}</span><b>${title}</b><p>${text}</p>
+      <div class="bc-f"><span>${st.next?`Next: ${st.next.nx} at ${st.next.n} days`:'Every milestone reached'}</span>${cur==='daily'?'':'<button onclick="pathGo()">See the path</button>'}</div></div>
+    <button class="bc-x" onclick="pathCardClose()" title="Close">✕</button>`;
+  c.classList.remove('out','show'); void c.offsetWidth; c.classList.add('show');
+  clearTimeout(_pathCardT); _pathCardT=setTimeout(pathCardClose,11000);
+  if(cur==='daily') paintPath();
+}
+function pathCardClose(){ const c=$('path-card'); if(!c) return; clearTimeout(_pathCardT); c.classList.add('out'); c.classList.remove('show'); }
+function pathGo(){ pathCardClose(); tab('daily'); const el=$('td-path'); if(el) setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'center'}),80); }
+/* the card's picture: today's pad, the frog landing on it, the lotus opening */
+function pathArt(st){
+  const P=PondArt, s=.74, frog=st.cur>=3||!!pondState().found.frog;
+  return `<span class="pa-pad"><i style="--c:#6f9e7a"></i></span><i class="pa-ring"></i>
+    <span class="pa-fl">${P.plant('great',30,true)}</span>
+    ${frog?`<span class="pa-hop"><span style="position:absolute;left:${-34*s}px;top:${-16*s}px">${P.fish('frog',s,0)}</span></span>`:''}`;
+}
+/* ── Today's card: the last seven days as stepping stones, today on the right ── */
+const PATH_Y=[64,49,66,50,63,48,58];
+const PATH_BUD=`<svg width="22" height="30" viewBox="-11 -22 22 30" style="display:block;overflow:visible"><path d="M0 8 Q1.2 1 0 -6" stroke="#6f9e7a" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M0 -20 C6 -14 6.5 -7 0 -4 C-6.5 -7 -6 -14 0 -20Z" fill="#f4a6c0"/><path d="M0 -20 C2.6 -14 2.8 -8 0 -4" fill="#fbd3e0" opacity=".85"/><path d="M-4.6 -9 Q-1.5 -6.5 0 -4 Q1.5 -6.5 4.6 -9" fill="none" stroke="#e48aa9" stroke-width=".8"/></svg>`;
+/* a dragonfly seen from above, head up: four glassy wings and a long blue body */
+const PATH_FLY=`<svg width="40" height="34" viewBox="-20 -17 40 34" style="display:block;overflow:visible;filter:drop-shadow(0 5px 4px rgba(5,25,28,.4))"><g fill="#eaf6f3" fill-opacity=".5" stroke="#d6efe9" stroke-opacity=".8" stroke-width=".5"><path d="M-1 -6 C-6 -10 -15 -10 -18 -8 C-15 -5.5 -6 -5 -1 -4.5Z"/><path d="M1 -6 C6 -10 15 -10 18 -8 C15 -5.5 6 -5 1 -4.5Z"/><path d="M-1 -3.5 C-6 -4 -14 -1.5 -16.5 1.5 C-13 2.5 -5 0 -1 -2.2Z"/><path d="M1 -3.5 C6 -4 14 -1.5 16.5 1.5 C13 2.5 5 0 1 -2.2Z"/></g><path d="M-12 -8.2 L-3 -6.4 M12 -8.2 L3 -6.4 M-11 0 L-3 -2.8 M11 0 L3 -2.8" stroke="#d6efe9" stroke-opacity=".5" stroke-width=".4"/><path d="M0 -3 L0 15" stroke="#2f86a6" stroke-width="2.1" stroke-linecap="round"/><path d="M-1 1.5 L1 1.5 M-1 5 L1 5 M-1 8.5 L1 8.5 M-1 12 L1 12" stroke="#1d4f60" stroke-width=".7"/><ellipse cx="0" cy="-5.2" rx="2.3" ry="3" fill="#2b6f7e"/><circle cx="-1.5" cy="-9" r="1.7" fill="#5fb3c9"/><circle cx="1.5" cy="-9" r="1.7" fill="#5fb3c9"/></svg>`;
+function paintPath(ps){
+  const el=$('td-path'); if(!el) return;
+  const st=pathState(), t=today(), mv=pondMotionOn(), frog=st.cur>=3||!!(ps||pondState()).found.frog;
+  const sig=[t,st.goal,st.cur,st.best,st.prev,st.met,st.todayMin,mv,frog,etHour(Date.now())>=20,
+    [...Array(7)].map((_,i)=>st.hit[addDays(t,i-6)]?1:0).join('')].join('|');
+  if(sig!==_pathSig){ _pathSig=sig; el.innerHTML=pathCardHTML(st,mv,frog); }
+  /* the frog's hop onto today's pad, once, the first time Today shows it */
+  if(_pathHop===t&&cur==='daily'){ _pathHop='';
+    const h=el.querySelector('.pth-s.end .pth-hop'), w=el.querySelector('.pth');
+    if(h&&w&&mv){ h.style.setProperty('--dx',(w.clientWidth*.82/6).toFixed(1)+'px'); h.classList.remove('go'); void h.offsetWidth; h.classList.add('go'); } }
+}
+function pathCardHTML(st,mv,frog){
+  const t=today(), P=PondArt; P.PF.motion=mv; P.reseed(31);
+  const X=i=>(8+i*82/6).toFixed(2), s=n=>n===1?'':'s';
+  const slots=[...Array(7)].map((_,i)=>addDays(t,i-6));
+  const inRun=d=>st.cur>0&&d>=st.start&&d<=st.end, first=slots.findIndex(inRun);
+  /* the frog sits a little forward, its head over the pad's edge, facing tomorrow */
+  const frogAt=(sc,rot,dx,dy)=>`<span class="pth-hop" style="--r:${rot}deg;left:${dx||0}px;top:${dy||0}px"><span style="position:absolute;left:${(-34*sc).toFixed(1)}px;top:${(-16*sc).toFixed(1)}px">${P.fish('frog',sc,0)}</span></span>`;
+  let pads='';
+  slots.forEach((d,i)=>{
+    const pos=`left:${X(i)}%;top:${PATH_Y[i]}px`;
+    if(d===t&&!st.met){ pads+=`<div class="pth-s now" style="${pos}"><span class="pth-gap now"></span><span class="pth-bud">${PATH_BUD}</span></div>`; return; }
+    if(!st.hit[d]){ pads+=`<div class="pth-s" style="${pos}"><span class="pth-gap"></span></div>`; return; }
+    const run=inRun(d), end=run&&d===st.end, turtle=st.cur>=30&&i===first+1&&!end;
+    const fl=!turtle&&(d===t||(run&&st.cur>=14&&i%2===0)), fz=d===t?20:16, fx=end&&frog?-7:4;
+    pads+=`<div class="pth-s${end?' end':''}" style="${pos}"><div class="pth-b"${mv?` style="animation-duration:${(5+i*.37).toFixed(2)}s;animation-delay:-${(i*.9).toFixed(1)}s"`:''}>
+      <span class="pth-pad${run?'':' old'}${d===t?' big':''}"><i style="--c:${run?'#6f9e7a':'#4f8762'};transform:rotate(${(+d.slice(8,10)*47)%360}deg)"></i></span>
+      ${fl?`<span class="pth-fl" style="left:${(fx-fz/2).toFixed(1)}px;top:${(-8-fz/2).toFixed(1)}px">${P.plant('great',fz)}</span>`:''}
+      ${turtle?`<span style="position:absolute;left:${(-34*.5+3).toFixed(1)}px;top:${(-16*.5+1).toFixed(1)}px;transform:rotate(-24deg)">${P.fish('turtle',.5,0)}</span>`:''}
+      ${end&&frog?frogAt(.7,-14,3,3):''}</div>
+      ${end&&st.cur>=100&&mv?'<i class="pth-ring"></i><i class="pth-ring two"></i>':''}</div>`;
+  });
+  /* who else is out on the water */
+  let life='';
+  if(!frog&&st.goal) life+=`<span class="pth-eyes${mv?' mv':''}" style="left:${X(st.met?4:5)}%;top:96px" title="Something’s watching"><i></i><i></i></span>`;
+  else if(frog&&!st.cur&&st.goal) life+=`<span class="pth-wait" style="left:${X(5)}%;top:90px">${frogAt(.6,-20)}</span>`;
+  if(st.cur>=7) life+=`<span class="pth-fly" style="left:${X(2)}%;top:24px">${PATH_FLY}</span>`;
+  if(st.cur>=21) for(let j=0;j<7;j++) life+=`<i class="pth-ff" style="left:${(8+P.rnd()*84).toFixed(1)}%;top:${(10+P.rnd()*92).toFixed(0)}px;animation-delay:-${(P.rnd()*4).toFixed(1)}s,-${(P.rnd()*9).toFixed(1)}s"></i>`;
+  if(st.cur>=50) life+='<i class="pth-moon"></i>';
+  const amb=[P.ripple(70,92,64,0),P.ripple(250,34,54,3.2),P.glints(300,118,6),P.deep('koi',P.loop(150,72,120,28,6,.4),48,false,.9)].join('');
+  const hr=etHour(Date.now());
+  const line=!st.goal?'Set a daily focus goal and every day you reach it lays a pad.'
+    :st.met?(st.cur===1?'Today’s pad is down. Bloom again tomorrow and it becomes a path.':'Today’s pad is open. Tomorrow’s bud is already waiting.')
+    :st.cur?`${st.left} more minute${s(st.left)} today keeps the path going${hr>=20?', before midnight':''}.`
+    :st.prev?`The last path reached ${st.prev} day${s(st.prev)}. Reach ${st.goal} minutes today to start a new one.`
+    :`Reach ${st.goal} minutes of focus today and the first pad floats in.`;
+  const nx=st.cur&&st.next?`<div class="pth-next"><span>Next: ${st.next.nx}</span><div class="pbar"><i style="width:${Math.round(st.cur/st.next.n*100)}%"></i></div><span>${st.cur} / ${st.next.n}</span></div>`:'';
+  return `<div class="pcard-h"><span class="pcard-t">Lotus path</span><span class="pcard-s">${st.best>1?`best ${st.best} days`:'a focus streak'}</span></div>
+    <div class="pth water${mv?' mv':''}${st.cur>7?' more':''}"><div class="amb">${amb}</div>${pads}${life}</div>
+    <div class="pth-wd">${slots.map((d,i)=>`<span style="left:${X(i)}%"${d===t?' class="on"':''}>${d===t?'Today':WEEKDAY_LETTERS[weekdayOf(d)]}</span>`).join('')}</div>
+    <div class="pth-n"><b>${st.cur}</b><span>day${s(st.cur)} in a row</span></div>
+    <p class="pth-l">${line}</p>
+    ${st.goal?nx:`<button class="pbtn sm" style="align-self:flex-start" onclick="tab('set')">Set a daily goal</button>`}`;
 }
 
 /* ═══════════════ Today ═══════════════ */
-let _tdScene='', _tdFry='', _reedsAll=false;
+let _tdScene='', _tdFry='', _reedsAll=false, _reedsSig='';
 const scoreInk=n=>n>=80?'#b0524a':n>=55?'#a8762f':n>=30?'#2f7a74':'#8f978f';
-/* the water behind the greeting: drawn once per size and cast */
+/* The water behind the greeting: drawn once per size. It starts every day
+   empty, with no fish at all; the only fish in it are the ones today's
+   finished tasks released (paintTodayFry), so the pond fills as you go. */
 function paintTodayScene(st,force){
   const hero=$('td-hero'), el=$('td-scene'); if(!hero||!el) return;
   const W=Math.round(hero.clientWidth)||1100, H=hero.clientHeight||340;
   PondArt.PF.motion=pondMotionOn();
-  const cast=[...new Set(activeClasses().map(c=>db.pond.adopt[c.id]).filter(Boolean))].slice(0,6);
-  if(st.found.catfish) cast.push('catfish');
-  if(!cast.length) cast.push('koi','goldfish');
   const moods=(db.diary||[]).filter(e=>e.tagId==='daily'&&e.mood).sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,3).map(e=>e.mood);
-  const sig=[W,H,PondArt.PF.motion,cast.join(),moods.join()].join('|');
+  const sig=[W,H,PondArt.PF.motion,moods.join()].join('|');
   if(!force&&sig===_tdScene) return;
   _tdScene=sig; _tdFry='';
   const P=PondArt, f=Math.min(1.25,W/1104), X=x=>+(W-(1104-x)*f).toFixed(1);
   P.reseed(11);
   const k=[];
-  k.push(P.deep('koi',P.loop(X(760),190,260*f,110,6,.4),60,false,1.6));
-  k.push(P.deep('catfish',P.loop(X(820),150,200*f,90,5,.5),70,true,1.8));
-  k.push(P.deep('goldfish',P.loop(X(680),230,220*f,70,6,.5),48,false,1.2));
   k.push(P.caustics(W,H,.22));
   [[640,120,120,0],[930,240,90,2],[780,290,140,4]].forEach(r=>k.push(P.ripple(X(r[0]),r[1],r[2],r[3])));
-  cast.forEach((sk,i)=>{ const sp=P.SP[sk], rx=(150+P.rnd()*150)*f, ry=70+P.rnd()*55, cx=X(700+P.rnd()*160), cy=165+P.rnd()*20;
-    k.push(P.swimmer(P.loop(cx,cy,rx,ry,6,.5),(sk==='puffer'?44:26+P.rnd()*18).toFixed(1),i%2===1,P.fish(sk,sp.s,(.7+P.rnd()*.5).toFixed(2)))); });
   /* lily pads carry the last few Daily moods */
   k.push(P.pad(X(1040),40,58,30,'#5f9470',moods[0]||null));
   k.push(P.pad(X(990),122,30,200,'#6f9e7a',null));
@@ -7461,44 +8114,322 @@ function paintTodayScene(st,force){
   k.push(P.pad(X(1080),H-20,44,280,'#6f9e7a',moods[2]||null));
   k.push(P.petals(H,4));
   k.push(P.glints(W,H,14));
-  el.innerHTML=k.join('');
+  P.morph(el,k.join(''));                         // in place: a zoom keeps every fish, only the paths move
 }
-/* one small fish per task finished today, added and removed without
-   disturbing the ones already swimming */
+/* One fish per task finished today, in its species' colours, added and
+   removed without disturbing the ones already swimming. A fish that
+   arrives while you're looking lands with a splash. */
 function paintTodayFry(st){
   const el=$('td-fry'), hero=$('td-hero'); if(!el||!hero) return;
   const W=Math.round(hero.clientWidth)||1100, f=Math.min(1.25,W/1104), X=x=>+(W-(1104-x)*f).toFixed(1);
-  const list=st.today.slice(0,14).map(a=>({id:a.id,k:st.rel.get(a.id)}));
+  const list=st.today.slice(0,18).map(a=>({id:a.id,k:st.rel.get(a.id)}));
   const sig=list.map(x=>x.id+x.k).join()+'|'+W;
   if(sig===_tdFry) return;
+  /* a new width (resize, zoom) redraws every fish: their paths are in
+     pixels, and the old ones could leave a narrower pond for good */
+  const sameW=_tdFry.endsWith('|'+W), first=!_tdFry;
   const had=new Set([...el.children].map(c=>c.dataset.id));
   const keep=new Set(list.map(x=>x.id));
   [...el.children].forEach(c=>{ if(!keep.has(c.dataset.id)) c.remove(); });
   PondArt.PF.motion=pondMotionOn();
-  list.forEach((x,i)=>{ if(had.has(x.id)&&_tdFry) return;
-    const old=el.querySelector(`[data-id="${x.id}"]`); if(old) old.remove();
+  list.forEach((x,i)=>{ if(had.has(x.id)&&sameW) return;
     const P=PondArt, sp=P.SP[x.k];
     P.reseed(1+[...x.id].reduce((a,c)=>a+c.charCodeAt(0),0)%9000);
+    const rx=(130+P.rnd()*170)*f, ry=58+P.rnd()*62, cx=X(690+P.rnd()*190), cy=158+P.rnd()*30;
+    const html=P.swimmer(P.loop(cx,cy,rx,ry,6,.5),(x.k==='puffer'?42:24+P.rnd()*18).toFixed(1),i%2===1,
+      P.fish(x.k,+(sp.s*.9).toFixed(2),(.6+P.rnd()*.45).toFixed(2)));
+    const old=el.querySelector(`[data-id="${x.id}"]`);
+    if(old){ P.morph(old,html); return; }         // the same fish on a new path: it keeps its layers
     const d=document.createElement('div'); d.dataset.id=x.id;
     d.style.cssText='position:absolute;inset:0;z-index:2;animation:pf-in 1.2s ease;pointer-events:none';
-    d.innerHTML=P.swimmer(P.loop(X(760)+i*30*f,170,(90+i*18)*f,50+i*8,5,.6),14+i*3,i%2===0,P.fish(x.k,Math.min(.8,sp.s*.52),.45));
+    d.innerHTML=html;
     el.appendChild(d);
+    if(!first&&sameW&&cur==='daily') pondRings(cx,cy);   // just released: a splash where it swims
   });
   _tdFry=sig;
 }
-function pondTap(e){
-  const hero=$('td-hero'), box=$('td-taps'); if(!hero||!box) return;
-  const r=hero.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
+function pondRings(x,y){
+  const box=$('td-taps'); if(!box) return;
   [[160,0,1.6],[90,.15,1.2]].forEach(([sz,dl,du])=>{
     const d=document.createElement('div'); d.className='tap-ring';
     d.style.cssText=`left:${x}px;top:${y}px;width:${sz}px;height:${sz}px;animation-duration:${du}s;animation-delay:${dl}s;opacity:${dl?0:1}`;
     box.appendChild(d); setTimeout(()=>d.remove(),1900);
   });
 }
-let _tdResize=null;
-window.addEventListener('resize',()=>{ clearTimeout(_tdResize); _tdResize=setTimeout(()=>{
+function pondTap(e){
+  const hero=$('td-hero'); if(!hero) return;
+  const r=hero.getBoundingClientRect();
+  pondRings(e.clientX-r.left,e.clientY-r.top);
+}
+/* After a resize or zoom, fit the ponds to their new width. Each is redrawn
+   in place (PondArt.morph), so every fish keeps its layers and only the
+   swim paths change. Nothing is redrawn under the Hello page, which covers
+   the whole app: that happens once, when it closes. */
+function pondsReflow(){
+  if(helloOpen()) return;
   if(cur==='daily'){ const st=pondState(); paintTodayScene(st); paintTodayFry(st); }
-  if(cur==='run'&&A&&$('run-hero')&&Math.abs($('run-hero').clientWidth-+(_runSig.split('|')[0]))>40){ buildRun(); paint(); } },200); });
+  const rh=$('run-hero');
+  if(cur==='run'&&A&&rh&&Math.abs(rh.clientWidth-+(_runSig.split('|')[0]))>40){
+    const W=Math.round(rh.clientWidth); PondArt.morph($('run-water'),runWater(W)); _runSig=W+'|'+A.id;
+  }
+}
+let _tdResize=null;
+window.addEventListener('resize',()=>{ clearTimeout(_tdResize); _tdResize=setTimeout(pondsReflow,200); });
+
+/* ═══════════════ Hello ═══════════════
+   The page you land on each time the app opens, and again when you come
+   back to it on a new day: a greeting, today's catch, and one question.
+   Built from the same numbers the Today screen uses, and it never saves.
+   Tapping the title card in the sidebar brings it back; Settings can turn
+   the automatic one off. */
+let _helloDay='', _helloHiddenAt=0, _helloGo='daily', _helloT=null, _helloCovering=false, _helloResized=false, _helloScroll=0;
+const helloOpen=()=>{ const v=$('v-hello'); return !!v&&!v.classList.contains('hide')&&!v.classList.contains('out'); };
+function paintMarks(){
+  PondArt.PF.motion=pondMotionOn();
+  const w=$('wm-mark'); if(w) w.innerHTML=PondArt.mark(52);
+  const o=$('ob-mark'); if(o) o.innerHTML=PondArt.mark(112,{swim:true});
+}
+function helloName(){
+  const n=((db.bio&&db.bio.profile&&db.bio.profile.name)||'').trim();
+  return n?n.split(/\s+/)[0]:'';
+}
+/* the water behind it: only the fish you caught today swim here, so a new
+   day opens on an empty pond */
+function helloScene(st){
+  const el=$('hl-scene'); if(!el) return;
+  const P=PondArt, W=innerWidth, H=innerHeight, cx=W/2, cy=H*.46, s=Math.min(1.2,Math.max(.6,W/1200));
+  P.PF.motion=pondMotionOn(); P.reseed(31);
+  const caught=[...new Set(st.today.map(a=>st.rel.get(a.id)).filter(Boolean))];
+  const k=[P.caustics(W,H,.2),P.ripple(W*.16,H*.3,200*s,0,8),P.ripple(W*.85,H*.72,240*s,3,8),P.ripple(W*.72,H*.16,150*s,5.5,8)];
+  caught.slice(0,10).forEach((sk,i)=>{ const sp=P.SP[sk]; if(!sp) return;
+    const rx=W*(.22+P.rnd()*.2), ry=H*(.16+P.rnd()*.18);
+    k.push(P.swimmer(P.loop(cx+(P.rnd()-.5)*W*.2,cy+(P.rnd()-.5)*H*.2,rx,ry,6,.5),(30+P.rnd()*22).toFixed(1),i%2===1,P.fish(sk,sp.s*1.05*s,(.6+P.rnd()*.4).toFixed(2)))); });
+  const moods=(db.diary||[]).filter(e=>e.tagId==='daily'&&e.mood).sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,3).map(e=>e.mood);
+  k.push(P.pad(W-50*s,58*s,64*s,30,'#5f9470',moods[0]||null),P.pad(W-130*s,150*s,30*s,200,'#6f9e7a',null),
+    P.pad(46*s,H-54*s,58*s,120,'#5a8d69',moods[1]||null),P.pad(150*s,H-24*s,34*s,280,'#6f9e7a',null),P.pad(38*s,70*s,30*s,60,'#6f9e7a',moods[2]||null));
+  k.push(P.petals(H,5),P.glints(W,H,18));
+  P.morph(el,k.join(''));
+}
+function helloShow(manual){
+  const v=$('v-hello'); if(!v||!db.onboarded) return;
+  if(!manual&&db.settings.hello===false) return;
+  clearTimeout(_helloT);
+  _helloDay=today();
+  const st=pondState(), t=today(), now=Date.now(), hr=etHour(now), p=dParts(now), who=helloName();
+  const items=todaysItems().filter(countable), done=items.filter(a=>a.done), open=items.filter(a=>!a.done);
+  const n=items.length, k=done.length, left=n-k;
+  const reeds=db.assignments.filter(a=>!a.done&&!a.ann&&a.due&&a.due<t&&!inArchivedCls(a)&&journeyAssignmentIsActive(a));
+  const nm=who?', '+esc(who):'';
+  const head=hr<5?`Still up${nm}?`:hr<12?`Good morning${nm}.`:hr<17?`Good afternoon${nm}.`:hr<22?`Good evening${nm}.`:`Late one${nm}.`;
+  const say=x=>['No','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten'][x]||String(x);
+  const ss=(x,w)=>x===1?w:w+'s';
+  const line=!n?(reeds.length?`Nothing is due today, but <b>${reeds.length}</b> ${ss(reeds.length,'task')} still ${reeds.length===1?'waits':'wait'} in the reeds.`:'Nothing is due today. The pond is all yours.')
+    :!k?`<b>${n}</b> ${ss(n,'task')} on today’s line, none caught yet. Each one you finish swims into the pond.`
+    :left?`You’ve caught <b>${k} of ${n}</b>. ${say(left)} more ${left===1?'is':'are'} still out there.`
+    :`${n===1?'Today’s one task is caught.':n===2?'<b>Both</b> caught.':`All <b>${n}</b> caught.`} Everything you set out to do today is swimming.`;
+  /* one slot per task: caught ones show the fish they released */
+  const slots=items.slice(0,18).map(a=>a.done?`<span class="on" title="${esc(a.title)}">${PondArt.fish(st.rel.get(a.id)||'koi',.5,0,'flat')}</span>`:`<span title="${esc(a.title)}">${PondArt.shadowFish(db.pond.adopt[a.classId]||'koi',.5,'#cfe9e3')}</span>`).join('');
+  const focusM=Math.round(todayNetFocusMs()/MIN), goal=+db.settings.goal||0, ps=pathState();
+  const tile=(key,val,pct,sub)=>`<div class="hl-tile"><span class="k">${key}</span><span class="v">${val}</span>${pct==null?'':`<div class="bar"><i data-w="${Math.max(0,Math.min(100,pct))}"></i></div>`}<span class="s">${sub}</span></div>`;
+  const tiles=[
+    tile('Caught',`${k}<small>/ ${n}</small>`,n?k/n*100:0,!n?'nothing due today':left?`${left} to go`:'every one released'),
+    tile('Focus',`${focusM}<small>${goal?'/ '+goal+' min':'min'}</small>`,goal?focusM/goal*100:null,!goal?'no daily goal set':focusM>=goal?(ps.cur>1?`in full bloom · day ${ps.cur} of your path`:'the lotus is in full bloom')
+      :ps.cur?`${goal-focusM} min keeps your ${ps.cur}-day path`:`${goal-focusM} min to full bloom`),
+    reeds.length?tile('In the reeds',`${reeds.length}`,null,'overdue, never counted against today')
+      :tile('Your pond',`Lv ${st.lv}`,(st.M.tasks-st.lvFrom)/((st.lvTo-st.lvFrom)||1)*100,`${st.foundN} of ${st.total} species found`)
+  ].join('');
+  /* what to do first: the highest do-score on today's line, else the reeds */
+  const top=[...open].sort((x,y)=>(doScore(y)||0)-(doScore(x)||0))[0]||[...reeds].sort((x,y)=>(doScore(y)||0)-(doScore(x)||0))[0]||null;
+  let next='';
+  if(top&&!A){ const sc=doScore(top), meta=[top.classId?esc(clsShort(top.classId)):'',top.est?'est '+durP(top.est*MIN):'',top.due?esc(dRel(top.due).toLowerCase()):''].filter(Boolean).join(' · ');
+    next=`<div class="hl-next"><div style="min-width:0"><div class="k">${open.includes(top)?'First up':'From the reeds'}</div><div class="t">${esc(top.title)}</div>${meta?`<div class="m">${meta}</div>`:''}</div>
+      ${sc!=null?`<span class="d" title="Do-score" style="color:${scoreInk(sc)};background:${scoreInk(sc)}1a">${sc}</span>`:''}</div>`; }
+  const ex=(db.exams||[]).filter(e=>!e.done&&e.examDate&&e.examDate>=t&&!inArchivedCls(e)).sort((a,b)=>a.examDate.localeCompare(b.examDate))[0];
+  if(ex&&dDelta(ex.examDate)<=7) next+=`<div class="hl-next" style="background:#f7ecd9"><div style="min-width:0"><div class="k">Coming up</div><div class="t">${esc(ex.title)}</div>
+    <div class="m">${ex.classId?esc(clsShort(ex.classId))+' · ':''}${esc(dRel(ex.examDate).toLowerCase())}</div></div></div>`;
+  /* the question, and where each answer goes */
+  let q, go, alt=null;
+  if(A){ q='Your session is still running.'; go=['Back to it','run']; }
+  else if(left){ q=hr>=22||hr<5?'One more before bed?':'Ready to catch the day?'; go=['I’m ready','daily']; alt=['Start focusing','run']; }
+  else if(n){ q=reeds.length?'Clear a few from the reeds?':'Want to get ahead on tomorrow?'; go=['Take a look','daily']; alt=['Open the plan','asg']; }
+  else if(reeds.length){ q='Ready to clear the reeds?'; go=['I’m ready','daily']; alt=['Open the plan','asg']; }
+  else { q='Ready when you are.'; go=['Open the pond','daily']; alt=['Plan something','asg']; }
+  _helloGo=go[1];
+  /* today's visitor in the reeds: named once it's in the collection, a
+     shadow until then; tapping the row goes to it on Today */
+  const tb=reedBugOfDay(t), bRec=db.pond.bugs[tb.k], bToday=!!(bRec&&bRec.last===t), bN=REED_BUGS.filter(b=>db.pond.bugs[b.k]).length;
+  const bugRow=`<button class="hl-bug${pondMotionOn()?' mv':''}" style="animation-delay:.58s" onclick="helloBug()" title="${bToday?'In your bug collection':'Go and catch it'}">
+      <span class="pad">${bugStill(tb,bugArtScale(tb)*.76,!bRec)}</span>
+      <span class="tx"><span class="k">Today in the reeds</span>
+        <span class="t">${bRec?esc(bugName(tb)):'Something’s visiting'}</span>
+        <span class="m">${bToday?'Caught today':bRec?'Back for another visit':'Tap it on Today to catch it'} · ${bN} of ${REED_BUGS.length} bugs caught</span></span>
+      <span class="c${bToday?' ok':''}">${bToday?'✓ In your collection':'Go catch it →'}</span></button>`;
+  const wrote=(db.diary||[]).some(e=>e.date===t&&e.tagId==='daily');
+  const foot=[`${esc(st.lvName)} · Lv ${st.lv}`,`${st.foundN} of ${st.total} species`,wrote?'journal written':'journal still blank'];
+  PondArt.PF.motion=pondMotionOn();
+  const d=(i)=>` style="animation-delay:${(.08+i*.09).toFixed(2)}s"`;
+  $('hl-body').innerHTML=`${PondArt.mark(104,{swim:true})}
+    <div class="hl-ey"${d(1)}>${p.weekday} · ${p.month} ${+p.day}</div>
+    <h1 class="hl-h" id="hl-h"${d(2)}>${head}</h1>
+    <p class="hl-l"${d(3)}>${line}</p>
+    ${n?`<div class="hl-catch"${d(4)}>${slots}</div>`:''}
+    <div class="hl-tiles"${d(5)}>${tiles}</div>
+    ${bugRow}
+    ${next?`<div class="hl-nexts" style="animation-delay:.62s">${next}</div>`:''}
+    <div class="hl-q"${d(7)}>${q}</div>
+    <div class="hl-b"${d(8)}><button class="go" id="hl-go" onclick="helloGo('${go[1]}')">${go[0]}</button>${alt?`<button class="alt" onclick="helloGo('${alt[1]}')">${alt[0]}</button>`:''}</div>
+    <div class="hl-k"${d(9)}>press <kbd>Enter</kbd> to dive in</div>
+    <div class="hl-foot"${d(10)}>${foot.join('<i></i>')}</div>`;
+  helloScene(st);
+  v.classList.remove('hide','out');
+  /* The app stays rendered underneath (hiding it saves GPU time while Hello
+     is up, but bringing it back then costs a visible hitch as it closes).
+     Only a resize or zoom takes it out of layout, see helloCover. */
+  v.scrollTop=0;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>v.querySelectorAll('.hl-tile .bar i').forEach(i=>i.style.width=i.dataset.w+'%')));
+  const b=$('hl-go'); if(b) try{ b.focus({preventScroll:true}); }catch(e){}
+}
+/* from Hello's reeds row: close onto Today, with the reed bed in view */
+function helloBug(){
+  const tb=reedBugOfDay(today()), r=db.pond.bugs[tb.k];
+  if(r&&r.last===today()){ helloGo(); collKind='bugs'; tab('coll'); return; }
+  helloGo('daily');
+  setTimeout(()=>{ const bed=document.querySelector('#dr-reeds .reeds'); if(bed) bed.scrollIntoView({block:'center',behavior:pondMotionOn()?'smooth':'auto'}); },60);
+}
+function helloGo(t){
+  const v=$('v-hello'); if(!v||v.classList.contains('hide')) return;
+  if(_helloCovering){ $('shell').style.display=''; _helloCovering=false; window.scrollTo(0,_helloScroll); }
+  v.classList.add('out');
+  if(t&&t!==cur) tab(t);
+  else if(_helloResized) pondsReflow();   // it was resized or zoomed while covered
+  _helloResized=false;
+  clearTimeout(_helloT);
+  /* the scene stays in place, out of rendering (display:none stops its
+     animations): tearing out all those nodes is a hitch of its own, and next
+     time Hello opens it's redrawn in place, keeping the fish it can */
+  _helloT=setTimeout(()=>{ v.classList.add('hide'); v.classList.remove('out'); },pondMotionOn()?700:0);
+}
+/* back after a while on a new day: say hello again */
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){ _helloHiddenAt=Date.now(); return; }
+  if(db.onboarded&&_helloDay&&_helloDay!==today()&&Date.now()-_helloHiddenAt>20*MIN&&!helloOpen()) helloShow();
+});
+/* A resize or zoom while the Hello page is up would make the browser
+   re-lay-out the whole hidden app at every step. So the first one takes the
+   app out of layout altogether (display:none) until Hello closes, when it's
+   laid out once, at its final size, and the scroll is put back. Hidden that
+   way its fish simply start swimming again on return; no one saw them. */
+function helloCover(){
+  if(!helloOpen()) return;
+  _helloResized=true;
+  if(_helloCovering) return;
+  _helloScroll=window.scrollY; _helloCovering=true; $('shell').style.display='none';
+}
+let _hlResize=null;
+window.addEventListener('resize',()=>{ helloCover(); clearTimeout(_hlResize); _hlResize=setTimeout(()=>{ if(helloOpen()) helloScene(pondState()); },200); });
+
+/* ═══════════════ New species ═══════════════
+   Every species you find for the first time gets its own moment: a shadow
+   surfaces, rings spread, the water flashes, and the fish is there in
+   colour with its number, rarity, field-guide entry (pond-lore.js) and what
+   brought it in. pondState() queues a find the moment it first records it,
+   so anything that finds one plays it: a finished task, an hour of focus,
+   a day of journaling. Several at once come one after another. It never
+   saves. Tapping a found fish in the Collection opens its card again. */
+const UL_TONE={Common:{glow:'#7fc79a55',ray:'#bfe8cf2b',hi:'#bfe8cf'},Uncommon:{glow:'#5fc2b066',ray:'#aef0e42e',hi:'#aef0e4'},
+  Rare:{glow:'#a58bd680',ray:'#d9c8ff33',hi:'#d9c8ff'},Legendary:{glow:'#f0c06088',ray:'#ffe7a640',hi:'#ffe19a'}};
+const UL_SPARKS={Common:5,Uncommon:7,Rare:10,Legendary:14};
+const UL_STAR='<svg viewBox="-10 -10 20 20" aria-hidden="true"><path d="M0 -10 Q1.2 -1.2 10 0 Q1.2 1.2 0 10 Q-1.2 1.2 -10 0 Q-1.2 -1.2 0 -10Z" fill="currentColor"/></svg>';
+const unlockOpen=()=>{ const v=$('v-unlock'); return !!v&&!v.classList.contains('hide'); };
+const unlockPending=k=>_ulQ.some(x=>x.k===k)||!!(_ulCur&&_ulCur.k===k);
+function unlockQueue(k,how,task){
+  if(!PondArt.SP[k]||unlockPending(k)) return;
+  _ulQ.push({k,how,title:(task&&task.title)||''});
+  if(!_ulCur){ clearTimeout(_ulT); _ulT=setTimeout(unlockNext,380); return; }   // let the tick land first
+  /* one's already up: its buttons now count this one too */
+  const box=document.querySelector('#v-unlock .ul-b'), v=$('v-unlock');
+  if(box&&!v.classList.contains('out')){ const had=document.activeElement&&document.activeElement.id==='ul-go';
+    box.innerHTML=unlockBtns(); if(had) unlockFocus(); }
+}
+function unlockNext(){
+  const it=_ulQ.shift();
+  if(it) unlockShow(it,false); else unlockHide();
+}
+/* the Collection: read a found species' card again */
+function unlockView(k){
+  const f=pondState().found[k]; if(!f||unlockOpen()) return;
+  unlockShow({k,how:f.how,title:''},true);
+}
+function unlockShow(it,again){
+  const v=$('v-unlock'); if(!v) return;
+  clearTimeout(_ulT); clearTimeout(_ulFocusT);
+  _ulCur=it; _ulAt=Date.now();
+  const P=PondArt, sp=P.SP[it.k], R=P.RAR[sp.rar]||P.RAR.Common, tone=UL_TONE[sp.rar]||UL_TONE.Common;
+  const st=pondState(), mv=pondMotionOn(), intro=mv&&!again;
+  P.PF.motion=mv;
+  const s=+Math.min(5.2,Math.max(2.8,(Math.min(innerWidth,560)-40)/76)).toFixed(2);
+  const lore=(window.PondLore&&PondLore[it.k])||`A ${sp.rar.toLowerCase()} find, and now part of your pond.`;
+  const how=again?speciesLine(sp,st)
+    :it.how==='task'?(it.title?`Released when you finished <b>${esc(it.title)}</b>`:'Released by a finished task')
+    :it.how==='goal'&&sp.goal?`Found once you ${esc(lowerFirst(sp.goal.t))}`:'Swimming in your pond';
+  const n=st.foundN, tot=st.total, from=again?n:Math.max(0,n-1);
+  const r=P.hs(it.k+'·unlock');
+  const bub=Array.from({length:16},()=>{ const w=(4+r()*9).toFixed(1);
+    return `<i style="left:${(r()*100).toFixed(1)}%;width:${w}px;height:${w}px;--t:${(7+r()*6).toFixed(1)}s;--d:${(-r()*12).toFixed(1)}s;--x:${((r()-.5)*90).toFixed(0)}px"></i>`; }).join('');
+  const sparks=Array.from({length:UL_SPARKS[sp.rar]||5},()=>{ const a=r()*Math.PI*2, rx=110+r()*80, ry=62+r()*40;
+    return `<i class="ul-spark" style="--x:${(Math.cos(a)*rx).toFixed(0)}px;--y:${(Math.sin(a)*ry).toFixed(0)}px;--t:${(1.6+r()*1.4).toFixed(2)}s;--d:${((intro?1.3:0)+r()*2.4).toFixed(2)}s">${UL_STAR}</i>`; }).join('');
+  _ulCur.again=again;
+  v.style.setProperty('--ul-glow',tone.glow); v.style.setProperty('--ul-ray',tone.ray); v.style.setProperty('--ul-hi',tone.hi);
+  v.innerHTML=`<div class="ul-bubbles">${bub}</div>
+    <div class="ul">
+      <div class="ul-ey"><span class="a">Something is surfacing…</span><span class="b">${again?'From your field guide':'New species found'}</span></div>
+      <div class="ul-stage" onclick="unlockSkip()">
+        <div class="ul-rays"><i></i></div><div class="ul-glow"><i></i></div>
+        <i class="ul-ring r1"></i><i class="ul-ring r2"></i><i class="ul-ring r3"></i><i class="ul-ring idle"></i>
+        <div class="ul-shadow">${intro?P.shadowFish(it.k,s,'#041f22'):''}</div>
+        <div class="ul-fish"><span class="ul-bob">${P.fish(it.k,s,.85)}</span></div>
+        <i class="ul-flash"></i>${mv?sparks:''}
+      </div>
+      <div class="ul-meta"><span class="ul-no">No. ${String(sp.no).padStart(3,'0')}</span><em class="ul-rar" style="color:${R.ink};background:${R.bg}">${sp.rar}</em></div>
+      <h2 class="ul-name" id="ul-name">${esc(sp.name)}</h2>
+      <p class="ul-lore">${esc(lore)}</p>
+      ${how?`<div class="ul-how">${how}</div>`:''}
+      <div class="ul-count"><div class="bar"><i style="--from:${(from/tot).toFixed(4)};--to:${(n/tot).toFixed(4)}"></i></div><span>${n} of ${tot} species found</span></div>
+      <div class="ul-b">${unlockBtns()}</div>
+    </div>`;
+  v.className=intro?'moving intro':mv?'moving':'';
+  v.scrollTop=0;
+  /* it's a dialog: keys belong to it now, not to a field left focused behind */
+  const ae=document.activeElement; if(ae&&ae!==document.body&&!v.contains(ae)&&ae.blur) ae.blur();
+  /* the button takes focus once the reveal is over, so Enter goes on */
+  _ulFocusT=setTimeout(unlockFocus,intro?2300:0);
+}
+function unlockFocus(){ const b=$('ul-go'); if(b) try{ b.focus({preventScroll:true}); }catch(e){} }
+/* "Next find · 2 more" while others wait, else a single way out */
+function unlockBtns(){
+  const more=_ulQ.length, again=_ulCur&&_ulCur.again;
+  return (more?`<button class="go" id="ul-go" onclick="unlockClose()">Next find · ${more} more</button><button class="alt" onclick="unlockClose(true)">Skip the rest</button>`
+    :`<button class="go" id="ul-go" onclick="unlockClose()">${again?'Close':'Into the pond'}</button>`)
+    +`<div class="ul-k">press <kbd>Enter</kbd> ${more?'for the next one':'to close'}</div>`;
+}
+/* a tap on the water, or Enter, during the reveal: skip to the finished card */
+function unlockSkip(){
+  const v=$('v-unlock'); if(!v||!v.classList.contains('intro')||Date.now()-_ulAt>2300) return false;
+  v.classList.remove('intro'); clearTimeout(_ulFocusT); unlockFocus();
+  return true;
+}
+function unlockClose(all){
+  const v=$('v-unlock'); if(!v||v.classList.contains('hide')||v.classList.contains('out')) return;
+  if(all) _ulQ=[];
+  clearTimeout(_ulFocusT); clearTimeout(_ulT);
+  v.classList.remove('intro'); v.classList.add('out');   // the fish swims off as the water fades
+  _ulT=setTimeout(()=>{ _ulCur=null; unlockNext(); },pondMotionOn()?450:0);
+}
+function unlockHide(){
+  const v=$('v-unlock'); _ulCur=null;
+  if(!v) return;
+  v.className='hide'; v.innerHTML='';          // out of the page: nothing left animating
+}
 
 /* one row of today's list: tap anywhere on it to finish the task */
 function catchRow(a,st){
@@ -7547,6 +8478,117 @@ function reedTap(id){
   toggleAsg(id,true); repaint();
 }
 
+/* ── the reeds ──
+   Each overdue task is a clump of reeds, drawn from its id so it always
+   keeps the same shape: leaves leaning both ways, a cattail, a patch of
+   water, and the shadow of a fish caught in among them. Hover and the
+   leaves part, the water rings and the fish edges out, since finishing the
+   task is what sets it free. The longer a task has waited, the thicker the
+   clump: another leaf at 3, 7, 14 and 30 days, and a second cattail at 7.
+   Sway phases come from the clock, so a repaint never makes them jump. */
+function reedClump(id,late,moving){
+  const r=PondArt.hs(id+'·reeds'), cx=25;
+  const n=5+(late>=3)+(late>=7)+(late>=14)+(late>=30), cats=late>=7?2:1;
+  const parts=[];
+  for(let i=0;i<n;i++){
+    const x=rf1(6+(i+.5)/n*38+(r()-.5)*4), off=x-cx, side=off<0?-1:1;
+    const h=Math.round(15+r()*16+(Math.abs(off)<9?5:0)), ink=REED_INK[Math.floor(r()*REED_INK.length)];
+    const leaf=reedLeaf(h,3.4+r()*1.8,2+r()*4,side,ink,r()<.7?'#e2efd9':null); leaf.h=h;
+    parts.push({x,h,p:leaf,lean:rf1(off*1.15+(r()-.5)*8),part:rf1(side*(9+r()*9))});
+  }
+  for(let i=0;i<cats;i++){
+    const h=Math.round(31+r()*8), c=reedCattail(h); c.h=h;
+    parts.push({x:rf1(cx+(i?8:-4)+(r()-.5)*4),h,p:c,lean:rf1((i?5:-4)+(r()-.5)*5),part:i?7:-6,cat:true});
+  }
+  /* tall ones behind; the fish slips in between the back leaves and the front */
+  parts.sort((a,b)=>b.h-a.h);
+  const back=parts.filter(q=>q.cat||q.h>=23), front=parts.filter(q=>!q.cat&&q.h<23);
+  const html=q=>reedPart(q.x,q.p,q.lean,q.part,rf1(1.4+r()*2.2),rf1(2.8+r()*1.8),r);
+  return `<span class="rd-ic${moving?' sw':''}" aria-hidden="true"><s class="rw"></s><s class="rr"></s>${back.map(html).join('')}
+    <i class="rf">${PondArt.shadowFish('koi',.36,'#1f4d4a')}</i>${front.map(html).join('')}
+    <i class="rb" style="left:16px;--d:.1s"></i><i class="rb" style="left:29px;--d:.45s"></i></span>`;
+}
+/* ── catching the bug of the day ──
+   Tap it and it goes in db.pond.bugs as {first,last,days,visits}. Catching the
+   same bug on a later visit only counts the day; twice in a day is a no-op. */
+function reedBugCatch(ev,k){
+  ev.stopPropagation(); ev.preventDefault();
+  const t=today(), bug=bugByKey(k); if(!bug) return;
+  const B=db.pond.bugs, had=B[k];
+  let kind='again';
+  if(!had){ B[k]={first:t,last:t,days:1,visits:[t]}; kind='new'; }
+  else if(had.last!==t){
+    had.visits=[...new Set([had.first,had.last,...(had.visits||[]),t].filter(Boolean))].sort();
+    had.last=t; had.days=(had.days||1)+1; kind='visit';
+  }
+  if(kind!=='again') save();
+  bugBurst(ev.clientX,ev.clientY);
+  bugCardShow(k,kind);
+  _reedsSig=''; if(cur==='daily') paintDaily();
+}
+function bugBurst(x,y){
+  const b=document.createElement('div'); b.className='bug-burst'; b.style.left=x+'px'; b.style.top=y+'px';
+  b.innerHTML='<i></i><i class="two"></i>'+[...Array(8)].map((_,i)=>`<s style="--a:${i*45}deg"></s>`).join('');
+  document.body.appendChild(b); setTimeout(()=>b.remove(),900);
+}
+let _bugCardT=null;
+function bugCardShow(k,kind){
+  const bug=bugByKey(k); if(!bug) return;
+  const n=Object.keys(db.pond.bugs).filter(x=>bugByKey(x)).length, no=REED_BUGS.indexOf(bug)+1, rec=db.pond.bugs[k];
+  const ey=kind==='new'?'New for your bug collection':kind==='visit'?`Caught again · seen on ${rec.days} days`:kind==='again'?'Already caught today':`No. ${String(no).padStart(2,'0')} in your bug collection`;
+  let c=$('bug-card'); if(!c){ c=document.createElement('div'); c.id='bug-card'; document.body.appendChild(c);
+    c.addEventListener('mouseenter',()=>clearTimeout(_bugCardT)); c.addEventListener('mouseleave',()=>{ _bugCardT=setTimeout(bugCardClose,4000); }); }
+  c.innerHTML=`<div class="bc-art${kind==='new'?' new':''}">${bugStill(bug,bugArtScale(bug)*.9)}</div>
+    <div class="bc-b"><span class="bc-ey">${ey}</span><b>${esc(bugName(bug))}</b><p>${esc(REED_BUG_NOTES[k]||'')}</p>
+      <div class="bc-f"><span>No. ${String(no).padStart(2,'0')}${bug.fic?' · Legend':''} · ${n} of ${REED_BUGS.length} caught</span>${cur==='coll'&&collKind==='bugs'?'':'<button onclick="bugCardGo()">See the collection</button>'}</div></div>
+    <button class="bc-x" onclick="bugCardClose()" title="Close">✕</button>`;
+  c.classList.remove('out'); c.classList.add('show');
+  clearTimeout(_bugCardT); _bugCardT=setTimeout(bugCardClose,kind?9000:14000);
+}
+function bugCardClose(){ const c=$('bug-card'); if(!c) return; clearTimeout(_bugCardT); c.classList.add('out'); c.classList.remove('show'); }
+function bugCardGo(){ bugCardClose(); collKind='bugs'; tab('coll'); }
+/* the bug half of the Collection page */
+function paintBugCollection(el,kindSw){
+  const B=db.pond.bugs, t=today(), tb=reedBugOfDay(t), caughtToday=B[tb.k]&&B[tb.k].last===t;
+  const n=REED_BUGS.filter(b=>B[b.k]).length, N=REED_BUGS.length;
+  const tiles=REED_BUGS.map((b,i)=>{ const r=B[b.k], sc=bugArtScale(b);
+    return `<div class="bx${r?' got':''}"${r?` onclick="bugCardShow('${b.k}','')" title="Read its entry"`:' title="Visits the reeds on its own day"'}>
+      <div class="bx-art">${bugStill(b,sc,!r)}${r?'':'<span class="bx-q">?</span>'}</div>
+      <span class="bx-no">No. ${String(i+1).padStart(2,'0')}</span>
+      <b>${r?esc(bugName(b)):'???'}</b>
+      <p>${r?`${b.fic?'<em class="bx-leg">Legend</em> ':''}Caught ${bugDate(r.first)}${r.days>1?` · seen on ${r.days} days`:''}`:bugTweak(b.k).off?'Resting for now':'Visits the reeds on its own day'}</p></div>`; }).join('');
+  el.innerHTML=`<div class="co">${kindSw}
+    <div class="phead">
+      <div><h1 class="ptitle">Bug collection</h1>
+        <div class="psub" style="max-width:560px">One bug visits the reeds on Today each day, ${N} in all, and each turns up once every ${N} days. Tap it while it’s there to add it here. A few are legends of the reed bed rather than real insects.</div></div>
+      <div class="co-n"><div><b>${n}</b><span>of ${N} caught</span></div><div class="pbar"><i style="width:${Math.round(n/N*100)}%"></i></div></div>
+    </div>
+    <div class="pcard bg-today">
+      <div class="bx-art">${bugStill(tb,bugArtScale(tb),!caughtToday&&!B[tb.k])}</div>
+      <div class="bg-t"><span class="pcard-s">Today in the reeds</span>
+        <b>${caughtToday||B[tb.k]?esc(bugName(tb)):'Something is visiting'}</b>
+        <p>${caughtToday?'Caught today. It’s in your collection.':B[tb.k]?'You’ve caught one before. Say hello again on Today.':'It’s on the reeds on Today. Go and tap it.'}</p></div>
+      ${caughtToday?'<span class="bg-ok">✓ Caught</span>':'<button class="tbtn" onclick="tab(\'daily\')">Go to the reeds</button>'}
+    </div>
+    <div class="bdex">${tiles}</div>
+  </div>`;
+}
+/* the stand of reeds on the divider above the list, and today's bug (the
+   bed itself is drawn by reedBedHTML in reed-bugs.js) */
+function reedBed(moving){ const t=today(); return reedBedHTML(moving,reedBugOfDay(t),t); }
+/* tweaks from the bug library (bug-tweaks.json): read at start, and again
+   whenever the app comes back into view, so a change made in the library
+   shows up without a reload */
+function refreshBugTweaks(){ loadBugTweaks().then(ch=>{ if(!ch) return; _reedsSig=''; if(cur==='daily') paintDaily(); else if(cur==='coll') paintCollection(); }); }
+refreshBugTweaks();
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden) refreshBugTweaks(); });
+/* the little clump that marks the overdue group on the Tasks screen */
+function reedMark(){
+  return `<span class="gm-reeds"><svg viewBox="0 0 24 22" aria-hidden="true"><path d="M6 22 Q5 12 2 5 Q7 12 8.5 22Z" fill="#8fae7c"/><path d="M15 22 Q17 13 22 8 Q18 14 17.2 22Z" fill="#6f9e7a"/>
+    <path d="M11.5 22 Q11 12 11.5 4.5" stroke="#6f8f5f" stroke-width="1.2" fill="none" stroke-linecap="round"/><path d="M11.5 4.5 L11.5 1" stroke="#6b4a2f" stroke-width=".8" stroke-linecap="round"/>
+    <rect x="9.8" y="4" width="3.4" height="7" rx="1.7" fill="#8a5a3b"/><path d="M9 22 Q8.5 16 5.5 12 Q10 16 10.8 22Z" fill="#5f9470"/></svg></span>`;
+}
+
 function paintDaily(){
   const st=pondState();
   const hr=etHour(Date.now());
@@ -7559,7 +8601,7 @@ function paintDaily(){
   const done=scored.filter(a=>a.done).length, total=scored.length, left=total-done;
   const line=!total?'Nothing due today. Add a task below and it swims into the pond when it’s done.'
     :left===0?'Everything you finished today is swimming. The pond is full.'
-    :done===0?`${total} task${total===1?'':'s'} on today’s list. Each one you finish swims into the pond.`
+    :done===0?`${total} task${total===1?'':'s'} on today’s list${st.today.length?'':', and the pond is still empty'}. Each one you finish releases a fish.`
     :`${done} swimming, ${left} to go. Some tasks turn up species you haven’t found yet.`;
   $('td-copy').innerHTML=`<div class="ey">${p.weekday} · ${p.month} ${+p.day}</div>
     <div class="gr">${greet}</div><div class="ln">${line}</div>`;
@@ -7581,17 +8623,31 @@ function paintDaily(){
     .filter(a=>!a.done&&!a.ann&&a.due&&a.due<t&&!inArchivedCls(a)&&journeyAssignmentIsActive(a))
     .sort((x,y)=>(x.due||'').localeCompare(y.due||''));
   const shown=_reedsAll?reeds:reeds.slice(0,3);
-  $('dr-reeds').innerHTML=reeds.length?`<div class="reeds">
+  /* redrawn only when what's shown changes, so the reeds keep swaying and
+     a hover in progress isn't cut off by an unrelated repaint */
+  const mv=pondMotionOn();
+  const tbug=reedBugOfDay(t), got=db.pond.bugs[tbug.k], gotToday=!!(got&&got.last===t);
+  const rsig=[t,mv,_reedsAll,reeds.length,st.found.ghost?1:0,tbug.k,gotToday?1:got?2:0,...shown.map(a=>a.id+'·'+a.due+'·'+a.title+'·'+a.classId)].join('|');
+  if(rsig!==_reedsSig){ _reedsSig=rsig;
+  /* the bug of the day, with a quiet line beside it; the reeds stay up
+     even when nothing is overdue, so there's always somewhere for it */
+  const vis=`<span class="reeds-vis${gotToday?' got':''}">${gotToday?`${esc(bugName(tbug))} · in your bug collection ✓`:got?`A ${esc(tbug.name)} is back · tap it`:'Something’s visiting the reeds · tap it'}</span>`;
+  $('dr-reeds').innerHTML=!reeds.length?`<div class="reeds calm">
+      ${reedBed(mv)}${vis}
+      <div class="reeds-h"><div><b>The reeds are clear</b></div><span>Nothing overdue</span></div></div>`
+    :`<div class="reeds">
+      ${reedBed(mv)}${vis}
       <div class="reeds-h"><div><b>In the reeds</b><em>${reeds.length} overdue</em></div>
-        <span>${st.found.ghost?'Finish one to set it swimming':'Clear them all to find the Ghost Koi'}</span></div>
+        <span>${st.found.ghost?'Finish one to set its fish free':'Clear them all to find the Ghost Koi'}</span></div>
       ${shown.map(a=>{ const late=-dDelta(a.due);
-        return `<div class="rd" onclick="reedTap('${a.id}')" title="Finish it">
-          <div class="rd-ic"><span style="height:18px;transform:rotate(-12deg)"></span><span style="height:26px"></span><span style="height:16px;transform:rotate(14deg)"></span><b></b></div>
+        return `<div class="rd" onclick="reedTap('${a.id}')" title="Finish it and set its fish free">
+          ${reedClump(a.id,late,mv)}
           <div class="rd-t">${esc(a.title)}</div>
           <span class="rd-c">${a.classId?esc(clsShort(a.classId)):'Unfiled'}</span>
+          <span class="rd-go">set it free</span>
           <span class="rd-l">${late} day${late===1?'':'s'}</span></div>`; }).join('')}
       ${reeds.length>3?`<button class="rd-more" onclick="_reedsAll=!_reedsAll;paintDaily()">${_reedsAll?'Show fewer':`Show ${reeds.length-3} more`}</button>`:''}
-    </div>`:'';
+    </div>`; }
 
   /* the lotus opens with today's net focus */
   const goal=+db.settings.goal||0, mins=Math.round(todayNetFocusMs()/MIN), op=goal?Math.min(1,mins/goal):0;
@@ -7599,20 +8655,21 @@ function paintDaily(){
   if(!lot.querySelector('.lotus')){
     PondArt.PF.motion=pondMotionOn(); PondArt.reseed(3);
     lot.innerHTML=`<div class="pcard-h" style="align-self:stretch"><span class="pcard-t">Lotus</span><span class="pcard-s">daily focus goal</span></div>
-      <div class="lotus"><div class="amb">${PondArt.caustics(200,170,.25)}${PondArt.ripple(100,110,160,1,5)}${PondArt.glints(200,90,4)}</div>
-        <div class="lf"></div>${[-78,-56,-34,-12,12,34,56,78].map(()=>'<div class="pb"></div>').join('')}${[-44,-22,0,22,44].map(()=>'<div class="pf"></div>').join('')}<div class="ctr"></div></div>
+      <div class="lotus"></div>
       <div class="lotus-n"></div>
       <button class="lotus-go" onclick="tab('run')"></button>
       <div class="lotus-note"></div>`;
   }
-  const back=[-78,-56,-34,-12,12,34,56,78], front=[-44,-22,0,22,44];
-  lot.querySelectorAll('.pb').forEach((el,i)=>{ const s=.35+op*.65; el.style.transform=`rotate(${(back[i]*s).toFixed(1)}deg) scaleY(${s.toFixed(2)})`; });
-  lot.querySelectorAll('.pf').forEach((el,i)=>{ el.style.transform=`rotate(${(front[i]*(.3+op*.7)).toFixed(1)}deg) scaleY(${(.5+op*.5).toFixed(2)})`; });
+  const flower=lot.querySelector('.lotus');
+  if(flower.dataset.progress!==String(op)){
+    flower.innerHTML=PondArt.lotus(op); flower.dataset.progress=String(op);
+  }
   lot.querySelector('.lotus-n').innerHTML=`<div style="display:flex;align-items:baseline;gap:6px"><b>${mins}</b><span>${goal?`of ${goal} min`:'min today'}</span></div>
     <p>${!goal?'Set a daily goal in Settings to grow the lotus.':mins>=goal?'In full bloom. Anything more is a bonus.':`${goal-mins} more minute${goal-mins===1?'':'s'} to full bloom`}</p>`;
   const fm=db.settings.focus, bm=db.settings.brk;
   lot.querySelector('.lotus-go').textContent=A?'Back to your session':`Start focusing · ${fm} min`;
   lot.querySelector('.lotus-note').textContent=`${fm} focus · ${bm} break · each minute earns ${Math.round(bm/fm*60)}s of rest`;
+  paintPath(st);     // the lotus path: a pad for every day in full bloom
 
   /* a glance at the collection: the twelve hand-drawn species */
   const nx=st.next;
@@ -7642,6 +8699,7 @@ function paintDaily(){
       </div>`; }).join('')
     :`<p style="margin:4px 0 14px;font:400 13.5px/1.5 'Outfit',sans-serif;color:var(--dim)">Nothing pinned. Pin a test or task with ◷ in Plan to watch it come downstream.</p>`}`;
   paintPondCard();
+  window.PondEvents?.refresh(true);
 }
 /* ═══════════════ Focus · set up a session ═══════════════ */
 let pickSel=new Set();
@@ -7730,6 +8788,7 @@ function paintSetup(){
             <div class="pbar" style="flex:1;height:8px;background:#ebe4d6"><i style="width:${afterPct}%;background:linear-gradient(90deg,#f7c7a6,#ec7a45);transition:width .4s"></i></div>
             <span style="font:500 13px/1 'Outfit',sans-serif;color:var(--label)">${Math.min(after,goal||after)} / ${goal||'—'} min</span></div>
           <span style="font:400 13px/1.4 'Outfit',sans-serif;color:var(--dim)">${!goal?'Set a daily goal in Settings to grow the lotus.':after>=goal?'Two cycles would bring the lotus to full bloom tonight.':`Two cycles would open the lotus to ${after} of ${goal} minutes.`}</span>
+          ${goal?(ps=>`<span style="font:500 12.5px/1.4 'Outfit',sans-serif;color:var(--label)">Lotus path · ${ps.cur} day${ps.cur===1?'':'s'}${ps.met?' · today’s pad is open':ps.cur?` · ${ps.left} min today keeps it going`:' · reach your goal today to lay the first pad'}</span>`)(pathState()):''}
         </div>
       </div>
     </div></div>`;
@@ -7764,31 +8823,74 @@ function setWorking(id){ closeSeg(); A.working=id; openSeg(); save(); paint(); }
    The page is built once (buildRun) and then paint() — four times a second —
    only moves the koi, the ring and the numbers. Rebuilding would restart
    every fish in the water. */
-let _runSig='', _runTaskSig='', _runCycSig='';
+let _runSig='', _runTaskSig='', _runCycSig='', _paintMemo={};
 function run(){
   $('v-setup').classList.add('hide'); $('v-run').classList.remove('hide');
   buildRun();
   clearInterval(tick); tick=setInterval(paint,250); paint();
+  rainPaint(); if(window.Rain) Rain.attach($('run-hero')); rainSync();
+}
+/* ── rain during a session (rain.js draws it and makes the sound) ──
+   On/off, how hard and how loud are kept in settings, so the next session
+   starts the way you left it. The sound carries on while you're on another
+   tab or window; the drawing only runs while the Focus screen is showing. */
+const RAIN_ICON=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 15.5a4.5 4.5 0 1 1 1.1-8.86A5.5 5.5 0 0 1 18.5 9a3.25 3.25 0 0 1-.5 6.5H7z"/><path d="M8.5 18.5l-1 2M12.5 18.5l-1 2M16.5 18.5l-1 2"/></svg>`;
+let _rainOpen=false;
+const rainOn=()=>db.settings.rain===true;
+const rainLevel=()=>(window.Rain&&Rain.LEVELS[db.settings.rainLevel])?db.settings.rainLevel:'rain';
+const rainVol=()=>db.settings.rainVol==null?60:+db.settings.rainVol;
+function rainSync(){
+  if(!window.Rain) return;
+  const v=$('v-run'), shown=cur==='run'&&!!A&&!!v&&!v.classList.contains('hide')&&!helloOpen();
+  Rain.set({ on:rainOn()&&!!A, level:rainLevel(), vol:rainVol(), motion:pondMotionOn(), visible:shown });
+}
+function rainPaint(){
+  const el=$('rn-rain'); if(!el||!window.Rain) return;
+  const on=rainOn(), lv=rainLevel();
+  el.className='rain-ui'+(on?' on':'')+(on&&_rainOpen?' open':'');
+  el.innerHTML=`<button class="rr-tog" onclick="rainToggle()" title="${on?'Stop the rain':'Let it rain'}" aria-pressed="${on}">${RAIN_ICON}<span>Rain</span><i class="rr-sw"></i></button>
+    <button class="rr-more" onclick="rainMenu(event)" aria-expanded="${_rainOpen}" title="How hard, how loud">${Rain.LEVELS[lv].name}<svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+    <div class="rr-pop" onclick="event.stopPropagation()">
+      <div class="rr-lv">${Rain.ORDER.map(k=>`<button class="${k===lv?'on':''}" onclick="rainSetLevel('${k}')">${Rain.LEVELS[k].name}</button>`).join('')}</div>
+      <label class="rr-vol"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>
+        <input type="range" min="0" max="100" step="1" value="${rainVol()}" oninput="rainSetVol(this.value)" onchange="save()" aria-label="Rain volume"></label>
+      <span class="rr-hint">Tap the water to splash it, or press and drag to trail a wake.${lv==='storm'?' Storms bring soft lightning and far-off thunder.':''}</span>
+    </div>`;
+}
+function rainToggle(){
+  db.settings.rain=!rainOn(); if(!db.settings.rain) _rainOpen=false;
+  save(); rainPaint(); rainSync();
+}
+function rainMenu(e){ if(e) e.stopPropagation(); _rainOpen=!_rainOpen; rainPaint(); }
+function rainSetLevel(k){ db.settings.rainLevel=k; save(); rainPaint(); rainSync(); }
+function rainSetVol(v){ db.settings.rainVol=+v; if(window.Rain) Rain.set({vol:+v}); }
+document.addEventListener('click',e=>{ if(_rainOpen&&!(e.target.closest&&e.target.closest('.rain-ui'))){ _rainOpen=false; rainPaint(); } });
+setInterval(rainSync,1500);
+/* the water behind a session, laid out for the hero's width. Kept apart
+   from buildRun so a resize or zoom can redraw just the water, in place. */
+function runWater(W){
+  const P=PondArt; P.PF.motion=pondMotionOn();
+  const f=W/1104, X=x=>+(x*f).toFixed(1);
+  P.reseed(21);
+  const k=[P.caustics(W,560,.2),P.ripple(X(200),420,200,0,7),P.ripple(X(920),150,160,3,7)];
+  /* the same rule as Today: only fish you've released today swim here, and
+     one you finish mid-session joins them (pondReleased redraws this) */
+  const st=pondState(), cast=[...new Set(st.today.map(a=>st.rel.get(a.id)).filter(Boolean))];
+  cast.slice(0,6).forEach((sk,i)=>{ const cx=X([200,900,560][i%3]), cy=i%2?380:170;
+    k.push(P.swimmer(P.loop(cx,cy,(130+(i>>1)*40)*f,80+(i>>1)*20,5,.5),26+i*5,i%2===1,P.fish(sk,P.SP[sk].s*.9,.7))); });
+  k.push(P.pad(X(1060),60,62,20,'#5f9470','great'),P.pad(X(60),520,56,150,'#5a8d69','good'),P.pad(X(1000),150,30,250,'#6f9e7a',null),P.pad(X(150),70,34,80,'#6f9e7a',null));
+  k.push(P.glints(W,560,14),P.petals(560,4));
+  return k.join('');
 }
 function buildRun(){
   const el=$('run-body'); if(!el||!A) return;
-  const P=PondArt; P.PF.motion=pondMotionOn();
-  const hero=$('run-hero');
+  const P=PondArt, hero=$('run-hero');
   const W=Math.round((hero&&hero.clientWidth)||el.clientWidth||1100);
-  const f=W/1104, X=x=>+(x*f).toFixed(1);
-  P.reseed(21);
-  const k=[P.deep('koi',P.loop(X(560),290,420*f,200,6,.3),70,false,2),P.deep('catfish',P.loop(X(540),300,360*f,170,6,.4),90,true,2.2),
-    P.deep('ray',P.loop(X(560),270,460*f,220,6,.3),110,false,2.4),P.caustics(W,560,.2),P.ripple(X(200),420,200,0,7),P.ripple(X(920),150,160,3,7)];
-  const cast=[...new Set(A.assignmentIds.map(asg).filter(Boolean).map(a=>db.pond.adopt[a.classId]).filter(Boolean))];
-  ['guppy','clown','koi','betta'].forEach(x=>{ if(cast.length<4&&!cast.includes(x)) cast.push(x); });
-  cast.slice(0,4).forEach((sk,i)=>{ const cx=X(i<2?200:900), cy=i%2?380:170;
-    k.push(P.swimmer(P.loop(cx,cy,130*f,80,5,.5),26+i*5,i%2===1,P.fish(sk,P.SP[sk].s*.9,.7))); });
-  k.push(P.pad(X(1060),60,62,20,'#5f9470','great'),P.pad(X(60),520,56,150,'#5a8d69','good'),P.pad(X(1000),150,30,250,'#6f9e7a',null),P.pad(X(150),70,34,80,'#6f9e7a',null));
-  k.push(P.glints(W,560,14),P.petals(560,4));
+  const water=runWater(W);
   const R=170, C=2*Math.PI*R;
   el.innerHTML=`<div class="scr" style="gap:22px">
     <div class="water rn-hero" id="run-hero">
-      <div class="amb">${k.join('')}</div>
+      <div class="amb" id="run-water">${water}</div>
       <div class="amb" id="run-fry"></div>
       <div style="position:absolute;left:36px;top:32px;z-index:8;display:flex;flex-direction:column;gap:8px">
         <span class="eyebrow" style="color:#9fc2bb;letter-spacing:.16em" id="rn-name"></span>
@@ -7796,6 +8898,7 @@ function buildRun(){
       <div style="position:absolute;right:36px;top:32px;z-index:8;display:flex;flex-direction:column;gap:8px;align-items:flex-end">
         <span class="eyebrow" style="color:#9fc2bb;letter-spacing:.16em" id="rn-bank-l">Rest banked</span>
         <span style="font:400 26px/1 var(--serif);color:#fbf8f2" id="rn-bank"></span></div>
+      <div class="rain-ui" id="rn-rain"></div>
       <div class="rn-ring">
         <div class="glow" id="rn-glow"></div>
         <svg width="380" height="380" style="position:absolute;inset:0;transform:rotate(-90deg)">
@@ -7829,7 +8932,7 @@ function buildRun(){
         <div style="font:400 12.5px/1.45 'Outfit',sans-serif;color:var(--faint);padding-top:6px;border-top:1px solid #ebe4d6">Rated 4 or 5, a cycle leaves a gold ring on today’s lily pad in the Journal.</div>
       </div>
     </div></div>`;
-  _runSig=W+'|'+A.id; _runTaskSig=''; _runCycSig='';
+  _runSig=W+'|'+A.id; _runTaskSig=''; _runCycSig=''; _paintMemo={};
 }
 function runQuickAdd(e){
   const v=e.target.value.trim(); if(e.key!=='Enter'||!v) return;
@@ -7846,28 +8949,42 @@ function paint(){
   const focus=A.phase!=='break', col=focus?'#f7c7a6':'#9fd8b8', over=rem<0;
   const prog=Math.max(0,Math.min(1,e/Math.max(1,A.target)));
   const n=A.cycles.length+(focus?1:0);
-  $('rn-name').textContent=(A.name||defaultName(A)).replace(/ · .*$/,'')+' · '+fDate(A.started);
-  $('rn-cyc').textContent=`Cycle ${Math.max(1,n)} · started ${fTime(A.started)}`;
-  $('rn-bank').textContent=focus?dur(e*A.ratio):dur(Math.max(0,rem));
-  $('rn-bank-l').textContent=focus?'Rest banked':'Rest left';
-  $('rn-ph').textContent=focus?(over?'Overtime':'Focus'):'Break'; $('rn-ph').style.color=col;
-  $('rn-clk').textContent=clock(rem);
-  $('rn-sub').textContent=A.paused?(e<1000?'paused · press start':'paused')
+  /* Four times a second, but only what actually changed is written: every
+     write (even of the same text) makes the browser re-lay-out the page. */
+  const put=(id,v)=>{ const el=$(id); if(el&&el.textContent!==v) el.textContent=v; };
+  const set=(el,k,v)=>{ if(_paintMemo[el.id+k]!==v){ _paintMemo[el.id+k]=v; el.style[k]=v; } };
+  put('rn-name',(A.name||defaultName(A)).replace(/ · .*$/,'')+' · '+fDate(A.started));
+  put('rn-cyc',`Cycle ${Math.max(1,n)} · started ${fTime(A.started)}`);
+  put('rn-bank',focus?dur(e*A.ratio):dur(Math.max(0,rem)));
+  put('rn-bank-l',focus?'Rest banked':'Rest left');
+  put('rn-ph',focus?(over?'Overtime':'Focus'):'Break'); set($('rn-ph'),'color',col);
+  put('rn-clk',clock(rem));
+  put('rn-sub',A.paused?(e<1000?'paused · press start':'paused')
     :focus?(over?`past the bell · break now worth ${dur(e*A.ratio)}`:'the koi is swimming')
-    :(over?'break overrun · counting against you':'rest · the water is still');
-  const C=2*Math.PI*170, arc=$('rn-arc');
-  arc.setAttribute('stroke',col); arc.style.filter=`drop-shadow(0 0 6px ${col})`;
-  arc.setAttribute('stroke-dashoffset',(C*(1-prog)).toFixed(1));
-  $('rn-koi').style.transform=`rotate(${(-90+prog*360).toFixed(2)}deg)`;
-  $('rn-glow').style.background=`radial-gradient(circle,${col}22,transparent 65%)`;
-  $('rn-glow').style.animation=pondMotionOn()?'pf-breathe 6s ease-in-out infinite':'none';
-  $('rn-play').textContent=A.paused?'Start':'Pause';
+    :(over?'break overrun · counting against you':'rest · the water is still'));
+  const C=2*Math.PI*170, arc=$('rn-arc'), off=+(C*(1-prog)).toFixed(1);
+  if(_paintMemo.arcCol!==col){ _paintMemo.arcCol=col; arc.setAttribute('stroke',col); arc.style.filter=`drop-shadow(0 0 6px ${col})`; }
+  /* The ring glides between ticks, but a long focus block moves it only a
+     fraction of a pixel per tick, and gliding that means redrawing the page
+     every frame for nothing the eye can see. So a step under half a screen
+     pixel is set as it is (anti-aliasing carries it); anything bigger (short
+     breaks, a phase change, a zoomed-in page) glides exactly as before. */
+  if(_paintMemo.arcOff!==off){
+    const from=_paintMemo.arcOff??+C.toFixed(1);                // a fresh ring starts empty and sweeps in, as before
+    const step=Math.abs(off-from)*(window.devicePixelRatio||1);
+    set(arc,'transition',step<.5?'none':'stroke-dashoffset .25s linear');
+    _paintMemo.arcOff=off; arc.setAttribute('stroke-dashoffset',off);
+  }
+  set($('rn-koi'),'transform',`rotate(${(-90+prog*360).toFixed(2)}deg)`);
+  set($('rn-glow'),'background',`radial-gradient(circle,${col}22,transparent 65%)`);
+  set($('rn-glow'),'animation',pondMotionOn()?'pf-breathe 6s ease-in-out infinite':'none');
+  put('rn-play',A.paused?'Start':'Pause');
   const sw=$('rn-switch');
-  sw.textContent=focus?(over?'Take your break':'Break now'):'Back to focus';
+  put('rn-switch',focus?(over?'Take your break':'Break now'):'Back to focus');
   sw.onclick=focus?endFocus:endBreak;
   paintTasks(); paintCycles();
-  $('live').textContent=clock(rem)+' · '+(focus?'focus':'break');
-  document.title=clock(rem)+' · '+(focus?'Focus':'Break');
+  put('live',clock(rem)+' · '+(focus?'focus':'break'));
+  const ttl=clock(rem)+' · '+(focus?'Focus':'Break')+' · Catching Days'; if(document.title!==ttl) document.title=ttl;
 }
 function togglePause(){
   if(A.paused){ A.pausedMs+=Date.now()-A.pausedAt; A.paused=false; A.pausedAt=null; openSeg(); }
@@ -8121,10 +9238,16 @@ function saveSession(){
   Object.entries(roll).forEach(([id,ms])=>{ const a=asg(id); if(a) a.logged=(a.logged||0)+ms; });
   db.sessions.unshift(A);
   const filed=diaryFromSession(A);       // session write-up also lands in the Journal
-  db.active=null; A=null;
-  save(); syncOut(); closeModal(); document.title='Focus';
+  const finalized=A;                    // a story hook never reads a live/unfinished timer
+  db.active=null; A=null; rainSync();
+  save(); const cached=cacheSave(), persisted=syncOut();
+  closeModal(); document.title='Catching Days';
   if(filed) toast('Session journal filed under Study Block.');
   tab('stats');
+  // Only a successful normal save can schedule fiction. Story failures cannot interrupt this flow.
+  Promise.resolve(persisted).then(ok=>{
+    if(ok||cached) return window.PondEvents?.afterSaved(finalized);
+  }).catch(e=>console.warn('Pond Moments post-save:',e));
 }
 
 function summarize(s){
@@ -8198,7 +9321,6 @@ function paintStats(){
   const totalNet=Object.values(byDay).reduce((a,b)=>a+b,0);
   const first=S.length?Math.min(...S.map(s=>s.started)):null;
   const t=today(), goal=+db.settings.goal||0;
-  const days=Object.keys(byDay).filter(k=>byDay[k]>0), stk=days.length?computeStreak(days):{streak:0,best:0};
   const weekAgo=addDays(t,-6);
   const doneWk=db.assignments.filter(a=>a.done&&a.doneAt&&dayKey(a.doneAt)>=weekAgo).length;
   const overdue=db.assignments.filter(a=>!a.done&&!a.ann&&a.due&&a.due<t&&!inArchivedCls(a)&&journeyAssignmentIsActive(a)).length;
@@ -8246,7 +9368,7 @@ function paintStats(){
     <div class="st-tiles">
       ${tile('Today',dur(byDay[t]||0),goal?`of a ${goal} min goal`:'focused today','#1f2e2c')}
       ${tile('Done this week',doneWk,'tasks released into the pond','#2f7a74')}
-      ${tile('Streak',stk.streak+' day'+(stk.streak===1?'':'s'),`best so far: ${stk.best} day${stk.best===1?'':'s'}`,'#1f2e2c')}
+      ${(ps=>tile('Lotus path',ps.cur+' day'+(ps.cur===1?'':'s'),!goal?'set a daily goal to start one':`days in a row at your goal · best ${ps.best}`,'#1f2e2c'))(pathState())}
       ${tile('Overdue',overdue,'in the reeds right now','#b0524a')}
     </div>
     <div class="st-two">
@@ -8426,7 +9548,9 @@ function setFlip(k){
   if(k==='motion') s.pondMotion=s.pondMotion===false;
   if(k==='ripples') s.pondRipples=s.pondRipples===false;
   if(k==='petals') s.pondPetals=s.pondPetals===false;
-  if(['motion','ripples','petals'].includes(k)){ _tdScene=''; _tdFry=''; }
+  if(k==='light') s.pondLight=s.pondLight!==true;
+  if(k==='hello') s.hello=s.hello===false;
+  if(['motion','ripples','petals','light'].includes(k)){ _tdScene=''; _tdFry=''; paintMarks(); }
   save(); paintSettings();
 }
 /* sliders store as you drag; they're rebalanced to 100 when you leave */
@@ -8448,7 +9572,7 @@ function adoptModal(){
   modal(`<h2>Class species</h2><p class="mdim">Each class adopts a species. Its finished tasks release that fish more often than any other.</p>
     <div style="display:flex;flex-direction:column;gap:10px;margin-top:16px">${activeClasses().map(c=>`<label class="row" style="gap:12px">
       <span style="flex:1;font:500 14.5px/1.2 'Outfit',sans-serif">${esc(clsShort(c.id))}</span>
-      <select style="width:220px" onchange="db.pond.adopt['${c.id}']=this.value;save()">${found.map(s=>`<option value="${s.k}"${db.pond.adopt[c.id]===s.k?' selected':''}>${esc(s.name)}</option>`).join('')}</select></label>`).join('')}</div>
+      <select style="width:220px" ${found.length?'':'disabled'} onchange="db.pond.adopt['${c.id}']=this.value;save()"><option value="" disabled ${found.some(s=>s.k===db.pond.adopt[c.id])?'':'selected'}>${found.length?'Choose a discovered fish':'Discover a fish first'}</option>${found.map(s=>`<option value="${s.k}"${db.pond.adopt[c.id]===s.k?' selected':''}>${esc(s.name)}</option>`).join('')}</select></label>`).join('')}</div>
     <div class="mrow"><button class="primary" onclick="closeModal();_tdScene='';repaint();if(cur==='set')paintSettings()">Done</button></div>`);
 }
 function paintSettings(){
@@ -8469,9 +9593,12 @@ function paintSettings(){
         </div>
         <div class="pcard set-card" style="gap:16px">
           <span class="pcard-t">The pond</span>
+          ${tog('hello',s.hello!==false,'Hello when the app opens','your day at a glance each time you open it')}
           ${tog('motion',s.pondMotion!==false,'Swimming and ripples','turn off for a completely still app')}
           ${tog('ripples',s.pondRipples!==false,'Ripples','rings spreading across the water')}
           ${tog('petals',s.pondPetals!==false,'Drifting petals','blossoms floating past')}
+          ${tog('light',s.pondLight===true,'Light on the water','sunlight rippling across the pond floor')}
+          <button class="set-row" onclick="window.open('bug-library.html','_blank')"><span>Bug library</span><b style="color:#2f7a74">see and tweak all ${REED_BUGS.length} bugs →</b></button>
           <button class="set-row" onclick="adoptModal()"><span>Class species</span><b style="color:#2f7a74">${activeClasses().filter(c=>db.pond.adopt[c.id]).length} adopted · change →</b></button>
         </div>
       </div>
@@ -8489,7 +9616,7 @@ function paintSettings(){
           <span style="font:400 14px/1.55 'Outfit',sans-serif;color:#cfe2dd;text-wrap:pretty">Hermes reads <b>AGENTS.md</b>, <b>agent-context.md</b> and <b>focus-data.json</b>, and can only write <b>inbox.json</b>. Everything it proposes waits here for your approval. It can’t complete, edit or delete anything.</span>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button class="dk1" onclick="checkInbox()">Check inbox now</button>
-            <button class="dk2" onclick="syncOut().then(o=>toast(o?'Wrote focus-data.json':'Not connected — launch with Start Focus.bat'))">Write data now</button>
+            <button class="dk2" onclick="syncOut().then(o=>toast(o?'Wrote focus-data.json':'Not connected — launch with Start Catching Days.bat'))">Write data now</button>
             <button class="dk2" onclick="copyBrief(this)">Copy agent brief</button></div>
         </div>`}
         <div class="pcard set-card" style="gap:14px">
@@ -8613,7 +9740,7 @@ function importData(inp){
       db=ensureSettings(Object.assign(clone(blank),d)); db.savedAt=Date.now();
       cacheSave(); if(SERVER) await syncOut();
       location.reload();
-    }catch(e){ alert('That file does not look like a Focus backup.'); } };
+    }catch(e){ alert('That file does not look like a Catching Days backup.'); } };
   r.readAsText(f); inp.value='';
 }
 async function eraseAll(){
@@ -8633,28 +9760,30 @@ function wipe(){
 /* Daily is the landing tab — the "what am I doing today" screen. Focus stays
    purely the pomodoro (setup screen, or a running session). */
 let cur='daily';
-const VIEWS=['daily','run','asg','jrn','dia','stk','bio','stats','log','coll','set'];
+const VIEWS=['daily','run','asg','jrn','proj','dia','stk','bio','stats','log','coll','set'];
 /* ── navigation ──
-   Five places. Plan, Journal and You each hold a few screens; while you're
+   Six places. Plan, Journal and You each hold a few screens; while you're
    in one, its screens are listed under it in the sidebar (on a phone, as a
    strip at the top of the page). Journal's Calendar and Vault are both the
-   'dia' view in different modes. Settings sits apart at the bottom. */
+   'dia' view in different modes. Plan's Projects is projects.js ('proj').
+   Settings sits apart at the bottom. */
 const NAV={
   today:  {items:[['daily','Today']]},
   focus:  {items:[['run','Focus']]},
-  plan:   {items:[['asg','Tasks'],['jrn','Journeys']]},
-  journal:{items:[['dia:cal','Calendar'],['dia:vault','Vault'],['stk','Sticky notes']]},
+  plan:   {items:[['asg','Tasks'],['jrn','Journeys'],['proj','Projects']]},
+  journal:{items:[['dia:cal','Calendar'],['dia:vault','Vault']]},
+  stk:    {items:[['stk','Sticky notes']]},
   you:    {items:[['bio','Bio'],['stats','Stats & history'],['coll','Collection']]},
 };
-const WIDE_VIEWS=['daily','dia','coll','run','asg','jrn','stk','bio','stats','log','set'];
+const WIDE_VIEWS=['daily','dia','coll','run','asg','jrn','proj','stk','bio','stats','log','set'];
 const navLast={};
+let _subnavGroup=null;
 const navKey=t=>t==='dia'?'dia:'+diaMode:t;
 const navGroupOf=t=>Object.keys(NAV).find(g=>NAV[g].items.some(([k])=>k.split(':')[0]===t))||null;
 function navOpen(key){
   const [t,mode]=key.split(':');
   if(t==='dia'&&mode){ diaMode=mode; diaFromVault=false; if(mode==='vault'){ diaSel=null; diaEntrySel=null; } }
-  if(t==='dia'&&cur==='dia'){ paintDiary(); navSync(); return; }
-  tab(t);
+  tab(t);     // even from inside Journal, so it fades like every other tab
 }
 function navGo(g){ navOpen(navLast[g]||NAV[g].items[0][0]); }
 function navSync(){
@@ -8665,8 +9794,8 @@ function navSync(){
     const sub=$('subs-'+k); if(!sub) return;
     const many=NAV[k].items.length>1;
     sub.classList.toggle('open',many&&k===g);
-    if(many&&k===g) sub.innerHTML=NAV[k].items.map(([ik,label])=>
-      `<button class="navsub${ik===key?' on':''}" onclick="navOpen('${ik}')">${label}</button>`).join('');
+    if(many&&k===g) sub.innerHTML='<div class="navsubs-in"><div>'+NAV[k].items.map(([ik,label])=>
+      `<button class="navsub${ik===key?' on':''}" onclick="navOpen('${ik}')">${label}</button>`).join('')+'</div></div>';
   });
   const setb=$('tab-set'); if(setb) setb.classList.toggle('on',cur==='set');
   /* the pond's level card lives on Today, like the design */
@@ -8677,6 +9806,8 @@ function navSync(){
     if(gg==='you') items.push(['set','Settings']);
     sn.innerHTML=items.length>1?items.map(([ik,label])=>
       `<button class="${ik===key?'on':''}" onclick="navOpen('${ik}')">${label}</button>`).join(''):'';
+    /* a new place's strip fades in with its screen; moving within a place leaves it be */
+    const sg=items.length>1?gg:null; if(sg&&sg!==_subnavGroup) flashIn(sn); _subnavGroup=sg;
     if(cur==='set'){ const y=$('grp-you'); if(y&&matchMedia('(max-width:760px)').matches) y.classList.add('on'); }
   }
   const m=$('main'); if(m){ m.classList.toggle('wide',WIDE_VIEWS.includes(cur));
@@ -8691,13 +9822,15 @@ function tab(t){
   $('v-run').classList.add('hide'); $('v-setup').classList.add('hide');
   navSync();
   paintPondCard();
-  if(t==='run'){ A?run():showSetup(); return; }
+  if(t==='run'){ A?run():showSetup(); flashIn($(A?'v-run':'v-setup')); window.scrollTo(0,0); rainSync(); return; }
+  rainSync();
   clearInterval(tick); tick=null;
   $('v-'+t).classList.remove('hide');
   if(t==='daily') paintDaily();
   if(t==='asg'){ asgJustDone.clear(); journeyTick(); paintAsg(); }
   if(t==='jrn'){ checkJourneyEnds(); journeyTick(); paintJourneys(); }
-  if(t==='dia') paintDiary();
+  if(t==='proj'&&window.PJ) PJ.paint();    // projects.js
+  if(t==='dia'){ diaShownMode=diaMode; paintDiary(); }
   if(t==='stk') paintStickies();
   if(t==='bio'){ bioFresh=true; paintBio(); }
   if(t==='stats') paintStats();
@@ -8726,7 +9859,7 @@ function paintHealth(){
       ?`focus-data.backup.json · ${dDate(db.lastBackup)}`:'—'}</td></tr>`:''}
   </table>
   ${MODE==='file'?`<p class="dim" style="font-size:12.5px;margin:10px 0 0">
-    Launch with <span class="mono">Start Focus.bat</span> instead of double-clicking the HTML.</p>`:''}`;
+    Launch with <span class="mono">Start Catching Days.bat</span> instead of double-clicking the HTML.</p>`:''}`;
 }
 function paintSyncInfo(){
   const el=$('sync-info'); if(!el) return;
@@ -8734,10 +9867,11 @@ function paintSyncInfo(){
     ? `<span style="color:var(--focus)">● Autosaving to focus-data.json</span>` +
       (db.lastSync?` · last written ${fExact(db.lastSync)}`:'') +
       (db.lastImport?`<br>Last import: ${db.lastImport.n} assignments, ${fExact(db.lastImport.at)}`:'')
-    : '<span style="color:var(--over)">Opened straight off disk — launch with Start Focus.bat to save.</span>';
+    : '<span style="color:var(--over)">Opened straight off disk — launch with Start Catching Days.bat to save.</span>';
 }
 function repaint(){
   if(cur==='asg')paintAsg(); else if(cur==='jrn')paintJourneys(); else if(cur==='dia')paintDiary();
+  else if(cur==='proj'){ if(window.PJ) PJ.refresh(); }
   else if(cur==='stk')paintStickies();
   else if(cur==='bio')paintBio();
   else if(cur==='stats')paintStats();
@@ -8749,6 +9883,7 @@ function repaint(){
 }
 
 document.addEventListener('keydown',e=>{
+  if(window.PondEvents?.isOpen()) return; // the scene dialog owns its keyboard
   // Escape has to be handled before the guards below — those exist to protect
   // typing, but dismissing a dialog from inside its own text field is exactly
   // what you'd expect Escape to do.
@@ -8756,7 +9891,26 @@ document.addEventListener('keydown',e=>{
     if(!modalLocked) closeModal();
     return;
   }
+  /* a new species on screen: Enter or Space finishes the reveal, then goes
+     on; Escape closes it (and any still queued). Nothing behind it reacts,
+     not even a field left focused under it. */
+  if(unlockOpen()&&!$('modals').innerHTML){
+    const onBtn=!!(document.activeElement&&document.activeElement.closest('#v-unlock button'));
+    if(e.key==='Escape'){ e.preventDefault(); unlockClose(true); }
+    else if((e.key==='Enter'||e.code==='Space')&&!onBtn){ e.preventDefault(); if(!unlockSkip()) unlockClose(); }
+    else if(!onBtn&&e.key!=='Tab') e.preventDefault();
+    return;
+  }
   if(isTyping(e.target)||$('modals').innerHTML) return;
+  /* the Hello page answers Enter and Escape, and keeps Space from pausing
+     a timer you can't see yet */
+  if(helloOpen()){
+    const onBtn=!!(document.activeElement&&document.activeElement.closest('#v-hello button'));
+    if(e.key==='Escape'){ e.preventDefault(); helloGo(null); }                 // just close, stay where the app is
+    else if(e.key==='Enter'&&!onBtn){ e.preventDefault(); helloGo(_helloGo); }  // a focused button handles its own Enter
+    else if(e.code==='Space'&&!onBtn) e.preventDefault();
+    return;
+  }
   if(e.code==='Space'&&A&&cur==='run'){ e.preventDefault(); togglePause(); }
 });
 /* Keyboard play for the drill. Typed questions never reach here — the input has
@@ -8854,7 +10008,7 @@ function paintWarn(){
     <p>This page was opened straight off the disk (<code>file://</code>), so there's no server to
     write your data to and Brave throws away storage for files opened this way. That's why you
     kept landing on the same list — every launch started from an empty database and re-ran the seed.</p>
-    <p>Close this tab and double-click <code>Start Focus.bat</code> instead — it starts the small
+    <p>Close this tab and double-click <code>Start Catching Days.bat</code> instead — it starts the small
     local server that writes <code>focus-data.json</code> for you. Nothing to click, nothing to
     remember, and nothing to re-connect on the next launch.</p>
     <div class="row wrapf" style="gap:8px;margin:12px 0 4px">
@@ -8886,3 +10040,16 @@ checkJourneyEnds(); journeyTick();
 </script>
 <script src="sync-core.js"></script>
 <script src="sync.js"></script>
+<script src="projects.js?v=2"></script>
+<script src="toad-art.js?v=1"></script>
+<script src="toads-design/toad-art-cast.js?v=1"></script>
+<script src="toad-companions.js?v=2"></script>
+<script src="toad-collection.js?v=5"></script>
+<script src="toad-lines.js?v=1"></script>
+<script src="toads.js?v=3"></script>
+<script src="daily-letter.js?v=1"></script>
+<script src="task-finish.js?v=1"></script>
+<script src="pond-events-content.js?v=3"></script>
+<script src="pond-events-core.js?v=1"></script>
+<script src="pond-events-stage.js?v=6"></script>
+<script src="pond-events.js?v=8"></script>

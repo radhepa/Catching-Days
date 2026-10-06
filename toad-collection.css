@@ -1,0 +1,52 @@
+/* Catching Days · encyclopedia, using the Collection's paper and pond palette. */
+.tc-collection .psub{max-width:600px;margin-bottom:0}
+.tc-count{display:flex;gap:10px;align-items:baseline;color:var(--dim);white-space:nowrap;font:400 14px/1.4 'Outfit',sans-serif}
+.tc-count b{font:400 42px/1 var(--serif);color:var(--tx)}
+.tc-intro{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:22px 26px}
+.tc-intro .eyebrow{color:var(--focus);font-size:10px;letter-spacing:.15em}
+.tc-intro p{font:400 14px/1.65 'Outfit',sans-serif;color:var(--dim);margin:9px 0 0;max-width:700px}
+.tc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.tc-card{display:flex;flex-direction:column;padding:0;overflow:hidden;text-align:left;min-width:0;border:1px solid var(--line);border-radius:22px;background:var(--panel);color:var(--tx);cursor:pointer;box-shadow:none;transition:box-shadow .18s,border-color .18s}
+.tc-card:hover{background:var(--panel);border-color:#8ea99a;box-shadow:0 8px 22px #173a3b12}
+.tc-card:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
+.tc-water{display:block;position:relative;overflow:hidden;background:radial-gradient(ellipse at 55% 65%,#2a7d78 0%,#1a5c60 52%,#0f3b41 100%);box-shadow:inset 0 0 42px #07252a70}
+.tc-card .tc-water{height:195px;width:100%}
+.tc-no{position:absolute;left:17px;top:16px;color:#cfe9e3;font:500 10px/1 'Outfit',sans-serif;letter-spacing:.1em;z-index:1}
+.tc-portrait{display:flex;position:absolute;inset:auto 0 4px;align-items:flex-end;justify-content:center;pointer-events:none}
+.tc-portrait img,.tc-portrait svg{display:block;width:210px;height:210px;max-width:none;flex:none;overflow:visible}
+.tc-card-body{display:flex;flex-direction:column;flex:1;padding:18px 21px 20px;gap:8px}
+.tc-name{font:400 28px/1.15 var(--serif)}
+.tc-role{display:block;font:500 10px/1.5 'Outfit',sans-serif;color:var(--focus);letter-spacing:.09em;text-transform:uppercase}
+.tc-brief{font:400 13px/1.55 'Outfit',sans-serif;color:var(--dim);margin:3px 0 8px}
+.tc-read{display:flex;justify-content:space-between;gap:8px;margin-top:auto;border-top:1px solid var(--line);padding-top:12px;font:500 12px/1.4 'Outfit',sans-serif;color:var(--label)}
+.tc-dialog{position:fixed;padding:0;border:1px solid #ded5c3;border-radius:26px;max-width:960px;width:calc(100% - 32px);max-height:calc(100dvh - 32px);background:var(--panel);color:var(--tx);box-shadow:0 28px 90px #092b3466;overflow:auto}
+.tc-dialog::backdrop{background:#082a35b8;backdrop-filter:blur(5px)}
+.tc-close{position:absolute;right:15px;top:15px;z-index:3;width:38px;height:38px;padding:0;border:1px solid #d9ceba;border-radius:50%;color:#314c46;background:#fbf8f2;font:400 26px/1 'Outfit',sans-serif;cursor:pointer}
+.tc-entry{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr)}
+.tc-entry-art{min-height:430px;align-self:stretch}
+.tc-entry-art .tc-portrait{inset:0;align-items:center;transform:translateY(24px)}
+.tc-entry-art .tc-portrait svg,.tc-entry-art .tc-portrait img{width:330px;height:330px}
+.tc-entry-number{position:absolute;left:25px;bottom:24px;right:25px;color:#b6d3c9;font:500 10px/1.4 'Outfit',sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.tc-entry-copy{padding:36px 36px 24px}
+.tc-entry-copy h2{font:400 42px/1.2 var(--serif);margin:7px 0 17px;outline:none}
+.tc-entry-copy h2:focus-visible{outline:2px solid var(--focus);outline-offset:5px}
+.tc-traits{display:flex;gap:6px;flex-wrap:wrap}
+.tc-traits span{font:500 10px/1.4 'Outfit',sans-serif;background:#e8eee3;color:#4b6656;padding:5px 9px;border-radius:99px}
+.tc-entry-copy blockquote{font:400 18px/1.5 var(--serif);color:var(--tx);margin:23px 0;padding:0 0 0 16px;border-left:2px solid #b8c9ae}
+.tc-entry-copy p{font:400 13px/1.7 'Outfit',sans-serif;color:var(--dim);margin:14px 0}
+.tc-facts{display:flex;flex-direction:column;gap:14px;border-top:1px solid var(--line);padding-top:18px;margin:22px 0 0}
+.tc-facts dt{font:600 9px/1.4 'Outfit',sans-serif;color:var(--focus);text-transform:uppercase;letter-spacing:.11em}
+.tc-facts dd{font:400 12px/1.6 'Outfit',sans-serif;color:var(--label);margin:4px 0 0}
+.tc-entry-nav{display:flex;justify-content:space-between;gap:10px;padding:16px 22px;border-top:1px solid var(--line);background:var(--panel)}
+.tc-entry-nav button{border:1px solid #d8cfbd;background:transparent;color:var(--label);border-radius:99px;min-height:40px;padding:9px 15px;font:500 12px/1.4 'Outfit',sans-serif;cursor:pointer}
+.tc-entry-nav button:hover,.tc-close:hover{background:#ece6d9}
+.tc-dialog button:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+/* A card's toad wakes while the card is hovered or focused and is a still picture otherwise;
+   it looks up at you, as the keepers do at home. The open entry's portrait keeps moving. */
+.tc-card:not(:hover):not(:focus-visible) .tc-portrait *{animation:none!important}
+.tc-card:hover .td-art .td-look,.tc-card:focus-visible .td-art .td-look,.tc-entry-art:hover .td-art .td-look{transform:scaleY(.72)}
+.tc-card:hover .td-hotaru .td-look,.tc-card:focus-visible .td-hotaru .td-look,.tc-entry-art:hover .td-hotaru .td-look{transform:scaleY(.55)}
+@media(max-width:1180px){.tc-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.tc-entry{grid-template-columns:minmax(0,1fr)}.tc-entry-art{min-height:230px}.tc-entry-art .tc-portrait{transform:translateY(3px)}.tc-entry-art .tc-portrait svg,.tc-entry-art .tc-portrait img{width:250px;height:250px}.tc-entry-number{top:20px;bottom:auto;left:20px;right:65px}.tc-entry-copy{padding:27px 24px 20px}.tc-entry-copy h2{font-size:36px}.tc-count{white-space:normal}.tc-entry-nav{padding:13px;gap:5px}.tc-entry-nav button{padding:8px 11px;font-size:11px}}
+@media(max-width:460px){.tc-grid{grid-template-columns:minmax(0,1fr);gap:17px}.tc-card .tc-water{height:200px}.tc-card-body{padding:17px 20px 20px}.tc-intro{padding:19px 21px}}
+@media(prefers-reduced-motion:reduce){.tc-card{transition:none}}

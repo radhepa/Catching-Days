@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-68 -118 136 136" role="img" aria-label="Neri · Keeper of the Kiln"><title>Neri · Keeper of the Kiln</title><defs>
+    <linearGradient id="neri_skin" gradientUnits="userSpaceOnUse" x1="0" y1="-63" x2="0" y2="1"><stop offset="0" stop-color="#f9eee3"/><stop offset="0.23" stop-color="#dfb19b"/><stop offset="0.65" stop-color="#bc8478"/><stop offset="0.94" stop-color="#946359"/><stop offset="1" stop-color="#173a3b"/></linearGradient>
+    <linearGradient id="neri_eye" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7e8d9"/><stop offset="1" stop-color="#c5907d"/></linearGradient>
+  <radialGradient id="neri_iris" cx=".45" cy=".42" r=".6"><stop offset="0" stop-color="#f2edbd"/><stop offset=".55" stop-color="#b7bc70"/><stop offset="1" stop-color="#727d42"/></radialGradient>
+    <linearGradient id="neri_cloth" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#526d73"/><stop offset="1" stop-color="#304d57"/></linearGradient><linearGradient id="neri_clay" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#e8cdb2"/><stop offset="1" stop-color="#aa8065"/></linearGradient>
+    <radialGradient id="neri_throat" cx=".4" cy=".25" r=".7"><stop stop-color="#fff1de"/><stop offset="1" stop-color="#e1bba2"/></radialGradient>
+    <clipPath id="neri_bc"><path d="M0 0 C18 .5 35 -1 41 -9 C47 -16 45 -26 40 -31 C42 -38 42 -45 38 -49 C31 -56 17 -57 0 -57 C-17 -57 -31 -56 -38 -49 C-42 -45 -42 -38 -40 -31 C-45 -26 -47 -16 -41 -9 C-35 -1 -18 .5 0 0Z"/></clipPath>
+  </defs>
+  <ellipse cx="0" cy=".8" rx="48" ry="4.6" fill="#1f2e2c" opacity=".16"/><ellipse cx="0" cy=".5" rx="34.56" ry="2.6" fill="#1f2e2c" opacity=".14"/>
+  <!-- a low fired-clay tile, not an app perch -->
+  <path d="M-52 1 Q-53 -3 -46 -4 L46 -4 Q53 -3 52 1 L51 7 Q0 12 -51 7Z" fill="#b69079" stroke="#7f6252" stroke-width=".5"/>
+  <path d="M-48 -1 Q0 -4 48 -1" fill="none" stroke="#ebd0b7" stroke-width=".8" opacity=".65"/>
+  <ellipse cx="0" cy="1.4" rx="41" ry="4.2" fill="#173a3b" opacity=".3"/><ellipse cx="0" cy=".9" rx="29.52" ry="2.3" fill="#173a3b" opacity=".2"/>
+  <!-- broad pear-shaped body with low, heavy haunches -->
+  <path d="M0 0 C18 .5 35 -1 41 -9 C47 -16 45 -26 40 -31 C42 -38 42 -45 38 -49 C31 -56 17 -57 0 -57 C-17 -57 -31 -56 -38 -49 C-42 -45 -42 -38 -40 -31 C-45 -26 -47 -16 -41 -9 C-35 -1 -18 .5 0 0Z" fill="url(#neri_skin)" stroke="#8d6159" stroke-width=".6"/>
+  <g clip-path="url(#neri_bc)">
+    <ellipse cy="-16" rx="24" ry="15" fill="#f5ddc7" opacity=".48"/>
+    <path d="M-36 -49 Q-29 -48 -31 -37 Q-41 -32 -40 -41Z M28 -52 Q38 -50 38 -43 Q29 -42 26 -47Z" fill="#986051" opacity=".28"/>
+    <circle cx="-33.64" cy="-42.46" r="1.2" fill="#693e34" opacity="0.22"/><circle cx="-34" cy="-43" r="1.2" fill="#ffffff" opacity=".4"/><circle cx="-28.73" cy="-37.59" r="0.9" fill="#693e34" opacity="0.22"/><circle cx="-29" cy="-38" r="0.9" fill="#ffffff" opacity=".4"/><circle cx="32.33" cy="-43.51" r="1.1" fill="#693e34" opacity="0.22"/><circle cx="32" cy="-44" r="1.1" fill="#ffffff" opacity=".4"/><circle cx="36.24" cy="-36.64" r="0.8" fill="#693e34" opacity="0.22"/><circle cx="36" cy="-37" r="0.8" fill="#ffffff" opacity=".4"/><circle cx="-13.8" cy="-46.71" r="0.65" fill="#693e34" opacity="0.22"/><circle cx="-14" cy="-47" r="0.65" fill="#ffffff" opacity=".4"/><circle cx="14.21" cy="-45.69" r="0.7" fill="#693e34" opacity="0.22"/><circle cx="14" cy="-46" r="0.7" fill="#ffffff" opacity=".4"/><circle cx="-36.64" cy="-22.46" r="1.2" fill="#693e34" opacity="0.22"/><circle cx="-37" cy="-23" r="1.2" fill="#ffffff" opacity=".4"/><circle cx="37.3" cy="-20.55" r="1" fill="#693e34" opacity="0.22"/><circle cx="37" cy="-21" r="1" fill="#ffffff" opacity=".4"/><circle cx="-29.73" cy="-10.6" r="0.9" fill="#693e34" opacity="0.22"/><circle cx="-30" cy="-11" r="0.9" fill="#ffffff" opacity=".4"/>
+    <ellipse cx="-12" cy="-51" rx="13" ry="2.8" fill="#fff" opacity=".22" transform="rotate(-8 -12 -51)"/>
+  </g>
+  <ellipse cx="-42" cy="2.1" rx="10" ry="1.3" fill="#173a3b" opacity=".18"/>
+    <path d="M-33 -14 C-39 -15 -44 -13 -46.5 -9 C-48 -6 -47 -3 -45.5 -1.9 L-38.2 -1.9 C-38.2 -5 -36.4 -7 -33.5 -9Z" fill="url(#neri_skin)"/>
+    <path d="M-43 -12 C-46 -10 -48 -6 -47 -3 M-38.2 -3 C-38.2 -5 -37 -7 -36 -8" fill="none" stroke="#8d6159" stroke-width=".55" stroke-linecap="round"/>
+    <g transform="translate(-42 0) scale(-1 1)">
+      <ellipse cy="-1.9" rx="6.4" ry="2.8" fill="#c39380"/>
+      <path d="M-5.9 -2.3 C-7 -.3 -4.8 1.2 -.7 1 M.6 1 Q5.4 1.3 6.2 -1.4" fill="none" stroke="#8d6159" stroke-width=".5" stroke-linecap="round"/>
+      <g fill="none" stroke-linecap="round">
+        <path d="M-.4 -2 L-7 .4 M-.2 -1.8 L-3.5 1.8 M.4 -1.8 L3.8 1.9 M.8 -2 L8.5 .4" stroke="#8d6159" stroke-width="3.6"/>
+        <path d="M-.4 -2 L-7 .4 M-.2 -1.8 L-3.5 1.8 M.4 -1.8 L3.8 1.9 M.8 -2 L8.5 .4" stroke="#c39380" stroke-width="2.8"/>
+      </g>
+      <g fill="#efd2bd" stroke="#8d6159" stroke-width=".35"><circle cx="-7" cy=".4" r="1.6"/><circle cx="-3.5" cy="1.8" r="1.6"/><circle cx="3.8" cy="1.9" r="1.6"/><circle cx="8.5" cy=".4" r="1.6"/></g>
+    </g><ellipse cx="42" cy="2.1" rx="10" ry="1.3" fill="#173a3b" opacity=".18"/>
+    <path d="M33 -14 C39 -15 44 -13 46.5 -9 C48 -6 47 -3 45.5 -1.9 L38.2 -1.9 C38.2 -5 36.4 -7 33.5 -9Z" fill="url(#neri_skin)"/>
+    <path d="M43 -12 C46 -10 48 -6 47 -3 M38.2 -3 C38.2 -5 37 -7 36 -8" fill="none" stroke="#8d6159" stroke-width=".55" stroke-linecap="round"/>
+    <g transform="translate(42 0) scale(1 1)">
+      <ellipse cy="-1.9" rx="6.4" ry="2.8" fill="#c39380"/>
+      <path d="M-5.9 -2.3 C-7 -.3 -4.8 1.2 -.7 1 M.6 1 Q5.4 1.3 6.2 -1.4" fill="none" stroke="#8d6159" stroke-width=".5" stroke-linecap="round"/>
+      <g fill="none" stroke-linecap="round">
+        <path d="M-.4 -2 L-7 .4 M-.2 -1.8 L-3.5 1.8 M.4 -1.8 L3.8 1.9 M.8 -2 L8.5 .4" stroke="#8d6159" stroke-width="3.6"/>
+        <path d="M-.4 -2 L-7 .4 M-.2 -1.8 L-3.5 1.8 M.4 -1.8 L3.8 1.9 M.8 -2 L8.5 .4" stroke="#c39380" stroke-width="2.8"/>
+      </g>
+      <g fill="#efd2bd" stroke="#8d6159" stroke-width=".35"><circle cx="-7" cy=".4" r="1.6"/><circle cx="-3.5" cy="1.8" r="1.6"/><circle cx="3.8" cy="1.9" r="1.6"/><circle cx="8.5" cy=".4" r="1.6"/></g>
+    </g>
+  <!-- proper parotoid glands behind the eyes -->
+  <path d="M29 -54 C35 -56 41 -53 42 -48 C43 -44 42 -42 40.5 -41 C38 -45 33 -50 29 -54Z M-29 -54 C-35 -56 -41 -53 -42 -48 C-43 -44 -42 -42 -40.5 -41 C-38 -45 -33 -50 -29 -54Z" fill="url(#neri_skin)"/>
+  <path d="M29 -54 C35 -56 41 -53 42 -48 C43 -44 42 -42 40.5 -41 M-29 -54 C-35 -56 -41 -53 -42 -48 C-43 -44 -42 -42 -40.5 -41" fill="none" stroke="#8d6159" stroke-width=".55"/>
+  <g fill="#724b40" opacity=".3"><circle cx="38" cy="-49" r=".55"/><circle cx="40" cy="-46" r=".5"/><circle cx="-38" cy="-49" r=".55"/><circle cx="-40" cy="-46" r=".5"/></g>
+  <g transform="translate(-18.2 -53) scale(0.9)">
+    <circle r="10" fill="url(#neri_eye)"/>
+    <circle cy=".7" r="7.4" fill="url(#neri_iris)"/>
+    <circle cy=".7" r="7.4" fill="none" stroke="#66703a" stroke-width=".5" opacity=".7"/>
+    <g transform="translate(0 1.2)"><g class="td-gaze">
+      <ellipse rx="4.6" ry="2.1" fill="#1f2e2c"/>
+      <circle cx="2.1" cy="0.3" r="1.15" fill="#ffffff" opacity=".9"/>
+      <circle cx="-2.5" cy="1.9" r=".5" fill="#ffffff" opacity=".5"/>
+    </g></g>
+    <g transform="translate(0 -10.2)"><g class="td-look"><g class="td-blink" style="--bk:1.79"><g transform="translate(0 10.2)">
+      <path d="M-10.24 0.15 A10.25 10.25 0 0 1 10.24 -0.4 C6 0.7 -6 0.9 -10.24 0.15Z" fill="url(#neri_eye)"/>
+      <path d="M-7.4 -3.6 C-3 -2.6 3 -2.6 7.4 -3.6" fill="none" stroke="#fff0df" stroke-width=".75" stroke-linecap="round" opacity=".55"/>
+      <path d="M-9.69 0.5 C-6 0.9 6 0.9 9.69 -0.05" fill="none" stroke="#492f2b" stroke-width="1.4" stroke-linecap="round"/>
+    </g></g></g></g>
+    <path d="M9.99 -0.35 A10 10 0 0 0 -9.99 -0.35" fill="none" stroke="#8d6159" stroke-width=".6" stroke-linecap="round"/>
+    <path d="M8.44 -4.87 A9.75 9.75 0 0 0 -8.44 -4.87" fill="none" stroke="#a7796a" stroke-width="1.3" stroke-linecap="round" opacity=".85"/>
+    <path d="M5.85 -7.49 A9.5 9.5 0 0 0 -5.85 -7.49" fill="none" stroke="#8d6159" stroke-width="1.6" stroke-linecap="round" opacity=".6"/>
+    <path d="M6.72 -4.7 A8.2 8.2 0 0 0 -4.7 -6.72" fill="none" stroke="#fff0df" stroke-width=".8" stroke-linecap="round" opacity=".7"/>
+    <path d="M9.4 3.42 A10 10 0 0 1 -9.4 3.42" fill="none" stroke="#a7796a" stroke-width=".6" stroke-linecap="round" opacity=".3"/>
+  </g><g transform="translate(18.2 -53) scale(0.9)">
+    <circle r="10" fill="url(#neri_eye)"/>
+    <circle cy=".7" r="7.4" fill="url(#neri_iris)"/>
+    <circle cy=".7" r="7.4" fill="none" stroke="#66703a" stroke-width=".5" opacity=".7"/>
+    <g transform="translate(0 1.2)"><g class="td-gaze">
+      <ellipse rx="4.6" ry="2.1" fill="#1f2e2c"/>
+      <circle cx="2.1" cy="0.9" r="1.15" fill="#ffffff" opacity=".9"/>
+      <circle cx="-2.5" cy="1.9" r=".5" fill="#ffffff" opacity=".5"/>
+    </g></g>
+    <g transform="translate(0 -10.2)"><g class="td-look"><g class="td-blink" style="--bk:1.7"><g transform="translate(0 10.2)">
+      <path d="M-10.25 0.2 A10.25 10.25 0 0 1 10.25 0.75 C6 1.5 -6 1.3 -10.25 0.2Z" fill="url(#neri_eye)"/>
+      <path d="M-7.4 -3.6 C-3 -2.6 3 -2.6 7.4 -3.6" fill="none" stroke="#fff0df" stroke-width=".75" stroke-linecap="round" opacity=".55"/>
+      <path d="M-9.7 0.55 C-6 1.5 6 1.5 9.7 1.1" fill="none" stroke="#492f2b" stroke-width="1.4" stroke-linecap="round"/>
+    </g></g></g></g>
+    <path d="M-9.99 -0.35 A10 10 0 0 1 9.99 -0.35" fill="none" stroke="#8d6159" stroke-width=".6" stroke-linecap="round"/>
+    <path d="M-8.44 -4.87 A9.75 9.75 0 0 1 8.44 -4.87" fill="none" stroke="#a7796a" stroke-width="1.3" stroke-linecap="round" opacity=".85"/>
+    <path d="M-5.85 -7.49 A9.5 9.5 0 0 1 5.85 -7.49" fill="none" stroke="#8d6159" stroke-width="1.6" stroke-linecap="round" opacity=".6"/>
+    <path d="M-6.72 -4.7 A8.2 8.2 0 0 1 4.7 -6.72" fill="none" stroke="#fff0df" stroke-width=".8" stroke-linecap="round" opacity=".7"/>
+    <path d="M-9.4 3.42 A10 10 0 0 0 9.4 3.42" fill="none" stroke="#a7796a" stroke-width=".6" stroke-linecap="round" opacity=".3"/>
+  </g><g fill="#492f2b" opacity=".55"><ellipse cx="-4.5" cy="-42" rx="1" ry=".7"/><ellipse cx="4.5" cy="-42" rx="1" ry=".7"/></g>
+    <path d="M-31 -37 Q-15 -34.6 0 -35 Q16 -34.5 31 -38.2" fill="none" stroke="#fff0df" stroke-width=".8" stroke-linecap="round" opacity=".55" transform="translate(0 -1.3)"/>
+    <path d="M-31 -37 Q-15 -34.6 0 -35 Q16 -34.5 31 -38.2" fill="none" stroke="#492f2b" stroke-width="1.45" stroke-linecap="round" opacity=".82"/>
+  <path d="M-31 -37 Q-33 -36.5 -32.5 -34.5 M31 -38.2 Q33 -38.8 33.5 -40" fill="none" stroke="#492f2b" stroke-width="1.1" stroke-linecap="round" opacity=".7"/>
+  <ellipse cy="-28.4" rx="13.5" ry="4.8" fill="url(#neri_throat)"/><ellipse cx="-3.5" cy="-30" rx="4" ry="1.2" fill="#fff" opacity=".32"/>
+  <!-- folded indigo work apron, one visible hand-mended corner -->
+  <path d="M-20 -22 Q0 -18 20 -22 L23 -5 Q0 0 -23 -5Z" fill="url(#neri_cloth)" stroke="#30454b" stroke-width=".5"/>
+  <path d="M-20 -22 Q0 -18 20 -22 M-17 -18 L-18 -9 M16 -18 L17 -8" fill="none" stroke="#94aaa7" stroke-width=".7" opacity=".55"/>
+  <path d="M-19 -10 L-10 -10 L-10 -4 L-19 -5Z" fill="#738c8c"/><path d="M-18 -9 L-16 -8 M-14 -9 L-12 -8 M-12 -6 L-14 -5" stroke="#e2d2b2" stroke-width=".5"/>
+  <!-- Short, rounded arms: one cups the bowl, the other bends up to the tool.
+       Closed fills share the body's paint; only exposed contours are outlined. -->
+  <path d="M-32 -28 C-41 -28 -47 -23 -46 -17 C-45 -10 -39 -6 -31 -7 L-22 -10 L-25 -15 C-30 -12 -36 -13 -36 -18 C-36 -21 -33 -23 -30 -24Z M33 -28 C40 -29 46 -25 47 -20 C49 -14 47 -9 42 -8 C37 -7 34 -10 34 -13 C34 -16 37 -18 40 -20 L42 -23 C39 -24 36 -24 33 -22Z" fill="url(#neri_skin)"/>
+  <path d="M-40 -27 C-44 -25 -47 -21 -46 -17 C-45 -10 -39 -6 -31 -7 L-24 -9 M-26 -14 C-31 -12 -36 -13 -36 -18 C-36 -20 -35 -21 -34 -22 M40 -27 C44 -25 46 -23 47 -20 C49 -14 47 -9 42 -8 C37 -7 34 -10 34 -13 C34 -16 37 -18 40 -20" fill="none" stroke="#8d6159" stroke-width=".55" stroke-linecap="round"/>
+  <circle cx="-40.7" cy="-19.55" r="1" fill="#693e34" opacity="0.22"/><circle cx="-41" cy="-20" r="1" fill="#ffffff" opacity=".4"/><circle cx="44.27" cy="-11.6" r="0.9" fill="#693e34" opacity="0.22"/><circle cx="44" cy="-12" r="0.9" fill="#ffffff" opacity=".4"/>
+  <!-- handmade bowl: irregular rim, warm matte glaze, a single repaired seam -->
+  <path d="M-25 -15 Q-22 -1 0 .2 Q22 -1 25 -15Z" fill="url(#neri_clay)" stroke="#8b6952" stroke-width=".6"/>
+  <ellipse cy="-15" rx="25" ry="4.1" fill="#f0d9bf" stroke="#8b6952" stroke-width=".6"/>
+  <ellipse cy="-15" rx="21.6" ry="2.5" fill="#937663"/><path d="M-19 -15.8 Q-3 -18 16 -16" fill="none" stroke="#b89b80" stroke-width=".65"/>
+  <path d="M10 -13 L7 -9 L9 -6 L5 -1 M7 -9 L12 -7" fill="none" stroke="#d9b261" stroke-width=".9" stroke-linecap="round"/>
+  <path d="M-19 -11 Q-17 -5 -8 -3" fill="none" stroke="#f8e5ca" stroke-width=".8" opacity=".5"/>
+  <!-- Rounded fingers hook around the near rim rather than spreading flat. -->
+  <path d="M-29 -14 C-33 -15 -35 -12 -33 -9 C-31 -6 -27 -5 -23 -7 L-20 -9 C-19 -10 -20 -12 -22 -12 L-27 -10 C-27 -12 -27 -13 -29 -14Z" fill="#ddb29a" stroke="#8d6159" stroke-width=".55"/>
+  <path d="M-28 -9 Q-25 -7.5 -21 -10 M-31 -11 Q-31 -8.5 -28 -8 M-27 -13 Q-26 -15 -24 -14" fill="none" stroke="#8d6159" stroke-width=".55" stroke-linecap="round"/>
+  <path d="M-32 -12 Q-31 -13 -29 -12.5" fill="none" stroke="#f6ddc8" stroke-width=".8" stroke-linecap="round"/>
+  <!-- The tool passes through the fist: palm behind, curled fingers in front,
+       following Hasu's stalk grip and Hotaru's rounded prop-holding fingers. -->
+  <g transform="translate(38 -3) rotate(22)">
+    <path d="M-4 -20 C-6 -19 -6 -15 -3 -13 L3 -13 C5 -14 5 -18 3 -20Z" fill="#c99986" stroke="#8d6159" stroke-width=".5"/>
+    <path d="M-1 0 L-1 -29 Q-5 -36 0 -39 Q5 -36 1 -29 L1 0Z" fill="#d7bd8a" stroke="#856a42" stroke-width=".5"/>
+    <path d="M-.1 -4 L-.1 -28 M-2 -33 L2 -33" stroke="#f0ddad" stroke-width=".6"/>
+    <path d="M3 -21 C.5 -22 -3 -21 -3.5 -18.5 L-3.5 -15.5 C-3.5 -13.5 -1 -12.5 1.5 -13 Q4 -13.5 4.5 -16.5 L4 -19.2 Q3.5 -20.5 3 -21Z" fill="#ddb29a" stroke="#8d6159" stroke-width=".55"/>
+    <path d="M4 -18.5 Q1.5 -19.2 -.2 -18.3 M4.5 -15.8 Q1.9 -16.5 .2 -15.6" fill="none" stroke="#8d6159" stroke-width=".55" stroke-linecap="round"/>
+    <path d="M-3 -20.5 Q-5.7 -20 -5.4 -17.5 Q-4 -16 -1.7 -17 L.6 -18.1" fill="#ddb29a" stroke="#8d6159" stroke-width=".55" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M-1.7 -20 Q.2 -20.7 1.8 -20.1" fill="none" stroke="#f6ddc8" stroke-width=".8" stroke-linecap="round"/>
+  </g></svg>

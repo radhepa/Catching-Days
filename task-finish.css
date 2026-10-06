@@ -1,0 +1,39 @@
+/* A small, warm-paper acknowledgement above the mobile navigation. */
+#task-finish[hidden]{display:none!important}
+#task-finish{position:fixed;z-index:53;bottom:24px;left:calc(248px + (100% - 248px)/2);transform:translateX(-50%);
+  width:min(540px,calc(100% - 296px));display:grid;grid-template-columns:80px minmax(0,1fr);gap:17px;align-items:center;
+  padding:19px 35px 18px 18px;border:1px solid #ded4bf;border-radius:20px;background:linear-gradient(120deg,#fffaf0,#f7f2e6);
+  color:var(--tx);box-shadow:0 10px 35px #183c342b,0 2px 5px #59472c0c;isolation:isolate}
+.tf-eyebrow{font:600 10px/1.3 'Outfit',sans-serif;letter-spacing:.11em;text-transform:uppercase;color:#6b8275}
+.tf-copy{min-width:0}
+.tf-copy strong{display:block;margin-top:5px;font:400 19px/1.35 var(--serif);overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tf-copy p{font:400 12px/1.6 'Outfit',sans-serif;color:#526b60;margin:7px 0 0}
+.tf-copy p span{color:#7d8471}
+.tf-actions{display:flex;gap:12px;align-items:center;margin-top:11px}
+#task-finish .tf-actions button{padding:5px 13px;border:1px solid #bbccb9;border-radius:99px;background:#eaf0e4;color:#466a55;font:600 11px/1.3 'Outfit',sans-serif}
+#task-finish .tf-actions button:hover{background:#dce9d5;border-color:#98b398}
+.tf-actions>span{font:400 10px/1.4 'Outfit',sans-serif;color:#8b8c78}
+#task-finish .tf-close{position:absolute;right:9px;top:8px;width:25px;height:25px;display:grid;place-items:center;padding:0;border:0;border-radius:50%;background:transparent;color:#8b8c78;font:400 18px/1 'Outfit',sans-serif}
+#task-finish .tf-close:hover{background:#eee5d4;color:var(--tx)}
+#task-finish button:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
+.tf-pond{position:relative;width:80px;height:80px;border-radius:50%;display:grid;place-items:center;overflow:hidden;background:radial-gradient(ellipse at 65% 30%,#438b7c,#1a5556 65%,#103e44);box-shadow:inset 0 0 12px #092f3a33}
+.tf-ring{position:absolute;left:10px;top:26px;width:60px;height:28px;border:1px solid #cce4cf66;border-radius:50%;transform:scale(.75);opacity:.5}
+.tf-ring.two{transform:scale(1.2);opacity:.2}
+.tf-fish{position:relative;display:grid;place-items:center;z-index:1;width:70px;height:55px;transform:rotate(-12deg)}
+.tf-fish svg{max-width:70px;max-height:55px;overflow:visible}
+.tf-spark{position:absolute;right:9px;top:10px;color:#f4d58b;font:400 12px/1 Georgia,serif}
+#task-finish.tf-motion{transition:opacity .45s ease,transform .45s cubic-bezier(.2,.8,.3,1)}
+#task-finish.tf-enter{opacity:0;transform:translate(-50%,14px) scale(.98)}
+.tf-motion .tf-ring{animation:tf-ripple 1.4s ease-out both}
+.tf-motion .tf-ring.two{animation-delay:.2s}
+.tf-motion .tf-fish{animation:tf-swim-in .9s cubic-bezier(.2,.8,.3,1) both}
+.tf-motion .tf-spark{animation:tf-glimmer 1.3s ease-out both}
+#task-finish.tf-out{opacity:0;transform:translate(-50%,12px) scale(.98)}
+.tf-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@keyframes tf-ripple{from{opacity:.8;transform:scale(.2)}to{opacity:0;transform:scale(1.6)}}
+@keyframes tf-swim-in{from{opacity:0;transform:translateX(-25px) rotate(-20deg)}45%{opacity:1}to{opacity:1;transform:translateX(0) rotate(-12deg)}}
+@keyframes tf-glimmer{0%{opacity:0;transform:scale(.2)}40%{opacity:1;transform:scale(1.2)}100%{opacity:.7;transform:scale(1)}}
+@media(max-width:900px){#task-finish{left:calc(210px + (100% - 210px)/2);width:min(540px,calc(100% - 250px))}}
+@media(max-width:760px){#task-finish{left:50%;bottom:var(--tf-bottom,calc(83px + env(safe-area-inset-bottom,0px)));width:calc(100% - 28px);grid-template-columns:62px minmax(0,1fr);gap:13px;padding:16px 30px 15px 14px}.tf-pond{width:62px;height:62px}.tf-fish{width:55px;height:45px}.tf-fish svg{max-width:55px;max-height:45px}.tf-ring{left:7px;top:20px;width:48px;height:23px}.tf-copy strong{font-size:17px}.tf-copy p{font-size:11px}.tf-actions>span{font-size:9px}}
+@media(prefers-reduced-motion:reduce){#task-finish,#task-finish *{animation:none!important;transition:none!important}}
+#task-finish:not(.tf-motion),#task-finish:not(.tf-motion) *{animation:none!important;transition:none!important}

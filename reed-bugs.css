@@ -1,0 +1,62 @@
+/* reed-bugs.css · Catching Days
+   The reed bed and its bug of the day. Shared by radhe-labs-focus.html and
+   bug-library.html (see reed-bugs.js and BUG-LIBRARY.md). */
+.reeds-bed .rs{position:absolute;bottom:0;transform-origin:50% 100%;transform:rotate(var(--r))}
+.reeds-bed .rp{position:absolute;inset:0;transform-origin:50% 100%}
+.reeds-bed .rp svg{display:block;width:100%;height:100%;overflow:visible}
+.reeds-bed.sw .rs{animation:rd-sway var(--t) ease-in-out var(--d) infinite alternate}
+@keyframes rd-sway{from{transform:rotate(calc(var(--r) - var(--a)))}to{transform:rotate(calc(var(--r) + var(--a)))}}
+/* a stand of reeds growing out of the divider, and the bug of the day
+   (reedBugHTML) visiting it. The bug's box is zero-sized at its feet, so a
+   transform places the feet right on a perch; its moves and wing swaps are
+   keyframes written per bug beside it. */
+.reeds-bed{position:absolute;right:18px;top:-34px;width:150px;height:34px;pointer-events:none}
+.rb-bug{position:absolute;display:block;left:0;top:0;width:0;height:0;transform-origin:0 0}
+.rb-in,.rb-l,.rb-mid,.rb-glow{position:absolute;display:block}
+.rb-l{inset:0}
+.rb-bug svg{position:absolute;left:0;top:0;overflow:visible}
+.rb-bz{animation:rb-buzz var(--bz) linear infinite alternate}
+@keyframes rb-buzz{to{transform:scaleY(var(--bs))}}
+.rb-mid{left:-2px;top:-2px}
+.rb-glow{width:14px;height:14px;border-radius:50%;background:radial-gradient(circle,#f4ffa0 0%,#dcef6a99 35%,#dcef6a00 70%);opacity:.6}
+.rb-glow.on{animation:rb-flash 2.8s ease-in-out infinite}
+@keyframes rb-flash{0%,55%{opacity:.08}63%{opacity:1}74%{opacity:.85}84%,100%{opacity:.08}}
+.rb-vis{position:absolute;display:block;left:0;top:0}
+.rb-hit{position:absolute;display:block;width:32px;height:32px;border-radius:50%;pointer-events:auto;cursor:pointer}
+.rb-prop{position:absolute;display:block;left:0;top:0;width:0;height:0;transform-origin:0 0}
+.rb-prop svg{position:absolute;overflow:visible}
+.rb-ring{position:absolute;display:block;left:-8px;top:-2px;width:16px;height:4px;border-radius:50%;border:1px solid #6fa89d;opacity:0}
+.reeds-bed.sw .rb-ring{animation:rb-ripple 1.3s ease-out infinite}
+.reeds-bed.sw .rb-ring.two{animation-delay:-.65s}
+@keyframes rb-ripple{0%{transform:scale(.3);opacity:.9}100%{transform:scale(1.5);opacity:0}}
+.reeds-bed:not(.sw) .rb-ring:not(.two){opacity:.6}
+.reeds-bed.sw .rb-gnat{animation:rb-gnat .7s ease-in-out infinite alternate}
+@keyframes rb-gnat{0%{transform:translate(-1px,.6px)}50%{transform:translate(1px,-.8px)}100%{transform:translate(-.4px,-.2px)}}
+.reeds-bed.sw .rb-sing{animation:rb-sing .5s steps(2,end) infinite}
+@keyframes rb-sing{0%{opacity:1}100%{opacity:.25}}
+/* the later visitors' props: a lit cattail, notes, rain, drops, bubbles, glints, pollen */
+.rb-glowp{position:absolute;display:block;left:-10px;top:-10px;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle,#ffe7a0 0%,#ffc86a88 35%,#ffc86a00 70%)}
+.rb-glowp.moon{background:radial-gradient(circle,#ffffff 0%,#dfe8ffaa 30%,#dfe8ff00 70%)}
+.reeds-bed.sw .rb-glowp{animation:rb-pulse 1.8s ease-in-out infinite alternate}
+@keyframes rb-pulse{from{opacity:.55;transform:scale(.9)}to{opacity:1;transform:scale(1.1)}}
+.reeds-bed.sw .rb-note{animation:rb-note 1.6s ease-out infinite}
+.reeds-bed.sw .rb-note.two{animation-delay:-.8s}
+@keyframes rb-note{0%{transform:translate(0,0);opacity:0}20%{opacity:1}100%{transform:translate(3px,-10px);opacity:0}}
+.reeds-bed.sw .rb-rain{animation:rb-rain .8s linear infinite}
+@keyframes rb-rain{0%{transform:translateY(0);opacity:0}15%{opacity:1}100%{transform:translateY(26px);opacity:0}}
+.reeds-bed.sw .rb-drop{animation:rb-drop 1.1s ease-in infinite}
+@keyframes rb-drop{0%{transform:translateY(0);opacity:0}20%{opacity:1}100%{transform:translateY(14px);opacity:0}}
+.rb-bub,.rb-twk,.rb-puff{transform-box:fill-box;transform-origin:center}
+.reeds-bed.sw .rb-bub{animation:rb-bub 1.8s ease-out infinite}
+.reeds-bed.sw .rb-bub.two{animation-delay:-.9s}
+@keyframes rb-bub{0%{transform:translateY(0) scale(.4);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateY(-22px) scale(1.2);opacity:0}}
+.reeds-bed.sw .rb-twk{animation:rb-twk 1.4s ease-in-out infinite}
+@keyframes rb-twk{0%,100%{transform:scale(.4) rotate(0deg);opacity:.4}50%{transform:scale(1.1) rotate(45deg);opacity:1}}
+.reeds-bed.sw .rb-puff{animation:rb-puff 1.2s ease-out infinite}
+@keyframes rb-puff{0%{transform:scale(.4);opacity:1}100%{transform:scale(1.6);opacity:0}}
+/* Nos. 81-100: a rainbow that shimmers, a kite on the breeze */
+.rb-bow{opacity:.7}
+.reeds-bed.sw .rb-bow{animation:rb-bow 2.2s ease-in-out infinite alternate}
+@keyframes rb-bow{from{opacity:.45}to{opacity:.85}}
+.reeds-bed.sw .rb-kite{transform-origin:1px -2px;animation:rb-kite 2.6s ease-in-out infinite alternate}
+@keyframes rb-kite{from{transform:rotate(-6deg)}to{transform:rotate(5deg)}}

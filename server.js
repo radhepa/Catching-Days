@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Tiny local server for Focus — static files (GET) plus a
+// Tiny local server for Catching Days — static files (GET) plus a
 // POST-to-save endpoint, so the app can write focus-data.json to disk
 // without relying on browser storage. Node fallback for server.py.
 // Only ever binds to 127.0.0.1 — never reachable from outside this PC.
@@ -41,6 +41,10 @@ const server = http.createServer((req, res) => {
   const file = name === '' ? 'radhe-labs-focus.html' : name;
   const full = path.join(ROOT, file);
   if (!full.startsWith(ROOT)) { res.writeHead(403); res.end(); return; }
+  // Author previews live on the separate local preview server, never in the app.
+  if (/^(pond-moments-library|pond-expressions-library)\./i.test(path.basename(full))) {
+    res.writeHead(404); res.end('Not found'); return;
+  }
   fs.readFile(full, (err, data) => {
     if (err) { res.writeHead(404); res.end('Not found'); return; }
     res.writeHead(200, {
@@ -52,5 +56,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, '127.0.0.1', () => {
-  console.log(`Focus — serving http://127.0.0.1:${PORT}  (Ctrl+C to stop)`);
+  console.log(`Catching Days — serving http://127.0.0.1:${PORT}  (Ctrl+C to stop)`);
 });
