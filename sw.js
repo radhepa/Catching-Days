@@ -5,10 +5,10 @@
    when you're offline — or the connection is so slow that waiting is pointless —
    the last good copy is served. Fonts are cached on first use. Requests to other
    origins (the sync API in particular) are never touched. */
-const CACHE = 'focus-v2';
+const CACHE = 'catching-days-v2';
 const SHELL = [
   './',
-  './radhe-labs-focus.html',
+  './catching-days.html',
   './pond.js',
   './manifest.webmanifest',
   './icons/icon-192.png',
@@ -40,7 +40,7 @@ self.addEventListener('activate', e => {
 function networkFirst(req) {
   return new Promise(resolve => {
     let settled = false;
-    const fallback = () => caches.match(req, { ignoreSearch: true }).then(hit => hit || caches.match('./radhe-labs-focus.html'));
+    const fallback = () => caches.match(req, { ignoreSearch: true }).then(hit => hit || caches.match('./catching-days.html'));
     const timer = setTimeout(() => {
       fallback().then(hit => { if (hit && !settled) { settled = true; resolve(hit); } });
     }, NETWORK_TIMEOUT_MS);

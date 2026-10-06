@@ -3,7 +3,7 @@ title Catching Days
 cd /d "%~dp0"
 
 set "PORT=8765"
-set "PAGE=radhe-labs-focus.html"
+set "PAGE=catching-days.html"
 
 if not exist "%PAGE%" (
   echo.

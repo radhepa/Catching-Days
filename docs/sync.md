@@ -1,6 +1,6 @@
 # Sync your devices
 
-Focus can keep your laptop, phone and tablet in step. There is no account to create and
+Catching Days can keep your laptop, phone and tablet in step. There is no account to create and
 nothing to host: your data is stored as **one file in a private GitHub repository that you own**,
 and each device merges its changes with that file automatically.
 
@@ -30,7 +30,7 @@ The token is what lets the app read and write that one repository, and nothing e
 
 1. Open <https://github.com/settings/personal-access-tokens/new> (GitHub → Settings → Developer settings →
    Personal access tokens → **Fine-grained tokens** → *Generate new token*).
-2. **Token name:** `Focus sync`.
+2. **Token name:** `Catching Days sync`.
 3. **Expiration:** pick the longest you are comfortable with. When it runs out, the app tells you and you
    create a new one (steps 2 and 3 again).
 4. **Repository access:** *Only select repositories* → choose your data repository (`focus-data`).
@@ -42,7 +42,7 @@ The token is what lets the app read and write that one repository, and nothing e
 
 Use the device that **already has your data**, usually your laptop.
 
-1. Open Focus → **Settings → Cloud sync**.
+1. Open Catching Days → **Settings → Cloud sync**.
 2. Open **Set up by hand instead**.
 3. **Repository:** `your-github-name/focus-data`. **Access token:** paste the token.
 4. Press **Connect**.
@@ -64,7 +64,7 @@ each other up to date.
 
 > **Order matters a little.** Connect the device that has your data first. A brand-new device that connects
 > to a repository with data simply adopts it. If you connect two devices that both already hold different data,
-> Focus merges them — nothing is thrown away — but it's tidier to start from one.
+> Catching Days merges them — nothing is thrown away — but it's tidier to start from one.
 
 ---
 
@@ -87,7 +87,7 @@ per-device counters.
 | Deleted a task on one device | It is deleted on the other — unless you edited it there, in which case it is kept |
 
 **Safety net.** If a sync would remove most of what a device has (for example, an old copy was restored in the
-repository), Focus stops and asks whether to use the cloud copy or keep this device's data. Nothing is deleted
+repository), Catching Days stops and asks whether to use the cloud copy or keep this device's data. Nothing is deleted
 until you choose.
 
 ---
@@ -98,9 +98,9 @@ Because each sync is a commit, you can go back:
 
 1. Open your data repository on GitHub → `focus-data.json` → **History**.
 2. Pick the version you want → **⋯ → View file** → **Download raw file**.
-3. In Focus: **Settings → Permanent memory → Import JSON** and choose that file.
+3. In Catching Days: **Settings → Permanent memory → Import JSON** and choose that file.
 
-Focus then pushes the restored version to your other devices.
+Catching Days then pushes the restored version to your other devices.
 
 ---
 

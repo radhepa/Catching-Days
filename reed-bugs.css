@@ -1,5 +1,5 @@
 /* reed-bugs.css · Catching Days
-   The reed bed and its bug of the day. Shared by radhe-labs-focus.html and
+   The reed bed and its bug of the day. Shared by catching-days.html and
    bug-library.html (see reed-bugs.js and BUG-LIBRARY.md). */
 .reeds-bed .rs{position:absolute;bottom:0;transform-origin:50% 100%;transform:rotate(var(--r))}
 .reeds-bed .rp{position:absolute;inset:0;transform-origin:50% 100%}

@@ -9702,7 +9702,7 @@ function exportData(){
   db.lastExport=Date.now(); save();
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([JSON.stringify(db,null,2)],{type:'application/json'}));
-  a.download=`radhelabs-focus-${today()}.json`; a.click();
+  a.download=`catching-days-backup-${today()}.json`; a.click();
   $('exp-info').textContent='Last export: '+fExact(db.lastExport);
 }
 function dl(name,text,type){
@@ -9719,7 +9719,7 @@ function exportCSV(){
   db.sessions.forEach(s=>s.cycles.forEach(c=>cy.push([s.id,s.name||'',fExact(s.started),c.n,
     c.actual,c.planned,c.over,c.breakActual,c.earned,c.overBreak,c.rating??'',c.journal||'',
     (c.done||[]).map(d=>d.title).join(' | '),(c.done||[]).map(d=>fStamp(d.at)).join(' | ')])));
-  dl(`radhelabs-cycles-${today()}.csv`,csvify(cy),'text/csv');
+  dl(`catching-days-cycles-${today()}.csv`,csvify(cy),'text/csv');
 
   const asgc=[['assignment','class','importance','est_min','logged_min','est_accuracy_pct',
     'due','done','completed_at','subtasks_done','subtasks_total','notes_count','journal']];
@@ -9729,13 +9729,13 @@ function exportCSV(){
       a.due?dDate(a.due):'',a.done?'yes':'no',a.done&&a.doneAt?fStamp(a.doneAt):'',
       a.subs.filter(s=>s.done).length,a.subs.length,a.log.length,
       a.log.map(n=>`[${fStamp(n.at)}] ${n.text}`).join('  ||  ')]); });
-  setTimeout(()=>dl(`radhelabs-assignments-${today()}.csv`,csvify(asgc),'text/csv'),300);
+  setTimeout(()=>dl(`catching-days-assignments-${today()}.csv`,csvify(asgc),'text/csv'),300);
 }
 function importData(inp){
   const f=inp.files[0]; if(!f) return;
   const r=new FileReader();
   r.onload=async ()=>{ try{ let d=JSON.parse(r.result);
-      if(d&&d.app==='radhe-labs-focus'&&d.data&&typeof d.data==='object') d=d.data;   // a copy downloaded from the sync repo's history
+      if(d&&(d.app==='catching-days'||d.app==='radhe-labs-focus')&&d.data&&typeof d.data==='object') d=d.data;   // a copy downloaded from the sync repo's history
       if(!Array.isArray(d.sessions)) throw 0;
       db=ensureSettings(Object.assign(clone(blank),d)); db.savedAt=Date.now();
       cacheSave(); if(SERVER) await syncOut();

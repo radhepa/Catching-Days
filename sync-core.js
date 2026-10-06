@@ -25,7 +25,8 @@
   'use strict';
 
   var FORMAT = 1;
-  var APP_ID = 'radhe-labs-focus';
+  var APP_ID = 'catching-days';
+  var LEGACY_APP_IDS = ['radhe-labs-focus'];   // data files saved before the rename
   /* state that belongs to one device and must not be synced */
   var DEVICE_KEYS = ['active', 'loads', 'firstRun', 'lastSync', 'lastBackup', 'lastExport', 'lastImport', 'savedAt'];
   var RECORD_LISTS = ['classes', 'assignments', 'sessions', 'diary', 'stickies', 'journeys', 'exams'];
@@ -134,7 +135,7 @@
   }
   function parseEnvelope(text) {
     var o = JSON.parse(text);
-    if (!o || o.app !== APP_ID || !isPlain(o.data)) throw new Error('That file is not a Focus data file');
+    if (!o || (o.app !== APP_ID && LEGACY_APP_IDS.indexOf(o.app) < 0) || !isPlain(o.data)) throw new Error('That file is not a Catching Days data file');
     return { savedAt: o.savedAt || 0, device: o.device || '', data: o.data };
   }
 

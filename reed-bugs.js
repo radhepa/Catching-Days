@@ -1,7 +1,7 @@
 /* reed-bugs.js · Catching Days
    The bug of the day on Today's reed bed: the reed drawing, all the bugs
    (art, flight plans, field notes), the daily rotation and the renderer.
-   Loaded by radhe-labs-focus.html AND bug-library.html, so the library
+   Loaded by catching-days.html AND bug-library.html, so the library
    always plays exactly what the app plays. Read BUG-LIBRARY.md before
    changing anything here; tweaks the owner makes in the library live in
    bug-tweaks.json (speed, size, off, and flagged change requests).

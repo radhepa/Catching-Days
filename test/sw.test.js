@@ -77,45 +77,45 @@ test('install caches the shell and survives a missing file', async () => {
     fetchImpl: async u => (u.includes('sync.js') ? resp('', { ok: false }) : resp('ok:' + u)),
   });
   await fire('install').waited;
-  const cached = [...stores.get('focus-v2').keys()];
-  assert.ok(cached.some(u => u.endsWith('radhe-labs-focus.html')));
+  const cached = [...stores.get('catching-days-v2').keys()];
+  assert.ok(cached.some(u => u.endsWith('catching-days.html')));
   assert.ok(cached.some(u => u.endsWith('manifest.webmanifest')));
   assert.ok(!cached.some(u => u.endsWith('sync.js')), 'failed file is skipped, not fatal');
 });
 
 test('activate removes old cache versions', async () => {
   const { fire, stores, cacheApi } = boot();
-  await cacheApi.open('focus-v0'); await cacheApi.open('focus-v1'); await cacheApi.open('focus-v2');
+  await cacheApi.open('catching-days-v0'); await cacheApi.open('catching-days-v1'); await cacheApi.open('catching-days-v2');
   await fire('activate').waited;
-  assert.deepEqual([...stores.keys()], ['focus-v2']);
+  assert.deepEqual([...stores.keys()], ['catching-days-v2']);
 });
 
 test('online: serves the network copy and refreshes the cache', async () => {
   const { fire, cacheApi } = boot({ fetchImpl: async () => resp('fresh') });
-  const r = await fire('fetch', get('radhe-labs-focus.html')).responded;
+  const r = await fire('fetch', get('catching-days.html')).responded;
   assert.equal(r.body, 'fresh');
   await new Promise(res => setImmediate(res));
-  assert.equal((await cacheApi.match(get('radhe-labs-focus.html'))).body, 'fresh');
+  assert.equal((await cacheApi.match(get('catching-days.html'))).body, 'fresh');
 });
 
 test('offline: falls back to the cached copy', async () => {
   let online = true;
   const { fire } = boot({ fetchImpl: async () => { if (!online) throw new TypeError('offline'); return resp('v1'); } });
-  await fire('fetch', get('radhe-labs-focus.html')).responded;    // primes the cache
+  await fire('fetch', get('catching-days.html')).responded;    // primes the cache
   await new Promise(res => setImmediate(res));
   online = false;
-  const r = await fire('fetch', get('radhe-labs-focus.html?x=1')).responded;   // query string ignored
+  const r = await fire('fetch', get('catching-days.html?x=1')).responded;   // query string ignored
   assert.equal(r.body, 'v1');
 });
 
 test('offline navigation to an unknown URL falls back to the app page', async () => {
   let online = true;
   const { fire } = boot({ fetchImpl: async u => { if (!online) throw new TypeError('offline'); return resp('app:' + (u.url || u)); } });
-  await fire('fetch', get('radhe-labs-focus.html')).responded;
+  await fire('fetch', get('catching-days.html')).responded;
   await new Promise(res => setImmediate(res));
   online = false;
   const r = await fire('fetch', get('somewhere-else')).responded;
-  assert.match(r.body, /radhe-labs-focus\.html/);
+  assert.match(r.body, /catching-days.html/);
 });
 
 test('slow network: serves the cache instead of waiting', async () => {
@@ -123,11 +123,11 @@ test('slow network: serves the cache instead of waiting', async () => {
   const { fire } = boot({
     fetchImpl: async () => (slow ? new Promise(res => setTimeout(() => res(resp('late')), 6000)) : resp('cached-copy')),
   });
-  await fire('fetch', get('radhe-labs-focus.html')).responded;
+  await fire('fetch', get('catching-days.html')).responded;
   await new Promise(res => setImmediate(res));
   slow = true;
   const t0 = Date.now();
-  const r = await fire('fetch', get('radhe-labs-focus.html')).responded;
+  const r = await fire('fetch', get('catching-days.html')).responded;
   assert.equal(r.body, 'cached-copy');
   assert.ok(Date.now() - t0 < 5000, 'returned at the timeout, not when the network finally answered');
 });

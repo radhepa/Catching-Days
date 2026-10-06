@@ -38,7 +38,7 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  const file = name === '' ? 'radhe-labs-focus.html' : name;
+  const file = name === '' ? 'catching-days.html' : name;
   const full = path.join(ROOT, file);
   if (!full.startsWith(ROOT)) { res.writeHead(403); res.end(); return; }
   // Author previews live on the separate local preview server, never in the app.

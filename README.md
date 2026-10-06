@@ -111,7 +111,7 @@ cd catching-days
 
 ### 2. Start the local server
 
-**Windows:** double-click **Start Catching Days.bat** if it is present in your copy. **Start Focus.bat** is also supported. The launcher finds Python or Node.js, starts the server, and opens the app. Keep the server window open while you use it.
+**Windows:** double-click **Start Catching Days.bat** . The launcher finds Python or Node.js, starts the server, and opens the app. Keep the server window open while you use it.
 
 **macOS, Linux, or a terminal on Windows:** open a terminal in the app folder and run one of these commands:
 
@@ -127,7 +127,7 @@ On Windows, you can also use `py -3 server.py` or `python server.py`.
 
 ### 3. Open your pond
 
-Visit [http://127.0.0.1:8765/radhe-labs-focus.html](http://127.0.0.1:8765/radhe-labs-focus.html).
+Visit [http://127.0.0.1:8765/catching-days.html](http://127.0.0.1:8765/catching-days.html).
 
 Use this address whenever you return. The local server handles saving; opening the HTML file directly from disk does not provide that save connection.
 
@@ -161,7 +161,7 @@ Then use the setup code from the connected device to connect your other device. 
 The interface runs in the browser, with a small Python or Node.js server for local persistence. Both servers use their language's standard libraries.
 
 ```text
-radhe-labs-focus.html      App shell and core study tools
+catching-days.html      App shell and core study tools
 server.py / server.js     Local file server and save endpoint
 Start Catching Days.bat   Windows launcher
 pond*.js                  Pond artwork, collection, and small stories
@@ -173,7 +173,7 @@ icons/ / sprites/         App icons and supporting artwork
 docs/images/              README screenshots and companion pictures
 ```
 
-The historical `radhe-labs-focus.html` filename is still the app's entry point; the name you see in the interface is **Catching Days**.
+The historical `catching-days.html` filename is still the app's entry point; the name you see in the interface is **Catching Days**.
 
 ---
 

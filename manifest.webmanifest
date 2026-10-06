@@ -2,7 +2,7 @@
   "name": "Catching Days",
   "short_name": "Catching Days",
   "description": "A calm pond for your tasks, focus sessions, and daily discoveries.",
-  "start_url": "./radhe-labs-focus.html",
+  "start_url": "./catching-days.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f4f0e7",

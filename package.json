@@ -1,7 +1,7 @@
 {
-  "name": "radhe-labs-focus",
+  "name": "catching-days",
   "version": "1.0.0",
-  "description": "Focus timer, tasks, habits and journal. Installable on your phone, with optional sync between devices.",
+  "description": "Catching Days: tasks, focus sessions, journal and a living pond. Installable on your phone, with optional sync between devices.",
   "private": true,
   "scripts": {
     "test": "node --test",
