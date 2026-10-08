@@ -20,10 +20,21 @@ REM Windows lets two processes both listen on one port, and connections then
 REM get routed unpredictably between them. So clicking the launcher twice is
 REM now harmless - the second click just opens the browser.
 netstat -ano | find "127.0.0.1:%PORT% " | find "LISTENING" >nul 2>&1
-if not errorlevel 1 (
+if errorlevel 1 goto :findserver
+
+REM An app server started before an update can be missing newer features
+REM (like reading calendars). If it is, swap it for a fresh one: your data
+REM lives in focus-data.json, so nothing is lost.
+powershell -NoProfile -Command "try{ Invoke-WebRequest -UseBasicParsing 'http://127.0.0.1:%PORT%/cal-feed' -TimeoutSec 4 | Out-Null; exit 0 }catch{ $r=$_.Exception.Response; if($r -and [int]$r.StatusCode -eq 404){ exit 9 }; exit 0 }"
+if not errorlevel 9 (
   start "" "http://127.0.0.1:%PORT%/%PAGE%"
   exit /b 0
 )
+echo   Updating the app server...
+for /f "tokens=5" %%p in ('netstat -ano ^| find "127.0.0.1:%PORT% " ^| find "LISTENING"') do taskkill /PID %%p /F >nul 2>&1
+timeout /t 1 /nobreak >nul
+
+:findserver
 
 REM ---- find something that can serve the app AND save your data ----
 py -3 --version  >nul 2>&1 && goto :usepy

@@ -235,25 +235,36 @@ function cacheRange(extra){
   if(extra){ if(addDays(extra,-7)<from) from=addDays(extra,-7); if(addDays(extra,14)>to) to=addDays(extra,14); }
   return {from,to};
 }
-function feedUrl(u){ u=String(u||'').trim(); if(/^webcal:\/\//i.test(u)) u='https://'+u.slice(9); return u; }
+function feedUrl(u){ u=String(u||'').trim(); if(/^webcal:\/\//i.test(u)) u='https://'+u.slice(9); else if(/^http:\/\//i.test(u)) u='https://'+u.slice(7); return u; }
+/* a browser may only read another site when that site allows it; most
+   calendars (Google's included) don't, which is why the local server reads them */
+async function fetchDirect(u){
+  let r; try{ r=await fetch(u,{cache:'no-store'}); }catch(e){ return null; }
+  if(!r.ok) return null;
+  const txt=await r.text();
+  return /BEGIN:VCALENDAR/i.test(txt.slice(0,4096))?txt:null;
+}
 async function fetchFeed(f){
   const u=feedUrl(f.url);
   if(MODE==='server'){
     const r=await fetch('/cal-feed?u='+encodeURIComponent(u),{cache:'no-store'});
     const txt=await r.text();
-    if(r.status===404) throw new Error('restart');
+    if(r.status===404){                     // a server window older than the calendar reader
+      const d=await fetchDirect(u); if(d) return d;
+      throw new Error('restart');
+    }
     if(!r.ok) throw new Error(txt||'Could not reach that address.');
     return txt;
   }
   /* hosted/phone copy: there is no helper to read another site, so only
      feeds that allow it work; everything else arrives through sync */
-  const r=await fetch(u,{cache:'no-store'});
-  if(!r.ok) throw new Error('Could not reach that address.');
-  return await r.text();
+  const d=await fetchDirect(u);
+  if(!d) throw new Error('Could not reach that address.');
+  return d;
 }
 function lastFetch(){ try{ return +localStorage.getItem(LS_FETCH)||0; }catch(e){ return 0; } }
 async function refreshFeeds(force,extraDay){
-  const feeds=P().feeds.filter(f=>f.on!==false&&f.url);
+  const feeds=P().feeds.filter(f=>f.on!==false&&f.url&&!f.ics);
   if(!feeds.length||S.fetching) return;
   if(MODE==='file') return;
   const rng=cacheRange(extraDay);
@@ -278,7 +289,7 @@ async function refreshFeeds(force,extraDay){
       anyOk=true;
     }catch(err){
       const msg=err&&err.message==='restart'?'restart':(err&&err.message)||'Could not reach that address.';
-      S.feedStatus[f.id]={ok:false, at:Date.now(), err:msg};
+      if(MODE!=='hosted') S.feedStatus[f.id]={ok:false, at:Date.now(), err:msg};   // the phone gets these through sync
       ev=ev.concat(P().cal.ev.filter(e=>e.f===f.id));   // keep what we had
     }
   }
@@ -829,7 +840,8 @@ function statusHTML(){
   const at=P().cal.at;
   let msg=S.fetching?'Updating your calendar…':at?`Calendar updated ${agoTxt(Math.max(at,lastFetch()))}`:'Not read yet';
   if(bad){ const e=S.feedStatus[bad.id].err; msg=e==='restart'?'Restart Catching Days to read your calendar':`“${bad.name}” couldn’t be read`; }
-  if(MODE==='hosted'&&!S.fetching&&!bad) msg=at?`Calendar from your laptop, ${agoTxt(at)}`:'Calendar arrives from your laptop';
+  if(!feeds.some(f=>f.url&&!f.ics)&&!S.fetching) msg=at?`Calendar imported ${agoTxt(at)}`:'Calendar imported';
+  else if(MODE==='hosted'&&!S.fetching&&!bad) msg=at?`Calendar from your laptop, ${agoTxt(at)}`:'Calendar arrives from your laptop';
   return `<div class="pl-stat${bad?' bad':''}"><span>${esc(msg)}</span><button class="pl-ib" data-act="refresh" title="Read your calendars again" aria-label="Refresh calendars"${S.fetching?' disabled':''}>⟳</button><button class="pl-link" data-act="settings">Calendars</button></div>`;
 }
 function agoTxt(ts){ const m=Math.round((Date.now()-ts)/MIN); return m<1?'just now':m<60?m+' min ago':m<1440?Math.round(m/60)+' h ago':Math.round(m/1440)+' days ago'; }
@@ -1050,46 +1062,73 @@ function connectModal(){
     <ol class="pl-steps">
       <li>Open <a href="https://calendar.google.com/calendar/u/0/r/settings" target="_blank" rel="noopener">Google Calendar settings</a>.</li>
       <li>On the left under <b>Settings for my calendars</b>, click the calendar you want (usually your name), then <b>Integrate calendar</b>.</li>
-      <li>Copy <b>Secret address in iCal format</b> (it ends in <span class="mono">.ics</span>) and paste it below.</li>
+      <li>Copy <b>Secret address in iCal format</b> (it ends in <span class="mono">.ics</span>) and paste it below. That’s it.</li>
     </ol>
-    <label class="lbl" for="pl-c-url" style="margin-top:14px">Secret address</label>
-    <input id="pl-c-url" placeholder="https://calendar.google.com/calendar/ical/…/basic.ics" autocomplete="off" spellcheck="false">
-    <div class="row" style="gap:10px;margin-top:12px">
-      <div style="flex:1"><label class="lbl" for="pl-c-name">Name</label><input id="pl-c-name" placeholder="Google Calendar" autocomplete="off"></div>
-      <div><label class="lbl">Colour</label><div class="pl-sw" id="pl-c-col">${FEED_COLORS.map((c,i)=>`<button type="button" class="${i===P().feeds.length%FEED_COLORS.length?'on':''}" data-c="${c}" style="background:${c}" aria-label="Colour ${i+1}"></button>`).join('')}</div></div>
-    </div>
+    <label class="lbl" for="pl-c-url" style="margin-top:14px">Paste your calendar</label>
+    <textarea id="pl-c-url" class="pl-c-in" rows="2" placeholder="https://calendar.google.com/calendar/ical/…/basic.ics" autocomplete="off" spellcheck="false"></textarea>
     <p class="pl-c-msg" id="pl-c-msg"></p>
-    <p class="dim" style="font-size:12px;margin:4px 0 0">Works with any calendar address that ends in .ics too: Outlook, Apple, Brightspace or Canvas. Add as many as you like.</p>
+    <p class="dim" style="font-size:12px;margin:4px 0 0">Any calendar’s iCal (.ics) address works: Outlook, Apple, Brightspace or Canvas. You can also open a downloaded .ics file in Notepad and paste everything in it. Add as many as you like.</p>
     <div class="row" style="gap:9px;margin-top:16px"><button class="primary" id="pl-c-go">Connect</button><button class="ghost" onclick="closeModal()">Cancel</button></div>`,true);
-  const sw=$('pl-c-col');
-  sw.onclick=e=>{ const b=e.target.closest('button'); if(!b) return; sw.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); };
+  const inp=$('pl-c-url');
   $('pl-c-go').onclick=connectGo;
-  $('pl-c-url').onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); connectGo(); } };
-  $('pl-c-url').focus();
+  inp.onkeydown=e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); connectGo(); } };
+  inp.addEventListener('paste',()=>setTimeout(connectGo,0));    // pasting is the whole job
+  inp.focus();
 }
+const IMPORT_BACK=60, IMPORT_AHEAD=550;   // days of a pasted calendar file to keep
+function nextFeedColor(){
+  const used=new Set(P().feeds.map(f=>f.color));
+  return FEED_COLORS.find(c=>!used.has(c))||FEED_COLORS[P().feeds.length%FEED_COLORS.length];
+}
+let _connecting=false;
 async function connectGo(){
-  const msg=$('pl-c-msg'), btn=$('pl-c-go');
-  const url=feedUrl($('pl-c-url').value);
+  if(_connecting) return;
+  const msg=$('pl-c-msg'), btn=$('pl-c-go'), inp=$('pl-c-url');
+  if(!msg||!inp) return;
+  const raw=String(inp.value||'').trim();
   const say=(t,bad)=>{ msg.textContent=t; msg.className='pl-c-msg'+(bad?' bad':' ok'); };
-  if(!/^https:\/\/\S+$/i.test(url)){ say('Paste the whole address. It starts with https:// (or webcal://).',true); return; }
+  if(!raw){ say('Paste your calendar’s iCal address.',true); return; }
+  const color=nextFeedColor();
+  /* the calendar file itself: read it right here, no address needed */
+  if(/BEGIN:VCALENDAR/i.test(raw)){
+    const t=today(), from=addDays(t,-IMPORT_BACK), to=addDays(t,IMPORT_AHEAD);
+    let r; try{ r=IC.parse(raw,{from,to,tz:TZ()}); }catch(e){ r=null; }
+    if(!r){ say('That didn’t look like a whole calendar. Paste everything from BEGIN:VCALENDAR to END:VCALENDAR.',true); return; }
+    const f={id:uid(), name:r.name||'Imported calendar', ics:true, color, on:true, created:Date.now(), at:Date.now(), n:r.events.length};
+    const ev=r.events.map(e=>{
+      const o={f:f.id,t:e.title.slice(0,140)};
+      if(e.loc) o.l=e.loc.slice(0,80);
+      if(e.free) o.fr=1;
+      if(e.allDay){ o.ad=1; o.d0=e.d0; o.d1=e.d1; } else { o.s=e.start; o.e=e.end; }
+      return o; });
+    P().feeds.push(f);
+    const c=P().cal;
+    P().cal={at:Date.now(), from:c.from||null, to:c.to||null, ev:c.ev.concat(ev).sort((a,b)=>(a.ad?0:a.s)-(b.ad?0:b.s))};
+    save(); closeModal(); rerender(); paintStatus();
+    toast(`Imported “${f.name}”: ${f.n} event${f.n===1?'':'s'}`);
+    return;
+  }
+  /* otherwise an address: pull it out of whatever was pasted around it */
+  const m=raw.match(/(?:https?|webcal):\/\/[^\s"'<>]+/i);
+  if(!m){ say('That isn’t a calendar address. It starts with https:// (or webcal://) and usually ends in .ics.',true); return; }
+  const url=feedUrl(m[0]);
   if(/calendar\.google\.com\/calendar\/(u\/\d+\/)?(r|embed)/i.test(url)){ say('That’s the calendar page, not its iCal address. Use “Secret address in iCal format”.',true); return; }
-  if(P().feeds.some(f=>feedUrl(f.url)===url)){ say('That calendar is already connected.',true); return; }
-  if(MODE==='file'){ say('Open Catching Days with Start Catching Days.bat first.',true); return; }
-  const name=($('pl-c-name').value||'').trim();
-  const color=($('pl-c-col').querySelector('.on')||{}).dataset?.c||FEED_COLORS[0];
-  btn.disabled=true; say('Reading your calendar…');
-  let txt;
-  try{ txt=await fetchFeed({url}); }
-  catch(err){
-    btn.disabled=false;
-    if(err&&err.message==='restart') say('One more step: close the black “Catching Days” window and open the app again (that turns calendar reading on), then try this again.',true);
-    else if(MODE==='hosted') say('This copy can’t read calendars directly. Connect it on your laptop and it will sync here.',true);
-    else say((err&&err.message)||'Could not read that address.',true);
+  if(P().feeds.some(f=>f.url&&feedUrl(f.url)===url)){ say('That calendar is already connected.',true); return; }
+  _connecting=true; if(btn) btn.disabled=true; say('Reading your calendar…');
+  let txt=null, err=null;
+  if(MODE==='file') txt=await fetchDirect(url);
+  else { try{ txt=await fetchFeed({url}); }catch(e){ err=e; } }
+  _connecting=false; if(btn) btn.disabled=false;
+  if(!txt){
+    const e=err&&err.message;
+    if(e==='restart') say('Close the black “Catching Days” window and open the app again, then paste this once more.',true);
+    else if(MODE==='file'||MODE==='hosted') say('This copy can’t read that address. Paste it on your laptop (it syncs here), or paste the calendar file’s text instead.',true);
+    else say(e||'Could not read that address.',true);
     return;
   }
   let r; try{ r=IC.parse(txt,{tz:TZ()}); }catch(e){ r=null; }
-  if(!r){ btn.disabled=false; say('That address didn’t look like a calendar.',true); return; }
-  const f={id:uid(), name:name||r.name||'Google Calendar', url, color, on:true, created:Date.now()};
+  if(!r){ say('That address didn’t look like a calendar.',true); return; }
+  const f={id:uid(), name:r.name||'Google Calendar', url, color, on:true, created:Date.now()};
   P().feeds.push(f);
   save(); closeModal();
   toast(`Connected “${f.name}”`);
@@ -1102,7 +1141,7 @@ function settingsModal(){
   modal(`<h2>Calendar settings</h2>
     <span class="lbl" style="margin-top:16px">Calendars</span>
     <div class="pl-feeds">${feeds.length?feeds.map(f=>{ const st=S.feedStatus[f.id];
-      return `<div class="pl-feed"><i style="background:${f.color}"></i><div><b>${esc(f.name)}</b><span>${st?(st.ok?`${st.n} events read ${agoTxt(st.at)}`:st.err==='restart'?'Restart Catching Days to read it':esc(st.err)):'Not read on this device yet'}</span></div>
+      return `<div class="pl-feed"><i style="background:${f.color}"></i><div><b>${esc(f.name)}</b><span>${f.ics?`${f.n||0} events, pasted ${agoTxt(f.at||f.created)}`:st?(st.ok?`${st.n} events read ${agoTxt(st.at)}`:st.err==='restart'?'Restart Catching Days to read it':esc(st.err)):'Not read on this device yet'}</span></div>
         <button class="switch${f.on!==false?' on':''}" data-act="feed-on" data-id="${f.id}" aria-label="Show ${esc(f.name)}"><span class="knob"></span></button>
         <button class="xs danger" data-act="feed-del" data-id="${f.id}">Remove</button></div>`; }).join('')
       :'<p class="dim" style="font-size:13px;margin:0">No calendars yet.</p>'}
