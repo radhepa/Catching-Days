@@ -42,7 +42,7 @@ It is meant for steady days, not heroic ones. There is no account to make and no
 
 <table>
   <tr>
-    <td width="33%" valign="top" align="center"><img src="docs/images/toads/hasu.svg" height="110" alt="Hasu"><br><b>A planner with a pulse</b><br><sub>Deadlines, estimates, subtasks and a do-score that tells you what to do next.</sub></td>
+    <td width="33%" valign="top" align="center"><img src="docs/images/toads/hasu.svg" height="110" alt="Hasu"><br><b>A planner with a pulse</b><br><sub>Deadlines, estimates, a do-score that tells you what to do next, and a day planner that puts it on the clock.</sub></td>
     <td width="33%" valign="top" align="center"><img src="docs/images/fish/koi.svg" height="64" alt="A koi"><br><br><b>Progress you can see</b><br><sub>385 fish, 100 insects and 9 toads to meet, all waiting on ordinary work.</sub></td>
     <td width="33%" valign="top" align="center"><img src="docs/images/toads/sumi.svg" height="110" alt="Sumi"><br><b>A journal that listens</b><br><sub>Moods, photos, tags, a calendar of lily pads and a Vault that connects themes.</sub></td>
   </tr>
@@ -57,7 +57,7 @@ It is meant for steady days, not heroic ones. There is no account to make and no
 </p>
 
 1. **Plan.** Add your classes and tasks in **Plan**. Give each one a deadline, an estimate, maybe a few subtasks. Recurring habits live in **Journeys**, and bigger efforts in **Projects**.
-2. **Choose.** On **Today**, pick what actually belongs in today. The plan for today stays separate from a task's real deadline, so choosing a lighter day never hides something that is due.
+2. **Choose.** On **Today**, pick what actually belongs in today. The plan for today stays separate from a task's real deadline, so choosing a lighter day never hides something that is due. Then give it a time: drag tasks onto **Your day**, around your classes and other commitments, or let **Plan my day** fit them in for you.
 3. **Focus.** Start a **Focus** session with one or more tasks. Choose a focus and break rhythm, count cycles, bank the rest you have earned, and let the rain fall if you like. Time spent counts toward your daily goal and opens the day's lotus.
 4. **Release.** Finish a task and a fish is released into your pond, sometimes a species you have not met yet. Tasks hint at what they will release ("a goldfish, or a surprise"), and the fish is decided by the task itself, so unticking and re-ticking never rerolls it.
 5. **Reflect.** End the day in the **Journal**: a mood, a few lines, a photo. The calendar fills with flowering lily pads, and the Vault threads related entries together.
@@ -71,6 +71,8 @@ A few small mechanics keep the day honest:
 | **Daily lotus** | Focus minutes toward your daily goal open the lotus on Today. Reach the goal and it is in full bloom. |
 | **Lotus path** | Each day the lotus fully blooms, a lily pad floats onto the water. Pads on days in a row make a path, and the longer it grows the more of the pond comes to it: a frog at 3 days, a dragonfly at 7, lotus flowers at 14, fireflies at 21, a turtle at 30, the moon at 50 and the old pond at 100. Miss a day and the path breaks; the next bloom starts a new one, and today never breaks it until midnight. |
 | **Overdue work** | It never disappears. Overdue tasks wait in the reeds where you can see them. |
+| **Your day** | Today and the Calendar lay your day out hour by hour: your calendar's commitments, plus blocks of time you set aside for tasks. A task without an estimate gets a guess (marked `~`) from similar tasks and the kind of work it is. |
+| **Tests coming up** | Quizzes and exams in the next two weeks sit under Today's list as reminders (Settings changes how far ahead). On the day, tick one off: you're asked how it went from 1 to 5, and one of the toads answers. |
 
 <p align="center"><img src="docs/images/divider.svg" width="640" alt=""></p>
 
@@ -78,12 +80,33 @@ A few small mechanics keep the day honest:
 
 | Place | What happens there |
 | --- | --- |
-| **Today** | See today's tasks, choose work from your plan, watch completed tasks become fish, and grow your daily focus lotus. The bug of the day visits the reeds here. |
+| **Today** | See today's tasks, give them a time on **Your day**, watch completed tasks become fish, keep an eye on tests coming up, and grow your daily focus lotus. The bug of the day visits the reeds here. |
+| **Calendar** | Plan a day, three days or a week: drag tasks and exam study onto the timeline around your classes, let **Plan my day** fill the gaps, and connect Google Calendar (or any `.ics` calendar). |
 | **Focus** | Bring tasks into a session, choose a focus and break rhythm, track cycles, bank earned rest, and rate or reflect on the work. Optional rain sets the atmosphere. |
 | **Plan** | Organize assignments by class, add estimates and subtasks, track quizzes and exams, build recurring habits in Journeys, and keep projects moving. |
 | **Journal** | Write entries with moods, tags, photos, and reusable prompts. Browse the calendar or connect recurring themes in the Vault. |
 | **Sticky notes** | Give a passing thought a place to land. |
 | **You** | Keep a structured bio, review your focus statistics and history, and explore the encyclopedia of fish, bugs and toads. |
+
+<p align="center"><img src="docs/images/divider.svg" width="640" alt=""></p>
+
+<h2 align="center">Your day, on the clock</h2>
+
+<p align="center"><i>A list says what to do. A day says when.</i></p>
+
+<p align="center">
+  <a href="docs/images/calendar.jpg"><img src="docs/images/calendar.jpg" width="100%" alt="The Calendar tab: a month, a tray of tasks to plan, and a day timeline with classes, planned tasks, dinner and an evening study block"></a>
+</p>
+
+**Your day** sits at the top of Today, and the **Calendar** tab gives it a whole page with day, three-day and week views. Your commitments are already there, and the rest of the day is yours to arrange.
+
+- **Drag a task onto a time.** Pull it from the tray, from Today's list or from the "not on the clock yet" chips. Drag a block to move it, stretch its bottom edge to change its length, or drop it back on the tray to unplan it. On a phone, tap a task and then tap a time.
+- **Plan my day.** It fills your free time around your commitments, most urgent first, as a suggestion you keep or throw away. Nothing is planned after its due date, a habit only lands on its own day, and exam prep goes in ahead of the exam.
+- **Estimates when you have none.** A task without one gets a guess from similar tasks in the same class, that class's usual, or the kind of work its title describes. It's marked `~` until you change it.
+- **Slipped blocks get a second chance.** A block that passes unfinished is marked, and one click finds it a new time.
+- **Things that repeat.** Block off time you're always busy (gym, work, dinner) and make it weekly, or keep a habit at the same time every day.
+- **A nudge when it's time.** When a planned block starts you get a reminder, with **Focus** one tap away.
+- **Your calendar, read-only.** Connect Google Calendar through its private iCal address (see [Connecting a calendar](#connecting-a-calendar)), or any other `.ics` calendar: Outlook, Apple, or a school's course calendar. Classes that repeat, moved or cancelled meetings, and time zones all come through. Nothing is ever changed in your calendar.
 
 <p align="center"><img src="docs/images/divider.svg" width="640" alt=""></p>
 
@@ -108,8 +131,8 @@ Each class you add adopts a species of its own. When you finish one of its tasks
       <p align="center"><sub><b>The collection.</b> Discovered species fill in; the rest wait in the dark.</sub></p>
     </td>
     <td width="50%" valign="top">
-      <a href="docs/images/today.jpg"><img src="docs/images/today.jpg" alt="The Today screen with the task list, focus lotus and lotus path" width="100%"></a>
-      <p align="center"><sub><b>Today.</b> Tasks to catch, a lotus to open, and a path of pads behind you.</sub></p>
+      <a href="docs/images/today.jpg"><img src="docs/images/today.jpg" alt="The Today screen with the task list, tests coming up, the day's timeline, the focus lotus and the lotus path" width="100%"></a>
+      <p align="center"><sub><b>Today.</b> Tasks to catch, tests coming up, your day on the clock, and a lotus to open.</sub></p>
     </td>
   </tr>
 </table>
@@ -152,6 +175,12 @@ Tap the day's bug on Today to **catch it**. It joins your bug collection, and a 
 <p align="center"><i>Nine neighbours, each with a home in the app, a temperament and a very particular way of saying "keep going".</i></p>
 
 Five keepers watch over the main rooms of the app. Four companions live at the edges of the pond. Each has an encyclopedia entry with a short story, and in the app they move when you hover over them (the motion respects your system's reduced-motion setting).
+
+They also have your back on test day. Tick off a quiz or exam under Today's list and you're asked how it went, from 1 (rough) to 5 (great). Then one of the nine answers in its own voice, sitting in the pond: comfort after a rough one, a celebration after a great one. The lily pad beside it even grows a flower to match.
+
+<p align="center">
+  <a href="docs/images/exam-checkoff.jpg"><img src="docs/images/exam-checkoff.jpg" width="80%" alt="Tabi, Keeper of the Road, in the pond after a quiz was ticked off as a 4 out of 5: Good one! See? All those little stepping stones added up to a whole path."></a>
+</p>
 
 <table>
   <tr>
@@ -264,12 +293,17 @@ For your first day, add a class and a few tasks in **Plan**, choose what belongs
 | Port 8765 is already occupied | Run `python3 server.py 8766` or `node server.js 8766`, then open the same app path on port 8766. |
 | Changes do not survive reopening | Open through the server and check **Settings → Permanent memory** for storage status. |
 | Artwork or styles are missing | Extract the whole download and keep the supporting folders beside the HTML file. |
+| The Calendar says to restart Catching Days | The server window was started before calendars could be read. Close it and start the app again. |
 
 ## Your data
 
 With the local server, changes save automatically to **focus-data.json** in the app folder. On the first launch of a new day, the app also creates a safety snapshot in **focus-data.backup.json** when there is data to back up. The server listens only on your computer's loopback address, `127.0.0.1`.
 
 Use **Settings → Permanent memory → Export JSON** for a separate, dated backup. Import that JSON through Settings when you need to restore or move your data. A browser-hosted copy stores its data in that browser on that device.
+
+### Connecting a calendar
+
+In **Calendar → Connect Google Calendar**, paste your calendar's **Secret address in iCal format** (Google Calendar → Settings → your calendar → Integrate calendar). The local server reads that address for you, because a web page isn't allowed to read another site directly; it only fetches `https://` calendar files. The address and a copy of the next few weeks of events are kept in your data, so a synced phone shows them too. Treat the secret address like a password: anyone who has it can see that calendar. Remove it in the Calendar's settings at any time.
 
 ### Optional sync between devices
 
@@ -289,6 +323,8 @@ Start Catching Days.bat   Windows launcher
 pond*.js                  Pond artwork, collection, and small stories
 toad*.js                  Companion artwork, dialogue, and encyclopedia
 projects.js / .css        Project workspace
+planner*.js / .css        Day planner, Calendar tab and calendar-feed reader
+exam-checkoff.js / .css   Ticking off a quiz or exam, and a toad's answer
 sync-core.js / sync.js    Optional GitHub sync
 manifest.webmanifest      App name, icons, and display metadata
 icons/ / sprites/         App icons and supporting artwork

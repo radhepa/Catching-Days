@@ -19,6 +19,8 @@
 <link rel="stylesheet" href="daily-letter.css?v=1">
 <link rel="stylesheet" href="task-finish.css?v=1">
 <link rel="stylesheet" href="pond-events.css?v=8">
+<link rel="stylesheet" href="planner.css?v=1">
+<link rel="stylesheet" href="exam-checkoff.css?v=2">
 <style>
 :root{
   /* Koi Pond: warm paper around dark water. */
@@ -1073,6 +1075,8 @@ th.r,td.r{text-align:right}
 .tap-ring{position:absolute;border-radius:50%;border:2px solid #e6f5f1;transform:translate(-50%,-50%);z-index:6;pointer-events:none;animation:pf-tap 1.6s ease-out forwards}
 .td-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:24px;align-items:start}
 .td-side{display:flex;flex-direction:column;gap:24px}
+.td-more{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:24px;align-items:start}
+.td-more-l{display:flex;flex-direction:column;gap:24px;min-width:0}
 .td-catch{padding:26px 26px 22px;display:flex;flex-direction:column;gap:4px}
 .td-catch .pcard-t{font-size:28px}
 .cr{display:flex;align-items:center;gap:16px;padding:14px 12px;border-radius:16px;cursor:pointer;transition:background .15s;position:relative}
@@ -1106,6 +1110,39 @@ th.r,td.r{text-align:right}
 .td-add input:focus{box-shadow:none}
 .td-add kbd{font:500 12px/1 'Outfit',sans-serif;color:#a8a898}
 .td-empty{padding:18px 12px;font:400 15px/1.5 'Outfit',sans-serif;color:var(--dim)}
+/* tests coming up (paintTests): reminders, so no tick circle; a date tile instead */
+.tst-wrap{margin-top:22px;padding-top:18px;border-top:1px solid #ebe4d6;display:flex;flex-direction:column;gap:2px}
+.tst-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+.tst-h b{font:400 20px/1 var(--serif);color:var(--tx)}
+.tst-h em{font:500 12px/1 'Outfit',sans-serif;font-style:normal;color:#715c95;background:#715c951a;padding:4px 8px;border-radius:99px;margin-left:10px}
+.tst-h span{font:400 13px/1 'Outfit',sans-serif;color:var(--faint)}
+.tst{display:flex;align-items:center;gap:14px;padding:9px 12px;border-radius:14px;cursor:pointer;transition:background .15s}
+.tst:hover{background:#f1ebdf}
+.tst-d{width:40px;height:42px;flex:none;border-radius:11px;border:1.5px solid color-mix(in srgb,var(--c) 45%,#fff);background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;overflow:hidden}
+.tst-d span{font:600 9.5px/1 'Outfit',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--c)}
+.tst-d b{font:400 18px/1 var(--serif);color:var(--tx)}
+.tst-b{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.tst-t{font:500 15px/1.3 'Outfit',sans-serif;color:var(--tx);word-break:break-word}
+.tst-m{display:flex;align-items:center;gap:6px 10px;font:400 12.5px/1.2 'Outfit',sans-serif;color:var(--dim);flex-wrap:wrap}
+.tst-k{font:600 11px/1 'Outfit',sans-serif;padding:4px 8px;border-radius:99px}
+.tst-go{font:500 12px/1 'Outfit',sans-serif;padding:7px 10px;border-radius:99px;border:1px solid var(--inputline);background:transparent;color:var(--focus);opacity:0;transition:opacity .15s;flex:none}
+.tst:hover .tst-go,.tst:focus-within .tst-go{opacity:1}
+.tst-go:hover{background:#fff;border-color:var(--focus)}
+.tst-n{width:62px;flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.tst-n b{font:400 22px/1 var(--serif)}
+.tst-n b.w{font:600 13px/1 'Outfit',sans-serif}
+.tst-n span{font:400 11px/1 'Outfit',sans-serif;color:var(--faint)}
+.tst-none{margin:2px 12px 4px;font:400 13.5px/1.5 'Outfit',sans-serif;color:var(--dim)}
+/* on its day (or after) a test gets a circle to tick it off; ticked, it's the deep-water check */
+.tst-ck{width:40px;height:40px;flex:none;border-radius:50%;border:1.5px solid #cfc6b4;background:#fff;padding:0;display:flex;align-items:center;justify-content:center;
+  font:700 16px/1 'Outfit',sans-serif;color:#fff;transition:border-color .15s,background .15s,box-shadow .15s}
+.tst-ck:hover{border-color:var(--koi);background:#fff7f2}
+.tst.due .tst-ck{border-color:var(--koi);box-shadow:0 0 0 4px #ec7a4518}
+.tst-ck.on,.tst-ck.on:hover{background:radial-gradient(circle at 40% 35%,#23706f,#0f3b41);border-color:transparent;box-shadow:none}
+.tst.done .tst-t{color:var(--faint);text-decoration:line-through}
+.tst-ask{color:var(--koi);font-weight:500}
+@media (hover:none){ .tst-go{opacity:1} }
+@media (max-width:760px){ .tst{gap:10px;padding:9px 6px} .tst-go{display:none} }
 .reeds{margin-top:40px;padding-top:20px;border-top:1px solid #ebe4d6;display:flex;flex-direction:column;gap:2px;position:relative}
 .reeds-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:6px;flex-wrap:wrap}
 .reeds-h b{font:400 20px/1 var(--serif);color:#b0524a}
@@ -1444,6 +1481,7 @@ th.r,td.r{text-align:right}
 @media (max-width:1180px){
   .td-grid{grid-template-columns:minmax(0,1fr)}
   .td-side{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));align-items:start}
+  .td-more{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
   .jr-grid{grid-template-columns:minmax(0,1fr)}
   .jr-left{max-width:560px;width:100%;margin:0 auto}
   .jr-panel{min-height:0}
@@ -1894,11 +1932,12 @@ button.set-row:hover{background:#ebe3d4}
     </button>
     <span id="live" class="hide"></span>
 
-    <!-- Six places. Plan, Journal and You each hold a few screens, listed
+    <!-- Seven places. Plan, Journal and You each hold a few screens, listed
          under the place while you're in it (on a phone: a strip at the top
          of the page, see paintSubnav). NAV in the script is the map. -->
     <nav class="navlist" id="navlist">
       <button id="grp-today" class="navitem" onclick="navGo('today')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="15" rx="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M8 3.4v3.2M16 3.4v3.2M4 10h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9.4 14.4l1.9 1.9 3.3-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Today<span class="pip"></span></button>
+      <button id="grp-cal" class="navitem" onclick="navGo('cal')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="15" rx="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M8 3.4v3.2M16 3.4v3.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><rect x="7.4" y="9.6" width="6.2" height="3.4" rx="1.1" fill="currentColor"/><rect x="10.4" y="14.6" width="6.2" height="3.4" rx="1.1" fill="currentColor" opacity=".5"/></svg>Calendar<span class="pip"></span></button>
       <button id="grp-focus" class="navitem" onclick="navGo('focus')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Focus<span class="pip"></span></button>
       <button id="grp-plan" class="navitem" onclick="navGo('plan')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 7h14M5 12h14M5 17h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span class="nv-two">Plan<span class="hint"><span>Tasks · Journeys · Projects</span></span></span><span class="pip"></span></button>
       <div class="navsubs" id="subs-plan"></div>
@@ -1948,14 +1987,23 @@ button.set-row:hover{background:#ebe3d4}
           <label class="td-add"><span>+</span>
             <input id="dr-add" autocomplete="off" placeholder="Add a task for today…"
               onkeydown="if(event.key==='Enter')dailyQuickAdd(this)"><kbd>Enter</kbd></label>
+          <!-- quizzes and exams coming up: reminders, not tasks (paintTests) -->
+          <div id="dr-tests"></div>
           <div id="dr-reeds"></div>
         </div>
         <div class="td-side">
-          <div class="pcard lotus-card" id="td-lotus"></div>
-          <div class="pcard path-card" id="td-path"></div>
-          <div class="pcard" id="td-coll" style="padding:22px;display:flex;flex-direction:column;gap:14px;cursor:pointer" onclick="tab('coll')"></div>
-          <div class="pcard" id="td-up" style="padding:22px 22px 10px;display:flex;flex-direction:column"></div>
+          <!-- your day as a timeline: planner.js (Planner.paintToday) -->
+          <div class="pcard pl-today" id="td-plan"></div>
         </div>
+      </div>
+      <!-- the quieter cards sit under the list and the day, side by side, so
+           Today isn't one long column (the Collection card and Pond Moments
+           live on the Collection page; tests coming up are in Today's catch) -->
+      <div class="td-more">
+        <div class="td-more-l">
+          <div class="pcard path-card" id="td-path"></div>
+        </div>
+        <div class="pcard lotus-card" id="td-lotus"></div>
       </div>
     </div>
 
@@ -1982,6 +2030,8 @@ button.set-row:hover{background:#ebe3d4}
     <div id="v-set" class="hide"><div id="set-body"></div></div>
     <!-- ════ PROJECTS ════ projects.js (self-contained) -->
     <div id="v-proj" class="hide"><div id="proj-body"></div></div>
+    <!-- ════ CALENDAR ════ the day planner, planner.js (self-contained) -->
+    <div id="v-cal" class="hide"><div id="cal-body"></div></div>
   </div>
 </div>
 <div id="modals"></div>
@@ -2117,7 +2167,7 @@ const bioTier=r=>r==='dislike'?null:(BIO_TIERS.find(t=>t.rel&&t.rel.includes(r))
 
 /* v3 added settings.urgency + exams[]. Nothing branches on `v` yet — when a
    future change actually needs a migration, switch on it here. */
-const blank={v:3,settings:{focus:25,brk:5,sound:true,notify:false,tz:'America/New_York',goal:120,pondMotion:true,
+const blank={v:3,settings:{focus:25,brk:5,sound:true,notify:false,tz:'America/New_York',goal:120,pondMotion:true,testsAhead:14,
     urgency:{wDue:40,wWork:25,wImp:20,wProc:15,capHrsPerDay:3}},
   classes:[],assignments:[],sessions:[],active:null,lastExport:null,lastSync:null,lastImport:null,lastBackup:null,
   loads:0,firstRun:null, motivationVisual:'plant',
@@ -3076,7 +3126,7 @@ function examRow(e){
         ${e.classId?`${classDot(e.classId)}<span style="color:${clsCol(e.classId)}">${esc(clsName(e.classId))}</span>`:'<span>Unfiled</span>'}
         ${e.confidence?`<span style="color:${CONF[e.confidence].c}">${CONF[e.confidence].t}</span>`:''}
         ${e.examDate&&!past&&!e.done?`<span${d!==null&&d<=1?' class="due-soon"':''}>${dRel(e.examDate)}</span>`:''}
-        ${e.done?`<span style="color:var(--focus)">✓ taken ${fStamp(e.doneAt)}</span>`:''}
+        ${e.done?`<span style="color:var(--focus)">✓ taken ${fStamp(e.doneAt)}${e.felt&&window.TestCheck&&TestCheck.FEEL[e.felt]?' · felt '+TestCheck.FEEL[e.felt].t.toLowerCase():''}</span>`:''}
       </div>
       ${open?`<div class="detail">
         ${e.notes?`<p class="dim" style="font-size:12.5px;margin:0 0 9px;white-space:pre-wrap">${esc(e.notes)}</p>`:''}
@@ -3633,6 +3683,13 @@ high-score and overdue work first, keep exam prep ahead of the exam date
 rather than the night before, and say plainly when there is more work than
 time. Suggest an order — don't invent new deadlines.
 
+When the user has used the Calendar tab, agent-context.md also has a
+**Schedule** section for today and tomorrow: their commitments (classes and
+events from their connected calendars, time they blocked off) and the blocks
+of time they already set aside for tasks, with the free time left. Fit
+suggestions around it and name actual times. You can't move anything on it;
+the user arranges it in the app.
+
 ## Job 2 — read the journal
 
 agent-context.md carries the journal entries with their date, mood, tag, and
@@ -3988,6 +4045,9 @@ function agentContext(){
   P('The app rewrites this file every time it saves. Read-only —');
   P('to propose new tasks write inbox.json, and read AGENTS.md first.');
   P('');
+
+  // ── the day planner's schedule: commitments and planned blocks ──
+  try{ if(window.Planner) Planner.agentLines().forEach(P); }catch(e){}
 
   P('## Classes');
   P('');
@@ -8447,7 +8507,7 @@ function catchRow(a,st){
   const cc=a.classId?clsCol(a.classId):hj?'var(--accent)':'var(--faint)';
   const cname=a.classId?esc(clsShort(a.classId)):hj?'↻ '+esc(hj.name):'Unfiled';
   const score=!a.done&&!a.ann?doScore(a):null;
-  return `<div class="cr${a.done?' done':''}${a.ann?' ann':''}${open?' open':''}" onclick="crTap(event,'${a.id}')">
+  return `<div class="cr${a.done?' done':''}${a.ann?' ann':''}${open?' open':''}" data-aid="${a.id}" onclick="crTap(event,'${a.id}')">
     <div class="cr-ic">${a.ann?'◆':a.done?PondArt.fish(k,.5,0,'flat'):`<i style="background:${asp?asp.c:'#8f978f'}"></i>`}</div>
     <div class="cr-b">
       <div class="cr-t">${esc(a.title)}</div>
@@ -8588,6 +8648,50 @@ function reedMark(){
     <rect x="9.8" y="4" width="3.4" height="7" rx="1.7" fill="#8a5a3b"/><path d="M9 22 Q8.5 16 5.5 12 Q10 16 10.8 22Z" fill="#5f9470"/></svg></span>`;
 }
 
+/* ── tests coming up ──
+   Quizzes and exams within db.settings.testsAhead days (14 unless changed in
+   Settings), under Today's catch. Before test day they're reminders only.
+   On the day, and for a week after if it was never ticked, a test gets a
+   circle to tick it off: exam-checkoff.js asks how it felt and one of the
+   toads answers. One ticked today stays (ticked) until tomorrow. Tap a row to
+   open the test; "Plan study" sets aside study time on the Calendar. */
+function paintTests(){
+  const el=$('dr-tests'); if(!el) return;
+  const t=today(), raw=db.settings.testsAhead, n=Math.max(0,Math.round(raw==null?14:+raw||0)), end=addDays(t,n), back=addDays(t,-7);
+  if(!n){ el.innerHTML=''; return; }
+  const list=(db.exams||[]).map(fixExam)
+    .filter(e=>e.examDate&&e.examDate>=back&&e.examDate<=end&&!clsArchived(e.classId)
+      &&(e.done?!!e.doneAt&&dayKey(e.doneAt)===t:true))
+    .sort((a,b)=>a.examDate.localeCompare(b.examDate)||a.title.localeCompare(b.title));
+  const open=list.filter(e=>!e.done).length;
+  const TC=window.TestCheck, FEEL=TC?TC.FEEL:null;
+  const span=n===14?'the next two weeks':n===7?'the next week':n===1?'today and tomorrow':`the next ${n} days`;
+  el.innerHTML=`<div class="tst-wrap">
+    <div class="tst-h"><div><b>Tests coming up</b>${open?`<em>${open}</em>`:''}</div><span>${esc(span)} · tick one off on its day</span></div>
+    ${list.length?list.map(e=>{
+      const d=dDelta(e.examDate), k=exKind(e), due=d<=0&&!e.done;
+      const col=e.done?'#2f7a74':d<0?'#b0524a':d<=3?'#c65f2e':d<=7?'#a8762f':'#2f7a74';
+      const cc=e.classId?clsCol(e.classId):'var(--faint)';
+      const conf=!e.done&&e.confidence&&CONF[e.confidence]?CONF[e.confidence]:null;
+      const felt=e.done&&e.felt&&FEEL&&FEEL[e.felt]?FEEL[e.felt]:null;
+      const left=e.done&&TC?`<button class="tst-ck on" onclick="event.stopPropagation();TestCheck.undo('${e.id}')" title="Ticked off. Tap to undo" aria-label="Undo ticking off ${esc(e.title)}">✓</button>`
+        :due&&TC?`<button class="tst-ck" onclick="event.stopPropagation();TestCheck.open('${e.id}')" title="Took it? Tick it off" aria-label="Tick off ${esc(e.title)}"></button>`
+        :`<div class="tst-d" style="--c:${col}"><span>${MONTH_NAMES[+e.examDate.slice(5,7)-1].slice(0,3)}</span><b>${+e.examDate.slice(8,10)}</b></div>`;
+      const right=e.done?`<b class="w" style="color:${felt?felt.c:'var(--focus)'}">${felt?'Felt '+felt.t.toLowerCase():'Taken'}</b>`
+        :d<0?`<b class="w">${d===-1?'Yesterday':-d+' days ago'}</b>`
+        :d===0?'<b class="w">Today</b>':d===1?'<b class="w">Tomorrow</b>':`<b>${d}</b><span>days</span>`;
+      return `<div class="tst${e.done?' done':''}${due?' due':''}" onclick="examModal('${e.id}')" title="Open ${esc(e.title)}">
+        ${left}
+        <div class="tst-b"><div class="tst-t">${esc(e.title)}</div>
+          <div class="tst-m"><span class="cr-c" style="color:${cc}"><i style="background:${cc}"></i>${e.classId?esc(clsShort(e.classId)):'Unfiled'}</span>
+            <span class="tst-k" style="color:${k.c};background:${k.c}18">${k.t}</span>${conf?`<span style="color:${conf.c}">${conf.t}</span>`:''}${
+            (due||e.done)&&d!==0?`<span>${esc(dMini(e.examDate))}</span>`:''}${d<0&&!e.done?'<span class="tst-ask">Did you take it?</span>':''}</div></div>
+        ${window.Planner&&!e.done&&d>=0?`<button class="tst-go" onclick="event.stopPropagation();Planner.planStudy('${e.id}')" title="Set aside study time on the Calendar">Plan study</button>`:''}
+        <div class="tst-n" style="color:${col}">${right}</div>
+      </div>`; }).join('')
+    :`<p class="tst-none">No quizzes or exams in ${esc(span)}.</p>`}
+  </div>`;
+}
 function paintDaily(){
   const st=pondState();
   const hr=etHour(Date.now());
@@ -8669,10 +8773,12 @@ function paintDaily(){
   lot.querySelector('.lotus-go').textContent=A?'Back to your session':`Start focusing · ${fm} min`;
   lot.querySelector('.lotus-note').textContent=`${fm} focus · ${bm} break · each minute earns ${Math.round(bm/fm*60)}s of rest`;
   paintPath(st);     // the lotus path: a pad for every day in full bloom
+  window.Planner?.paintToday();   // "Your day": the timeline card, planner.js
 
-  /* a glance at the collection: the twelve hand-drawn species */
+  /* a glance at the collection: the twelve hand-drawn species (the card
+     has left Today; this only draws if it's ever put back) */
   const nx=st.next;
-  $('td-coll').innerHTML=`<div class="pcard-h"><span class="pcard-t">Collection</span>
+  if($('td-coll')) $('td-coll').innerHTML=`<div class="pcard-h"><span class="pcard-t">Collection</span>
       <span style="font:500 13px/1 'Outfit',sans-serif;color:var(--focus)">${st.foundN} of ${st.total} found</span></div>
     <div class="mdex">${PondArt.SPEC.slice(0,12).map(sp=>{ const f=st.found[sp.k];
       return `<i title="${f?esc(sp.name):'Still hidden'}" style="background:${f?'#0f3b41':'#e0d8c8'}">${f?PondArt.fish(sp.k,.5,0,'flat'):PondArt.shadowFish(sp.k,.5,'#b9ae98')}</i>`; }).join('')}</div>
@@ -8684,9 +8790,11 @@ function paintDaily(){
         <span style="font:400 12px/1.3 'Outfit',sans-serif;color:var(--dim)">${esc(nx.sp.goal.t)}</span>
       </div></div>`:''}`;
 
-  /* pinned tests, as far upstream as they are */
-  const ups=countdownItems().slice(0,3);
-  $('td-up').innerHTML=`<div class="pcard-h" style="margin-bottom:10px"><span class="pcard-t">Upstream</span><span class="pcard-s">◷ pinned tests</span></div>
+  paintTests();
+  /* pinned tests, as far upstream as they are (the card has left Today;
+     ◷ pins still show on the Tasks screen) */
+  const ups=$('td-up')?countdownItems().slice(0,3):[];
+  if($('td-up')) $('td-up').innerHTML=`<div class="pcard-h" style="margin-bottom:10px"><span class="pcard-t">Upstream</span><span class="pcard-s">◷ pinned tests</span></div>
     ${ups.length?ups.map(x=>{ const d=dDelta(itemDate(x)), col=d<=3?'#c65f2e':d<=7?'#a8762f':'#2f7a74';
       return `<div class="up">
         <div class="rg"><i style="inset:0;border-color:${col};opacity:.35"></i><i style="inset:7px;border-color:${col};opacity:.6"></i><b style="background:${col}"></b></div>
@@ -9533,6 +9641,7 @@ function setNum(key,el){
   if(key==='brk') s.brk=Math.max(1,Math.min(90,v||5));
   if(key==='goal') s.goal=Math.max(0,Math.min(1440,v||0));
   if(key==='cap') s.urgency.capHrsPerDay=Math.min(24,Math.max(0.5,v||3));
+  if(key==='testsAhead') s.testsAhead=Math.max(0,Math.min(120,Math.round(v)||0));
   setupF=null; save();
 }
 function setTz(el){
@@ -9599,6 +9708,11 @@ function paintSettings(){
           ${tog('light',s.pondLight===true,'Light on the water','sunlight rippling across the pond floor')}
           <button class="set-row" onclick="window.open('bug-library.html','_blank')"><span>Bug library</span><b style="color:#2f7a74">see and tweak all ${REED_BUGS.length} bugs →</b></button>
           <button class="set-row" onclick="adoptModal()"><span>Class species</span><b style="color:#2f7a74">${activeClasses().filter(c=>db.pond.adopt[c.id]).length} adopted · change →</b></button>
+        </div>
+        <div class="pcard set-card" style="gap:14px">
+          <span class="pcard-t">Today</span>
+          <span style="font:400 13.5px/1.5 'Outfit',sans-serif;color:var(--dim)">Quizzes and exams show under Today’s catch as reminders once they’re this close. 0 hides the section.</span>
+          <label class="set-row"><span>Tests coming up</span><div style="display:flex;align-items:baseline;gap:6px"><input type="number" step="1" min="0" max="120" value="${s.testsAhead==null?14:s.testsAhead}" onchange="setNum('testsAhead',this);if(cur==='daily')paintDaily()" style="width:60px;text-align:right"><b>days ahead</b></div></label>
         </div>
       </div>
       <div style="display:flex;flex-direction:column;gap:20px">
@@ -9759,22 +9873,24 @@ function wipe(){
 /* Daily is the landing tab — the "what am I doing today" screen. Focus stays
    purely the pomodoro (setup screen, or a running session). */
 let cur='daily';
-const VIEWS=['daily','run','asg','jrn','proj','dia','stk','bio','stats','log','coll','set'];
+const VIEWS=['daily','cal','run','asg','jrn','proj','dia','stk','bio','stats','log','coll','set'];
 /* ── navigation ──
-   Six places. Plan, Journal and You each hold a few screens; while you're
+   Seven places. Plan, Journal and You each hold a few screens; while you're
    in one, its screens are listed under it in the sidebar (on a phone, as a
    strip at the top of the page). Journal's Calendar and Vault are both the
-   'dia' view in different modes. Plan's Projects is projects.js ('proj').
+   'dia' view in different modes. Plan's Projects is projects.js ('proj');
+   Calendar is the day planner, planner.js ('cal').
    Settings sits apart at the bottom. */
 const NAV={
   today:  {items:[['daily','Today']]},
+  cal:    {items:[['cal','Calendar']]},
   focus:  {items:[['run','Focus']]},
   plan:   {items:[['asg','Tasks'],['jrn','Journeys'],['proj','Projects']]},
   journal:{items:[['dia:cal','Calendar'],['dia:vault','Vault']]},
   stk:    {items:[['stk','Sticky notes']]},
   you:    {items:[['bio','Bio'],['stats','Stats & history'],['coll','Collection']]},
 };
-const WIDE_VIEWS=['daily','dia','coll','run','asg','jrn','proj','stk','bio','stats','log','set'];
+const WIDE_VIEWS=['daily','cal','dia','coll','run','asg','jrn','proj','stk','bio','stats','log','set'];
 const navLast={};
 let _subnavGroup=null;
 const navKey=t=>t==='dia'?'dia:'+diaMode:t;
@@ -9829,6 +9945,7 @@ function tab(t){
   if(t==='asg'){ asgJustDone.clear(); journeyTick(); paintAsg(); }
   if(t==='jrn'){ checkJourneyEnds(); journeyTick(); paintJourneys(); }
   if(t==='proj'&&window.PJ) PJ.paint();    // projects.js
+  if(t==='cal'&&window.Planner) Planner.paint();   // planner.js
   if(t==='dia'){ diaShownMode=diaMode; paintDiary(); }
   if(t==='stk') paintStickies();
   if(t==='bio'){ bioFresh=true; paintBio(); }
@@ -9871,13 +9988,16 @@ function paintSyncInfo(){
 function repaint(){
   if(cur==='asg')paintAsg(); else if(cur==='jrn')paintJourneys(); else if(cur==='dia')paintDiary();
   else if(cur==='proj'){ if(window.PJ) PJ.refresh(); }
+  else if(cur==='cal'){ if(window.Planner) Planner.refresh(); }
   else if(cur==='stk')paintStickies();
   else if(cur==='bio')paintBio();
   else if(cur==='stats')paintStats();
   else if(cur==='set')paintSettings();
   else if(cur==='daily')paintDaily();
   else if(cur==='coll')paintCollection();
-  else if(cur==='run'){ A?paint():paintPick(); }
+  /* setup has no paintPick any more (it threw, and nothing after it ran);
+     redraw it, but never under a field the user is typing in */
+  else if(cur==='run'){ if(A) paint(); else if(!document.activeElement?.closest('#v-setup input,#v-setup textarea')) paintSetup(); }
   paintPondCard();
 }
 
@@ -10040,6 +10160,9 @@ checkJourneyEnds(); journeyTick();
 <script src="sync-core.js"></script>
 <script src="sync.js"></script>
 <script src="projects.js?v=2"></script>
+<script src="planner-ical.js?v=1"></script>
+<script src="planner.js?v=1"></script>
+<script src="exam-checkoff.js?v=3"></script>
 <script src="toad-art.js?v=1"></script>
 <script src="toads-design/toad-art-cast.js?v=1"></script>
 <script src="toad-companions.js?v=2"></script>
@@ -10051,4 +10174,4 @@ checkJourneyEnds(); journeyTick();
 <script src="pond-events-content.js?v=3"></script>
 <script src="pond-events-core.js?v=1"></script>
 <script src="pond-events-stage.js?v=6"></script>
-<script src="pond-events.js?v=8"></script>
+<script src="pond-events.js?v=9"></script>

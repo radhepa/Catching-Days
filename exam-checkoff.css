@@ -1,0 +1,48 @@
+/* ═══════════════ Catching Days · ticking off a test (exam-checkoff.js) ═══════════════
+   Lives inside the app's .modal. Everything is prefixed tcx-. */
+
+/* step one: how did it feel? */
+.tcx{display:flex;flex-direction:column;gap:6px}
+.tcx-q{font:400 26px/1.2 var(--serif);color:var(--tx);margin:6px 0 0;text-wrap:balance}
+.tcx-sub{margin:2px 0 14px;font:400 13.5px/1.5 'Outfit',sans-serif;color:var(--dim)}
+.tcx-scale{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.tcx-n{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 4px 12px;border-radius:16px;
+  background:color-mix(in srgb,var(--c) 7%,#fff);border:1.5px solid color-mix(in srgb,var(--c) 28%,#fff);font-weight:400;
+  transition:background .14s,border-color .14s,transform .1s}
+.tcx-n b{font:400 28px/1 var(--serif);color:var(--c)}
+.tcx-n span{font:600 12px/1 'Outfit',sans-serif;color:var(--label)}
+.tcx-n:hover,.tcx-n:focus-visible{background:color-mix(in srgb,var(--c) 16%,#fff);border-color:var(--c);outline:none}
+.tcx-n:active{transform:scale(.97)}
+.tcx-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:16px}
+.tcx-foot>span{font:400 12px/1 'Outfit',sans-serif;color:var(--faint)}
+.tcx-foot kbd{font:600 11px/1 'Outfit',sans-serif;background:var(--panel2);border:1px solid var(--line2);border-radius:5px;padding:2px 5px;color:var(--label)}
+.tcx-b{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* step two: a toad answers */
+.tcx-toad{gap:0}
+/* the same water as Today's hero (.td-hero): its gradient and its deep inner
+   shadow; ripples, pads, petals, glints and a koi shadow come from pond.js */
+.tcx-water{position:relative;height:210px;border-radius:22px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;margin:-4px -4px 0;isolation:isolate;
+  background:radial-gradient(ellipse at 50% 58%,#2a7d78 0%,#1a5c60 38%,#113f46 72%,#0b3036 100%);box-shadow:inset 0 0 56px #07252a,0 12px 30px rgba(15,59,65,.2)}
+.tcx-art{position:relative;z-index:8;margin-bottom:-6px;animation:tcx-up .5s cubic-bezier(.2,.8,.3,1) both}
+.tcx-art svg{display:block;overflow:visible}
+@keyframes tcx-up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.tcx-say{display:flex;flex-direction:column;gap:4px;padding:18px 4px 0}
+.tcx-name{font:400 24px/1.1 var(--serif);color:var(--tx)}
+.tcx-line{margin:8px 0 0;font:400 17px/1.5 'Outfit',sans-serif;color:var(--tile);min-height:3em;text-wrap:pretty}
+.tcx-line .off{color:transparent}
+.tcx-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.tcx-felt{display:flex;align-items:center;gap:8px;margin:12px 0 4px;font:500 12.5px/1.3 'Outfit',sans-serif;color:var(--dim)}
+.tcx-felt i{width:9px;height:9px;border-radius:50%;background:var(--c);flex:none}
+.tcx-toad .tcx-b{margin-top:12px}
+
+@media (max-width:760px){
+  .tcx-q{font-size:22px}
+  .tcx-scale{gap:6px}
+  .tcx-n{padding:12px 2px 10px}
+  .tcx-n b{font-size:24px}
+  .tcx-n span{font-size:11px}
+  .tcx-foot>span{display:none}
+  .tcx-water{height:180px}
+}
+@media (prefers-reduced-motion:reduce){ .tcx-art{animation:none} .tcx-n{transition:none} }

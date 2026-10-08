@@ -118,7 +118,7 @@
     if(!started)return;
     try{
       const v=progress();
-      renderSection(document.querySelector('#v-daily .td-side'),'pe-daily',false);
+      $('pe-daily')?.remove();   // Pond Moments lives on the Collection page only (the user asked to keep Today short)
       renderSection($('coll-body'),'pe-collection',true);
       if(pondVisit)environmentId=v.environment?.id||null;
       const wanted=v.environment?.id===environmentId?v.environment:null;

@@ -1153,8 +1153,12 @@ function reedBugHTML(bug,g,moving,t,o={}){
   const on={main:tt=>!inW(alt,tt), rest:tt=>!stopAt(tt).fly&&!inW(alt,tt), fly:tt=>stopAt(tt).fly&&!inW(alt,tt), alt:tt=>inW(alt,tt), add:tt=>inW(add,tt)};
   const steps=(W)=>{ const B=new Set([0]); S.forEach(s=>B.add(s.t)); W.forEach(([a,b])=>{ B.add(a); B.add(b); }); return [...B].filter(x=>x>=0&&x<T).sort((a,b)=>a-b); };
   const B=steps([...alt,...add]);
-  const track=(name,fn,bps=B)=>`@keyframes ${id}-${name}{${bps.map(tt=>`${pc(tt)}%{opacity:${fn(tt)?1:0}}`).join('')}100%{opacity:${fn(0)?1:0}}}`;
-  const an=(n,e)=>moving?`animation:${id}-${n} ${TD}s ${e} ${d}s infinite;`:'';
+  /* A layer that is shown (or hidden) for the whole loop gets no track at all:
+     Chrome can't hand a constant opacity animation to the compositor, so it
+     would tick the whole page on the main thread every frame for nothing. */
+  const still=n=>!on[n]||B.every(tt=>!!on[n](tt)===!!on[n](0));
+  const track=(name,fn,bps=B)=>still(name)&&bps===B?'':`@keyframes ${id}-${name}{${bps.map(tt=>`${pc(tt)}%{opacity:${fn(tt)?1:0}}`).join('')}100%{opacity:${fn(0)?1:0}}}`;
+  const an=(n,e)=>moving&&!(on[n]&&still(n))?`animation:${id}-${n} ${TD}s ${e} ${d}s infinite;`:'';
   let css='';
   if(moving){
     css=`@keyframes ${id}-m{${S.map(s=>`${pc(s.t)}%{transform:${tf(s)};animation-timing-function:${s.e||'ease-in-out'}}`).join('')}}`
