@@ -2275,32 +2275,9 @@ let db=boot();
 if(!db.onboarded && (db.classes.length||db.assignments.length||db.sessions.length)) db.onboarded=true;
 
 /* ── Google Tasks import (seed once) ──
-   Pulled from Google Tasks on 2026-08-06. Each course becomes a class;
-   deduped by title so reloading never duplicates. Runs once per data set. */
-const GOOGLE_TASKS = [
-  {title:"Drugs: Knowledge Assessment (Empowered Choices)",course:"Empowered Choices",due:""},
-  {title:"Intro Questionnaire (Empowered Choices)",course:"Empowered Choices",due:""},
-  {title:"Alcohol: Knowledge Assessment (Empowered Choices)",course:"Empowered Choices",due:"2026-10-01"},
-  {title:"Alcohol: Quiz (Empowered Choices)",course:"Empowered Choices",due:"2026-10-01"},
-  {title:"Drugs: Quiz (Empowered Choices)",course:"Empowered Choices",due:"2026-10-01"},
-  {title:"Final Questionnaire (Empowered Choices)",course:"Empowered Choices",due:"2026-10-01"},
-  {title:"Homework (ENGR 19500)",course:"Summer 2026 ENGR 19500-006 LEC",due:"2026-08-14"},
-  {title:"Python 3 Team Task 3 (VIP)",course:"Summer 2026 VIP 17920-049 - Merge",due:"2026-08-10"},
-  {title:"Python 3 Team Task 2 (VIP)",course:"Summer 2026 VIP 17920-049 - Merge",due:"2026-08-10"},
-  {title:"Python 3 Team Task 1 (VIP)",course:"Summer 2026 VIP 17920-049 - Merge",due:"2026-08-10"},
-  {title:"Final Kerbal Space Program Project (HIST 38700)",course:"Summer 2026 HIST 38700-002 LEC",due:"2026-08-14"},
-  {title:"Second Response Paper (HIST 38700)",course:"Summer 2026 HIST 38700-002 LEC",due:"2026-08-10"},
-  {title:"Second Analysis Video (HIST 38700)",course:"Summer 2026 HIST 38700-002 LEC",due:"2026-08-07"},
-  {title:"Professional Development #5 (VIP) Reflection",course:"VIP",due:"2026-08-14"},
-  {title:"Professional Development #4 (VIP) Reflection",course:"VIP",due:"2026-08-14"},
-  {title:"Professional Development #3 (VIP) Reflection",course:"VIP",due:"2026-08-14"},
-  {title:"HW13: Trigonometric integrals II (section 8.3)",course:"195000-006 Lec Calc II (Briggs/Cochran)",due:"2026-08-08"},
-  {title:"HW14: Trigonometric substitution I (section 8.4)",course:"195000-006 Lec Calc II (Briggs/Cochran)",due:"2026-08-08"},
-  {title:"HW15: Trigonometric substitution II (section 8.4)",course:"195000-006 Lec Calc II (Briggs/Cochran)",due:"2026-08-08"},
-  {title:"Calculus Remake Quiz",course:"",due:"2026-08-07"},
-  {title:"Python Quiz (Individual)",course:"VIP 17920",due:"2026-08-07"},
-  {title:"Final Exam (ENGR 19500)",course:"Summer 2026 ENGR 19500-006 LEC",due:"2026-08-10"}
-];
+   A one-time seed list for a personal copy of the app. The public copy ships
+   it empty, so a new pond starts with nothing in it but you. */
+const GOOGLE_TASKS = [];
 function importGoogleTasks(){
   if(db.gtasksImported) return;
   const cidByName={};
