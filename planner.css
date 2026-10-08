@@ -325,13 +325,14 @@ body.pl-dragging,body.pl-dragging *{cursor:grabbing!important;user-select:none!i
   .pl-it,.pl-chip,.pl-float{transition:none}
 }
 
-/* ── Today: "Your day" matches the height of Today's catch beside it; the
-   timeline takes whatever room that leaves (at least ~7 hours) ── */
+/* ── Today: two columns that end together. The shorter one stretches its
+   first card: Your day's timeline shows more hours (at least ~7), or
+   Today's catch gets a little room at its foot. ── */
 #v-daily .td-grid{align-items:stretch}
-#v-daily .td-side>#td-plan{flex:1 1 auto}
+#v-daily .td-main>.td-catch,#v-daily .td-side>#td-plan{flex:1 1 auto}
+#v-daily .td-main>#td-path,#v-daily .td-side>#td-lotus{flex:none}
 .pl-today .pl-tl{flex:1 1 auto;min-height:0}
 .pl-today .pl-scroll{height:auto!important;flex:1 1 0;min-height:320px}
 @media (max-width:1180px){
-  #v-daily .td-grid{align-items:start}
   .pl-today .pl-scroll{flex:none;height:420px!important}
 }

@@ -1075,8 +1075,7 @@ th.r,td.r{text-align:right}
 .tap-ring{position:absolute;border-radius:50%;border:2px solid #e6f5f1;transform:translate(-50%,-50%);z-index:6;pointer-events:none;animation:pf-tap 1.6s ease-out forwards}
 .td-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:24px;align-items:start}
 .td-side{display:flex;flex-direction:column;gap:24px}
-.td-more{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:24px;align-items:start}
-.td-more-l{display:flex;flex-direction:column;gap:24px;min-width:0}
+.td-main{display:flex;flex-direction:column;gap:24px;min-width:0}
 .td-catch{padding:26px 26px 22px;display:flex;flex-direction:column;gap:4px}
 .td-catch .pcard-t{font-size:28px}
 .cr{display:flex;align-items:center;gap:16px;padding:14px 12px;border-radius:16px;cursor:pointer;transition:background .15s;position:relative}
@@ -1128,9 +1127,9 @@ th.r,td.r{text-align:right}
 .tst-go{font:500 12px/1 'Outfit',sans-serif;padding:7px 10px;border-radius:99px;border:1px solid var(--inputline);background:transparent;color:var(--focus);opacity:0;transition:opacity .15s;flex:none}
 .tst:hover .tst-go,.tst:focus-within .tst-go{opacity:1}
 .tst-go:hover{background:#fff;border-color:var(--focus)}
-.tst-n{width:62px;flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.tst-n{min-width:62px;flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
 .tst-n b{font:400 22px/1 var(--serif)}
-.tst-n b.w{font:600 13px/1 'Outfit',sans-serif}
+.tst-n b.w{font:600 13px/1.2 'Outfit',sans-serif;white-space:nowrap}
 .tst-n span{font:400 11px/1 'Outfit',sans-serif;color:var(--faint)}
 .tst-none{margin:2px 12px 4px;font:400 13.5px/1.5 'Outfit',sans-serif;color:var(--dim)}
 /* on its day (or after) a test gets a circle to tick it off; ticked, it's the deep-water check */
@@ -1480,8 +1479,11 @@ th.r,td.r{text-align:right}
 /* ── narrower windows: the two-column screens stack ── */
 @media (max-width:1180px){
   .td-grid{grid-template-columns:minmax(0,1fr)}
-  .td-side{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));align-items:start}
-  .td-more{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  /* one column: the list, the day, then the lotus path and the lotus */
+  .td-grid{display:flex;flex-direction:column}
+  .td-main,.td-side{display:contents}
+  .td-catch{order:1} #td-plan{order:2} #td-path{order:3} #td-lotus{order:4}
+  #td-lotus .lotus-go{align-self:center;width:min(100%,420px)}
   .jr-grid{grid-template-columns:minmax(0,1fr)}
   .jr-left{max-width:560px;width:100%;margin:0 auto}
   .jr-panel{min-height:0}
@@ -1975,7 +1977,11 @@ button.set-row:hover{background:#ebe3d4}
         <div class="td-pips" id="td-pips"></div>
         <div class="td-tap">tap the water</div>
       </div>
+      <!-- two columns that flow on their own: the list and the lotus path on
+           the left, the day and the lotus on the right. Whichever column is
+           shorter stretches its first card, so the bottoms always meet. -->
       <div class="td-grid">
+        <div class="td-main">
         <div class="pcard td-catch">
           <div class="pcard-h" style="margin-bottom:10px">
             <div class="pcard-t">Today’s catch</div>
@@ -1991,20 +1997,16 @@ button.set-row:hover{background:#ebe3d4}
           <div id="dr-tests"></div>
           <div id="dr-reeds"></div>
         </div>
+          <div class="pcard path-card" id="td-path"></div>
+        </div>
         <div class="td-side">
           <!-- your day as a timeline: planner.js (Planner.paintToday) -->
           <div class="pcard pl-today" id="td-plan"></div>
+          <div class="pcard lotus-card" id="td-lotus"></div>
         </div>
       </div>
-      <!-- the quieter cards sit under the list and the day, side by side, so
-           Today isn't one long column (the Collection card and Pond Moments
-           live on the Collection page; tests coming up are in Today's catch) -->
-      <div class="td-more">
-        <div class="td-more-l">
-          <div class="pcard path-card" id="td-path"></div>
-        </div>
-        <div class="pcard lotus-card" id="td-lotus"></div>
-      </div>
+      <!-- the Collection card and Pond Moments live on the Collection page;
+           tests coming up are in Today's catch -->
     </div>
 
     <!-- ════ FOCUS ════ set up (paintSetup) and a session in progress (buildRun/paint) -->
