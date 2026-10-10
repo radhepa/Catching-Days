@@ -297,7 +297,7 @@ For your first day, add a class and a few tasks in **Plan**, choose what belongs
 
 ## A toad on your desktop (optional)
 
-The **desktop-pet** folder is an add-on: one of the nine toads sits on your Windows desktop, on top of your other windows. Tap it to tick off today's tasks, look at your day, or start a focus session and watch the timer under it, without opening the app. Drag it around, or push it against the edge of the screen and it hides with only its head peeking out.
+The **desktop-pet** folder is an add-on: one of the nine toads sits on your Windows desktop, on top of your other windows. Tap it to tick off today's tasks, look at your day, or start a focus session: the toad comes to the middle of the screen, asks if you're ready, counts down 3, 2, 1, and slithers into a corner with your timer under it. No need to open the app. Drag it around, or push it against the edge of the screen and it hides with only its head peeking out.
 
 <a href="docs/images/desktop-toad.jpg"><img src="docs/images/desktop-toad.jpg" alt="Hasu at the corner of the screen, beside a browser, with today's tasks open next to her" width="100%"></a>
 

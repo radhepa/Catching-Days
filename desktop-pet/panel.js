@@ -112,10 +112,13 @@ function paintTabs(){
     $('tab-focus').textContent=s.phase==='rating'?'rate it':s.paused?'paused':(s.phase==='break'?'break ':'')+clock(rem);
     ft.classList.add('live'); }
   else { $('tab-focus').textContent=`${V.settings.focus} min`; ft.classList.remove('live'); }
-  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===mode||(b.dataset.v==='focus'&&['rate','end','break-over'].includes(mode))));
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===mode||(b.dataset.v==='focus'&&['rate','end','break-over','setup'].includes(mode))));
 }
 document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{
-  const v=b.dataset.v; go(mode===v?'chat':v);
+  const v=b.dataset.v;
+  /* Focus with nothing running: the toad comes out and asks (stage.js) */
+  if(v==='focus'&&!V.session){ window.pet.send('focus-ritual',{}); return; }
+  go(mode===v?'chat':v);
 }));
 
 function taskRow(r,extra){
@@ -176,7 +179,7 @@ function focusSetupHTML(){
   return `<div class="sec"><b>Rhythm</b><span>focus · break</span></div>
     <div class="pre">${RHY.map(([k,n,f,b])=>`<button class="${setK===k?'on':''}" data-rhy="${k}"><b>${n}</b><span>${f?f+' · '+b:setF+' · '+setB}</span></button>`).join('')}</div>
     ${setK==='custom'?`<div class="btns"><button data-step="f-5">− focus</button><button data-step="f5">+ focus</button><button data-step="b-1">− break</button><button data-step="b1">+ break</button></div>`:''}
-    <button class="go" data-act="begin">Begin · ${setF} min focus${pickIds.size?` · ${pickIds.size} task${pickIds.size===1?'':'s'}`:''}</button>
+    <button class="go" data-act="begin">Start focusing · ${setF} min${pickIds.size?` · ${pickIds.size} task${pickIds.size===1?'':'s'}`:''}</button>
     ${goal?`<div class="lotus"><div class="bar"><i style="width:${pct}%"></i></div><span>${V.mins} / ${goal} min today</span></div>`:''}
     <div class="sec"><b>Bring tasks in</b><span>optional · ${pickIds.size} picked</span></div>
     ${shown.map(r=>`<button class="pk${pickIds.has(r.id)?' on':''}" data-pick="${esc(r.id)}"><span class="pk-ck">${pickIds.has(r.id)?'✓':''}</span>
@@ -252,7 +255,7 @@ function render(force){
   const b=$('body'); let h='';
   if(mode==='tasks') h=tasksHTML();
   else if(mode==='day') h=dayHTML();
-  else if(mode==='focus') h=V.session?runHTML():focusSetupHTML();
+  else if(mode==='focus'||mode==='setup') h=V.session?runHTML():focusSetupHTML();
   else if(mode==='rate') h=V.session?rateHTML(false):focusSetupHTML();
   else if(mode==='end') h=V.session?rateHTML(true):focusSetupHTML();
   else if(mode==='break-over') h=V.session?breakOverHTML():'';
@@ -292,8 +295,9 @@ $('body').addEventListener('click',async e=>{
   if(act==='soon'){ showSoon=!showSoon; render(true); return; }
   if(act==='pickall'){ pickAll=!pickAll; render(true); return; }
   if(act==='begin'){
-    const res=await op({k:'focus',act:'start',f:setF,b:setB,ids:[...pickIds]});
-    if(res&&res.ok){ pickIds=new Set(); window.pet.send('react',{kind:'focusStart'}); say(line('focusStart')); }
+    /* the toad still asks first; it starts the session after its 3, 2, 1 */
+    window.pet.send('focus-ritual',{f:setF,b:setB,ids:[...pickIds]});
+    pickIds=new Set();
     return;
   }
   if(act==='pause'||act==='resume'){ await op({k:'focus',act}); return; }

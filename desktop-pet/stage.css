@@ -1,0 +1,48 @@
+/* stage.css · the focus ritual: the toad in the middle of the screen, asking */
+:root{--tx:#1f2e2c;--dim:#6f7a75;--faint:#8f978f;--koi:#ec7a45;--koi2:#f08c5b;--deep:#0f3b41;--paper:#fbf8f2;--line:#e4dccd;
+  --serif:'Young Serif',Georgia,serif;--sans:'Outfit','Segoe UI',sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:transparent;overflow:hidden;user-select:none;-webkit-user-select:none;font:400 15px/1.45 var(--sans);color:var(--tx)}
+button{font:inherit;cursor:pointer}
+#dim{position:fixed;inset:0;opacity:0;transition:opacity .45s ease;
+  background:radial-gradient(ellipse at 50% 55%,rgba(15,59,65,.38) 0%,rgba(10,36,40,.6) 60%,rgba(6,22,25,.72) 100%)}
+#dim.on{opacity:1}
+#toad{position:absolute;left:0;top:0;width:var(--B);height:var(--B);transform-origin:0 0;will-change:transform}
+#wig{width:100%;height:100%;transform-origin:50% 86.76%}
+#art,#art .td-art{width:100%;height:100%;display:block;overflow:visible}
+
+#bubble{position:absolute;left:50%;width:min(400px,calc(100vw - 32px));transform:translate(-50%,10px) scale(.96);opacity:0;pointer-events:none;
+  background:var(--paper);border:1px solid var(--line);border-radius:24px;padding:16px 20px 14px;
+  box-shadow:0 18px 50px rgba(6,22,25,.35),0 2px 6px rgba(6,22,25,.15);transition:opacity .22s,transform .3s cubic-bezier(.3,1.35,.5,1)}
+#bubble.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+#bubble::after{content:'';position:absolute;left:50%;bottom:-9px;width:18px;height:18px;margin-left:-9px;background:var(--paper);
+  border-right:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg);border-bottom-right-radius:4px}
+.ey{display:block;font:600 10.5px/1.2 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:#3f7d6f}
+#say{margin:6px 0 0;min-height:2.9em;font:400 17px/1.45 var(--sans);text-wrap:pretty}
+#say .off{visibility:hidden}
+.rhy{display:flex;gap:6px;margin:12px 0 0;flex-wrap:wrap}
+.rhy:empty{display:none}
+.rhy button{padding:7px 11px;border-radius:99px;border:1.5px solid var(--line);background:#fff;font:500 12.5px/1 var(--sans);color:var(--tx)}
+.rhy button:hover{border-color:#c9bfa9}
+.rhy button.on{background:var(--deep);border-color:var(--deep);color:var(--paper)}
+.rhy .cap{font:500 12.5px/28px var(--sans);color:var(--dim)}
+.acts{display:flex;gap:8px;margin-top:14px}
+.acts button{flex:1;padding:12px 10px;border-radius:99px;font:600 14.5px/1 var(--sans);transition:transform .12s,background .15s}
+.acts button:active{transform:scale(.97)}
+.yes{border:none;background:var(--koi);color:#2a1408;box-shadow:0 8px 20px #ec7a4544}
+.yes:hover{background:var(--koi2)}
+.no{border:1.5px solid var(--line);background:var(--paper);color:var(--tx)}
+.no:hover{background:#f1ebdf}
+.acts button:focus-visible,.rhy button:focus-visible,.lnk:focus-visible{outline:2px solid #2f7a74;outline-offset:2px}
+.lnk{display:block;margin:10px auto 0;background:none;border:none;padding:2px 6px;color:#2f7a74;font:500 12.5px/1.2 var(--sans);border-radius:6px}
+.lnk:hover{text-decoration:underline}
+#bubble.said .rhy,#bubble.said .acts,#bubble.said .lnk{display:none}
+
+#count{position:absolute;left:50%;transform:translateX(-50%);font:400 150px/1 var(--serif);color:#fbf8f2;
+  text-shadow:0 6px 30px rgba(0,0,0,.35);pointer-events:none;font-variant-numeric:tabular-nums}
+#count span{display:inline-block;animation:num .9s cubic-bezier(.2,1.2,.4,1) both}
+@keyframes num{0%{transform:scale(1.6);opacity:0}22%{transform:scale(1);opacity:1}75%{opacity:1}100%{transform:scale(.85);opacity:0}}
+#count i{position:absolute;left:50%;top:50%;width:160px;height:160px;margin:-80px 0 0 -80px;border-radius:50%;border:2px solid #fbf8f2aa;
+  animation:ring .9s ease-out both}
+@keyframes ring{0%{transform:scale(.4);opacity:.9}100%{transform:scale(1.6);opacity:0}}
+@media (prefers-reduced-motion:reduce){ #count span,#count i{animation-duration:.01s} #bubble{transition:none} }

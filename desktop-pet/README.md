@@ -9,7 +9,7 @@ An optional add-on for Catching Days: one of the pond's nine toads lives on your
 - **Tap it** and it says something, then gives you three places:
   - **Tasks**: today's list, what's waiting in the reeds, and what's coming up. Tick one and it's released into the pond.
   - **My day**: your Calendar tab's timeline for today, what's on now and what's next, plus deadlines and tests coming up.
-  - **Focus**: start a session (Gentle, Classic, Deep or your own rhythm, with tasks brought in if you like). The timer sits under the toad, the toad rings the bell when the block is done, and you can rate the block, take your break, and save the session without leaving what you're doing.
+  - **Focus**: the toad comes out to the middle of your screen and asks, in its own way, whether you're ready and mean it (pick Gentle, Classic, Deep or your usual rhythm right there). Say yes and it answers, counts down 3, 2, 1, starts the session, and slithers off into a bottom corner with the timer under it. Say not yet and it goes back where it was. It rings the bell when the block is done, and you can rate the block, take your break, and save the session without leaving what you're doing. "Pick tasks first" opens a set-up where you can bring tasks into the session.
 - **Choose your toad**: Hasu, Ame, Sumi, Tabi, Hotaru, Neri, Oto, Kuri or Mame. Each one talks in its own voice. Right-click the toad (or use the tray icon) for the chooser, the size, and Start with Windows.
 
 ![The talk box's other places: a chat line, the day's timeline, and a focus session with its timer under the toad](../docs/images/desktop-toad-places.jpg)
@@ -48,6 +48,7 @@ main.js          the toad's windows, dragging and edge peeking, the inbox, the b
 core.js          reads the pond: today's list, the reeds, the do-score, the day, the session clock
 pet.js / .css    the toad on the desktop (art loaded from the app's own toad files)
 panel.js / .css  the talk box: chat, tasks, the day, focus
+stage.js / .css  the focus ritual: the toad in the middle of the screen, 3, 2, 1, off to a corner
 pet-lines.js     what each of the nine toads says
 preload.js       the bridge between the windows and the rest
 test/            node tests for core.js

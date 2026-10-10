@@ -6,6 +6,7 @@
      done (6)    a task checked off; {task} is replaced with a shortened title
      undone (2)  allDone (3)  focusStart (4)  bell (4)  breakStart (3)
      breakOver (3)  sessionEnd (3)  peek (4)  pulled (4)  choose (2)
+     ready (4)  committed (4)  notYet (3)   the focus ritual, added below
    s: hr, total, done, left, overdue, running, phase, paused, cycles, mins, goal,
       next {title,inMin}|null, now {title,untilMin}|null, exam {title,days}|null, peeking.
    In the pond: a finished task is a fish released, focus minutes open the lotus,
@@ -804,6 +805,148 @@ mame:{
     'Yay! I get to live on your desktop! I’m going to explore all of it!']
 }
 };
+/* ── the focus ritual (stage.js): the toad comes to the middle of the screen and asks
+   ready (4)      are you ready, and do you mean it?
+   committed (4)  the "good" after you say yes, just before 3, 2, 1
+   notYet (3)     you said not yet                                                    */
+const RITUAL={
+  hasu:{
+    ready:[
+      'Hm. Before we start: are you ready to actually do the work? Not tidy the desk. The work.',
+      'Two hundred summers taught me one thing. Sit down only if you mean it. Do you?',
+      'The lotus opens for people who stay. Are you staying for this one?',
+      'Hm. Phone away, one thing in front of you. Ready to commit to it?'],
+    committed:[
+      'Hm. Good. That’s all I wanted to hear.',
+      'Good. The mud is ready when you are.',
+      'Hm. Good answer. I’ll hold you to it.',
+      'Good. Let’s open the lotus a little.'],
+    notYet:[
+      'Hm. Then don’t. Come back when you mean it. I’ll be on my pad.',
+      'Fair. Half a heart opens nothing. Find the other half, then tap me.',
+      'No shame in that. Get some water. The pond isn’t going anywhere.']},
+  ame:{
+    ready:[
+      'Rain’s coming. You staying?',
+      'Ready? Really ready?',
+      'One block. All of you. Yes?',
+      'Clouds are in. Are you?'],
+    committed:[
+      'Good.',
+      'Good. Rain starts.',
+      'Hm. Good. Head down.',
+      'Good. I’ll keep watch.'],
+    notYet:[
+      'Fine. Later, then.',
+      'Not yet is honest. Come back.',
+      'Hm. Rain can wait. Not forever.']},
+  sumi:{
+    ready:[
+      'Mm. Before we begin, a small question. Are you ready, and do you mean it?',
+      'Let us be precise. Is this a real session, or a hopeful one?',
+      'One word will do. Committed?',
+      'Mm. A session is a promise to yourself. Will you make it?'],
+    committed:[
+      'Good. I shall write that down: “committed.”',
+      'Mm. Good. A clear answer is the best beginning.',
+      'Good. Then let the first line be the hardest one.',
+      'Good. Spoken plainly, and well.'],
+    notYet:[
+      'Mm. “Not yet” is an honest phrase. I respect it.',
+      'Then we shall wait. A blank page keeps very well.',
+      'Of course. Return when the words come easier.']},
+  tabi:{
+    ready:[
+      'Alright, traveler! Boots laced, pack on. Ready to really walk this one?',
+      'Road rule: don’t start a road you won’t walk. So, are you in?',
+      'Dango’s ready. Dango is always ready. How about you?',
+      'Big question before the first step: are you committed to this stretch?'],
+    committed:[
+      'Good! That’s the spirit. Dango, we’re off!',
+      'Good, good! The first step was saying yes. The rest is walking.',
+      'Ha! Good. I knew you had it in you.',
+      'Good! Pack’s light, road’s clear. Let’s go.'],
+    notYet:[
+      'No trouble! The road waits. Dango and I will be right here.',
+      'Fair enough. Sit, have some water, and holler when you’re ready.',
+      'Not yet’s fine. A rested walker goes further.']},
+  hotaru:{
+    ready:[
+      '…Mm? Oh. Are we doing this? Like, really doing it?',
+      '…Before I light the lantern… are you ready? Committed?',
+      '…It’s quiet. Good time to work. Are you in?',
+      '…Mm. One lantern, one task. Ready to keep it lit?'],
+    committed:[
+      '…Good. I’m awake now. Mostly.',
+      '…Mm. Good. Lantern’s lit.',
+      '…Good answer. I’ll glow quietly.',
+      '…Oh, good. Let’s go, then.'],
+    notYet:[
+      '…That’s okay. I’ll go back to resting my eyes.',
+      '…Mm. Not yet. I know that feeling.',
+      '…Okay. The lantern will still be here.']},
+  neri:{
+    ready:[
+      'Sleeves up? Are you ready to put your hands in the clay for real?',
+      'Before we start: are you committed, or just looking at the wheel?',
+      'Good work starts with a yes. Do I have one?',
+      'Clay doesn’t shape itself. Ready to sit with it?'],
+    committed:[
+      'Good. Now we make something, lopsided or not.',
+      'Good! Don’t worry about perfect. Worry about done.',
+      'Good. Wheel’s spinning. Hands steady.',
+      'That’s what I like to hear. Good.'],
+    notYet:[
+      'That’s fine. Clay keeps if you cover it. Come back soon.',
+      'Not yet? Then rest your hands. They’ll want work later.',
+      'Fair. Make yourself some tea first. Then we’ll talk.']},
+  oto:{
+    ready:[
+      'Um… are you ready? I mean, really ready? You can say no…',
+      '…Before we start the song… are you committed? Sorry. It’s a big word.',
+      'I’ll play quietly if you work. Is that… a yes?',
+      'Um. Ready to begin? I tuned the flute just in case.'],
+    committed:[
+      'Oh! Good. Good. I’ll start the first note.',
+      '…Good. That sounded very brave.',
+      'Good… okay. Here we go. Together.',
+      'Good! Sorry. I mean. Good.'],
+    notYet:[
+      'Oh, that’s okay! I wasn’t ready either, honestly.',
+      '…Okay. I’ll keep practising till you are.',
+      'No, no, that’s fine. The song can wait.']},
+  kuri:{
+    ready:[
+      'Roots need steady water. Ready to be steady?',
+      'Hm. You committed?',
+      'Plant it now or don’t. Ready?',
+      'Ground’s ready. Are you?'],
+    committed:[
+      'Good. Dig in.',
+      'Good. Steady now.',
+      'Hm. Good. Let it grow.',
+      'Good. Quiet work, then.'],
+    notYet:[
+      'Fine. Seeds keep.',
+      'Hm. Not yet. That’s allowed.',
+      'Rest the soil. Come back.']},
+  mame:{
+    ready:[
+      'Are you ready?! Like, REALLY ready? Pinky promise ready?',
+      'Okay okay okay. Are we committed? I don’t know what that means but I’m doing it!',
+      'Big mission time! Do you accept?',
+      'Is it focus time? Are you ready? I’m ready! Are you?'],
+    committed:[
+      'YES! Good! This is the best mission ever!',
+      'Good! I knew it! Let’s gooo!',
+      'Good good good! I’ll be super quiet. Mostly.',
+      'Woohoo! Good! Submarine mode!'],
+    notYet:[
+      'Aww. Okay! I’ll wait right here. Very patiently. Kind of.',
+      'That’s okay! Even explorers take snack breaks!',
+      'Oh! Okay. Can we do it later? Promise?']}
+};
+Object.keys(RITUAL).forEach(k=>{ if(L[k]) Object.assign(L[k],RITUAL[k]); });
 if(typeof window!=='undefined') window.PET_LINES=L;
 if(typeof module!=='undefined') module.exports=L;
 })();

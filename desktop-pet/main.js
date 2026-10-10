@@ -247,6 +247,7 @@ const TEST=process.argv.includes('--test');
 let fakeCursor=null;
 const cursor=()=>TEST&&fakeCursor?fakeCursor:screen.getCursorScreenPoint();
 function dragStart(){
+  if(stageWin) return;
   closePanel();
   const c=cursor();
   drag={ox:c.x-virt.x, oy:c.y-virt.y, lastX:c.x, t:setInterval(dragTick,8)};
@@ -350,6 +351,60 @@ function closePanel(){
   send(toadWin,'panel',{open:false});
 }
 
+/* ════════════════════ the focus ritual (stage.js) ════════════════════
+   Focus, when no session is running, doesn't open a form: the toad comes out
+   to the middle of the screen on a window of its own that covers the screen,
+   asks if you're ready, counts down, starts the session and slithers off to
+   the nearest bottom corner. The desktop toad hides meanwhile and reappears,
+   in that corner, exactly where the stage leaves it. */
+let stageWin=null, ritual=null;
+/* the toad's box (the art's square) in screen pixels, and whether it's hiding */
+function toadBox(){
+  const g=geo(), [x,y]=toadWin.getPosition();
+  if(peek.edge&&peek.p>.5){ const r=toadRect(); return {x:r.x+r.w/2-g.S/2,y:r.y+r.h/2-g.S/2,s:g.S,fade:true}; }
+  return {x:x+(g.W-g.S)/2,y:y+g.H-g.PILL-g.S,s:g.S,fade:false};
+}
+function startRitual(o){
+  o=o||{};
+  if(stageWin||!VIEW||!toadWin) return;
+  if(VIEW.session){ openPanel('focus'); return; }
+  closePanel();
+  const g=geo(), box=toadBox(), wa=workAreaAt(box.x+g.S/2,box.y+g.S/2);
+  const right=box.x+g.S/2>=wa.x+wa.width/2;
+  const corner={x:right?wa.x+wa.width-g.W:wa.x,y:wa.y+wa.height-g.H};
+  const usual=[VIEW.settings.focus,VIEW.settings.brk], last=Array.isArray(S.mem.rhythm)?S.mem.rhythm:usual;
+  const fixed=o.f!=null;
+  ritual={wa,corner,home:{x:virt.x,y:virt.y},
+    params:{f:fixed?+o.f:+last[0]||25,b:fixed?+o.b:+last[1]||5,ids:Array.isArray(o.ids)?o.ids.slice(0,12):[],fixed,usual,
+      sound:VIEW.settings.sound,
+      from:{x:box.x-wa.x,y:box.y-wa.y,s:box.s,fade:box.fade},
+      to:{x:corner.x+(g.W-g.S)/2-wa.x,y:corner.y+g.H-g.PILL-g.S-wa.y}}};
+  send(toadWin,'react',{kind:'pulled'});
+  stageWin=new BrowserWindow({x:wa.x,y:wa.y,width:wa.width,height:wa.height,frame:false,transparent:true,resizable:false,movable:false,
+    alwaysOnTop:true,skipTaskbar:true,hasShadow:false,fullscreenable:false,maximizable:false,minimizable:false,show:false,
+    backgroundColor:'#00000000',title:'Catching Days toad · focus',
+    webPreferences:{preload:path.join(__dirname,'preload.js'),contextIsolation:true,sandbox:true,nodeIntegration:false,backgroundThrottling:false,autoplayPolicy:'no-user-gesture-required'}});
+  stageWin.setAlwaysOnTop(true,'pop-up-menu');
+  stageWin.loadFile(path.join(__dirname,'stage.html'));
+  stageWin.on('closed',()=>{ stageWin=null; if(ritual){ ritual=null; try{ toadWin.showInactive(); }catch(e){} } });
+  /* if the stage never comes up, the toad mustn't stay hidden */
+  setTimeout(()=>{ if(stageWin&&!stageWin.isVisible()){ try{ stageWin.close(); }catch(e){} } },8000);
+}
+function endRitual(d){
+  const r=ritual; if(!r) return; ritual=null;
+  if(d&&d.started){
+    /* the desktop toad takes over in the corner, out of hiding */
+    virt={x:r.corner.x,y:r.corner.y}; peek={edge:null,p:0};
+    toadWin.setPosition(r.corner.x,r.corner.y);
+    send(toadWin,'peek',{edge:null,p:0,animate:false});
+    remember();
+  }
+  setTimeout(()=>{ try{ toadWin.showInactive(); }catch(e){} },40);
+  setTimeout(()=>{ try{ if(stageWin) stageWin.close(); }catch(e){} },140);
+  if(d&&d.pick) setTimeout(()=>openPanel('setup'),200);
+  else if(d&&d.started) setTimeout(()=>send(toadWin,'react',{kind:'focusStart'}),200);
+}
+
 /* ════════════════════ the bell: focus time up, break over ════════════════════ */
 function bellCheck(){
   const s=VIEW&&VIEW.session;
@@ -420,7 +475,7 @@ function menuTemplate(){
     {label:'Talk to '+NAMES[S.toad],click:()=>openPanel('chat')},
     {label:'Today’s tasks',click:()=>openPanel('tasks')},
     {label:'My day',click:()=>openPanel('day')},
-    {label:'Focus',click:()=>openPanel('focus')},
+    {label:'Focus',click:()=>{ if(VIEW&&!VIEW.session) startRitual(); else openPanel('focus'); }},
     {type:'separator'},
     {label:'Choose a toad',submenu:TOADS.map(t=>({label:NAMES[t],type:'radio',checked:S.toad===t,click:()=>setToad(t)}))},
     {label:'Size',submenu:[['s','Small'],['m','Medium'],['l','Large']].map(([k,l])=>({label:l,type:'radio',checked:S.size===k,click:()=>setSize(k)}))},
@@ -441,16 +496,19 @@ function trayIcon(){
 
 /* ════════════════════ messages from the two windows ════════════════════ */
 ipcMain.handle('init',e=>{
-  const who=e.sender===toadWin?.webContents?'toad':'panel';
-  return {who, view:VIEW, toad:S.toad, size:S.size, geo:geo(), peek, mem:S.mem, login:!!S.startAtLogin,
+  const who=e.sender===toadWin?.webContents?'toad':e.sender===stageWin?.webContents?'stage':'panel';
+  return {who, view:VIEW, ritual:who==='stage'&&ritual?ritual.params:null, toad:S.toad, size:S.size, geo:geo(), peek, mem:S.mem, login:!!S.startAtLogin,
     artBase:require('url').pathToFileURL(S.appDir+path.sep).href, names:NAMES, toads:TOADS};
 });
 ipcMain.on('ignore',(e,on)=>{ if(toadWin&&!drag) toadWin.setIgnoreMouseEvents(!!on,{forward:true}); });
 ipcMain.on('drag-start',()=>dragStart());
 ipcMain.on('drag-end',()=>dragEnd());
-ipcMain.on('toad-click',()=>{ if(panelOpen) closePanel(); else openPanel('chat'); });
+ipcMain.on('toad-click',()=>{ if(stageWin) return; if(panelOpen) closePanel(); else openPanel('chat'); });
 ipcMain.on('toad-menu',()=>{ Menu.buildFromTemplate(menuTemplate()).popup({window:toadWin}); });
-ipcMain.on('panel-open',(e,mode)=>openPanel(mode));
+ipcMain.on('panel-open',(e,mode)=>{ if(mode==='focus'&&VIEW&&!VIEW.session) startRitual(); else openPanel(mode); });
+ipcMain.on('focus-ritual',(e,o)=>startRitual(o));
+ipcMain.on('stage-ready',()=>{ if(!stageWin||!ritual) return; toadWin.hide(); stageWin.show(); stageWin.focus(); send(stageWin,'go',{}); });
+ipcMain.on('stage-done',(e,d)=>endRitual(d));
 ipcMain.on('panel-close',()=>closePanel());
 ipcMain.on('panel-height',(e,h)=>{ h=Math.max(120,Math.min(900,Math.round(+h||0))); if(h!==panelH){ panelH=h; if(panelOpen) placePanel(); } });
 ipcMain.on('panel-pin',()=>{ panelActive=true; });
@@ -495,7 +553,7 @@ ipcMain.handle('op',(e,o)=>{
 
 if(TEST) global.__toadTest={dragStart,dragEnd,dragTick,setCursor:(x,y)=>{ fakeCursor={x,y}; },
   state:()=>({virt,peek,pos:toadWin.getPosition(),size:toadWin.getSize(),geo:geo(),panelOpen,panelMode,ops:OPS,view:VIEW,clients:clients.size}),
-  openPanel,closePanel,setToad,setSize};
+  openPanel,closePanel,setToad,setSize,startRitual,stage:()=>stageWin};
 
 /* ════════════════════ start up, shut down ════════════════════ */
 app.on('second-instance',()=>{ if(toadWin){ toadWin.showInactive(); openPanel('chat'); } });
