@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' file:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: file:">
+<title>Catching Days toad · talk</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Outfit:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="panel.css">
+<body>
+<div id="card" class="card" role="dialog" aria-label="Toad">
+  <header class="hd">
+    <div class="pt" id="pt"></div>
+    <div class="who"><span class="ey" id="who-t"></span><span class="nm" id="who-n"></span></div>
+    <div class="hd-b">
+      <button class="ic" id="b-set" title="Settings" aria-label="Settings"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+      <button class="ic" id="b-x" title="Close (Esc)" aria-label="Close">✕</button>
+    </div>
+  </header>
+  <p class="say" id="say" aria-live="polite"></p>
+  <nav class="tabs" id="tabs">
+    <button data-v="tasks"><b>Tasks</b><span id="tab-tasks"></span></button>
+    <button data-v="day"><b>My day</b><span id="tab-day"></span></button>
+    <button data-v="focus"><b>Focus</b><span id="tab-focus"></span></button>
+  </nav>
+  <main id="body"></main>
+  <footer class="ft" id="ft"></footer>
+</div>
+<script src="panel.js"></script>
+</body>
+</html>

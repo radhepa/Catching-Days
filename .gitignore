@@ -2,6 +2,7 @@
 focus-data.json
 focus-data.backup.json
 inbox.json
+desktop-pet-inbox.json
 
 # tooling noise
 __pycache__/

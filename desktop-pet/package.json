@@ -1,0 +1,14 @@
+{
+  "name": "catching-days-desktop-toad",
+  "version": "1.0.0",
+  "description": "An optional add-on for Catching Days: one of the pond's toads on your desktop. Tap it to tick off today's tasks, see your day, and run a focus session.",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "40.9.3"
+  },
+  "license": "UNLICENSED"
+}

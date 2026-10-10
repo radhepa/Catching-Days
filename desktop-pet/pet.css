@@ -1,0 +1,34 @@
+/* pet.css · the toad's own window: transparent everywhere but the toad */
+html,body{margin:0;height:100%;background:transparent;overflow:hidden;user-select:none;-webkit-user-select:none}
+#stage{position:fixed;inset:0;overflow:hidden}
+#toad{position:absolute;left:0;top:0;width:var(--S);height:var(--S);transform-origin:50% 86.76%;will-change:transform}
+#toad.glide{transition:transform .26s cubic-bezier(.3,1.25,.5,1)}
+#sway{width:100%;height:100%;transform-origin:50% 30%;transition:transform .14s ease-out}
+#toad.held #sway{transition:transform .09s linear}
+#art{width:100%;height:100%;cursor:grab}
+#art .td-art{width:100%;height:100%;display:block;overflow:visible}
+#toad.held #art{cursor:grabbing}
+/* a soft shadow so the toad sits on any wallpaper */
+#art .td-art{filter:drop-shadow(0 3px 5px rgba(20,32,30,.28))}
+
+/* the session timer under the toad (or beside its head when it's hiding) */
+#pill{position:absolute;display:flex;align-items:center;gap:7px;height:26px;padding:0 11px 0 7px;border-radius:13px;border:none;
+  background:#0f3b41ee;color:#fbf8f2;font:600 13px/1 'Outfit','Segoe UI',sans-serif;font-variant-numeric:tabular-nums;letter-spacing:.02em;
+  box-shadow:0 4px 12px rgba(10,30,32,.35);cursor:pointer;white-space:nowrap;transition:opacity .25s,transform .25s}
+#pill.hide{opacity:0;transform:translateY(6px) scale(.9);pointer-events:none}
+#pill-ring{width:14px;height:14px;border-radius:50%;flex:none;
+  background:conic-gradient(var(--c,#f7c7a6) calc(var(--p,0)*1turn),#ffffff2e 0);
+  -webkit-mask:radial-gradient(circle,transparent 3.5px,#000 4px);mask:radial-gradient(circle,transparent 3.5px,#000 4px)}
+#pill.brk{background:#1d4d3fee}
+#pill.paused #pill-t{opacity:.6}
+#pill.over{background:#7a3a2aee}
+#pill.ring{animation:pill-ring .5s ease-in-out 6 alternate}
+@keyframes pill-ring{to{transform:scale(1.12)}}
+
+/* a little bounce when something good happens (on top of the art's own hop) */
+#toad.cheer #sway{animation:cheer .7s cubic-bezier(.3,1.6,.5,1)}
+@keyframes cheer{0%{transform:none}35%{transform:translateY(-9px) rotate(-4deg)}70%{transform:translateY(0) rotate(3deg)}100%{transform:none}}
+/* the bell: a wobble that says "look at me" */
+#toad.bell #sway{animation:bellw .18s ease-in-out 8 alternate}
+@keyframes bellw{from{transform:rotate(-5deg)}to{transform:rotate(5deg)}}
+@media (prefers-reduced-motion:reduce){ #toad.glide{transition:none} #toad.cheer #sway,#toad.bell #sway,#pill.ring{animation:none} }

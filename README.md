@@ -295,6 +295,14 @@ For your first day, add a class and a few tasks in **Plan**, choose what belongs
 | Artwork or styles are missing | Extract the whole download and keep the supporting folders beside the HTML file. |
 | The Calendar says to restart Catching Days | The server window was started before calendars could be read. Close it and start the app again. |
 
+## A toad on your desktop (optional)
+
+The **desktop-pet** folder is an add-on: one of the nine toads sits on your Windows desktop, on top of your other windows. Tap it to tick off today's tasks, look at your day, or start a focus session and watch the timer under it, without opening the app. Drag it around, or push it against the edge of the screen and it hides with only its head peeking out.
+
+<a href="docs/images/desktop-toad.jpg"><img src="docs/images/desktop-toad.jpg" alt="Hasu at the corner of the screen, beside a browser, with today's tasks open next to her" width="100%"></a>
+
+It needs Node.js. Double-click **desktop-pet/Install Desktop Toad.bat**, or see [desktop-pet/README.md](desktop-pet/README.md). The toad never writes your save file; what you do on it is handed to the app, which applies it the moment it's open.
+
 ## Your data
 
 With the local server, changes save automatically to **focus-data.json** in the app folder. On the first launch of a new day, the app also creates a safety snapshot in **focus-data.backup.json** when there is data to back up. The server listens only on your computer's loopback address, `127.0.0.1`.
@@ -326,6 +334,7 @@ projects.js / .css        Project workspace
 planner*.js / .css        Day planner, Calendar tab and calendar-feed reader
 exam-checkoff.js / .css   Ticking off a quiz or exam, and a toad's answer
 sync-core.js / sync.js    Optional GitHub sync
+desktop-pet/              Optional desktop toad (Electron); desktop-pet-link.js is its way in
 manifest.webmanifest      App name, icons, and display metadata
 icons/ / sprites/         App icons and supporting artwork
 docs/images/              README art: pond banner, fish, bugs, toads, screenshots
