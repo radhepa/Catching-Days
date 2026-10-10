@@ -28,6 +28,10 @@ const {spawn}=require('child_process');
 const core=require('./core');
 
 app.setAppUserModelId('days.catching.desktop-toad');
+/* Software compositing: the toad's small see-through window animates all day, and on a
+   laptop that's cheaper (and steadier) drawn by the CPU than by waking the graphics card.
+   --gpu turns hardware acceleration back on. */
+if(!process.argv.includes('--gpu')) app.disableHardwareAcceleration();
 /* --profile=<folder> keeps a second toad's settings apart (handy for trying things out) */
 { const p=process.argv.find(x=>x.startsWith('--profile=')); if(p) app.setPath('userData',path.resolve(p.slice(10))); }
 if(!app.requestSingleInstanceLock()){ app.quit(); return; }
@@ -271,6 +275,29 @@ function dragEnd(){
   remember();
 }
 
+/* ── clicks fall through the toad's window except over the toad itself ──
+   The window ignores the mouse, and the toad's page says when the cursor is over
+   the drawing. It used to learn that only from mouse moves Windows forwards to an
+   ignoring window, and Windows stops forwarding them once the window has been
+   hidden and shown again (the focus ritual does that), which left the toad
+   impossible to click or drag. So the cursor is also read here, ten times a
+   second while it's over the toad's window, and handed to the page to test. */
+let ignoreNow=true, probeIn=false;
+function setIgnore(on){ ignoreNow=on; try{ toadWin.setIgnoreMouseEvents(on,{forward:true}); }catch(e){} }
+function showToad(){
+  if(!toadWin) return;
+  toadWin.showInactive();
+  setIgnore(true); probeIn=false;
+  send(toadWin,'hit-reset',{});
+}
+setInterval(()=>{
+  if(!toadWin||drag||!toadWin.isVisible()) return;
+  const c=screen.getCursorScreenPoint(), b=toadWin.getBounds();
+  const inside=c.x>=b.x&&c.x<b.x+b.width&&c.y>=b.y&&c.y<b.y+b.height;
+  if(inside||probeIn) send(toadWin,'probe',{x:c.x-b.x,y:c.y-b.y,inside});
+  probeIn=inside;
+},100);
+
 function createToad(){
   const g=geo();
   toadWin=new BrowserWindow({width:g.W,height:g.H,frame:false,transparent:true,resizable:false,movable:false,
@@ -279,7 +306,7 @@ function createToad(){
     webPreferences:{preload:path.join(__dirname,'preload.js'),contextIsolation:true,sandbox:true,nodeIntegration:false,backgroundThrottling:false,autoplayPolicy:'no-user-gesture-required'}});
   toadWin.setIgnoreMouseEvents(true,{forward:true});
   toadWin.loadFile(path.join(__dirname,'pet.html'));
-  toadWin.once('ready-to-show',()=>{ restorePlace(); toadWin.showInactive(); });
+  toadWin.once('ready-to-show',()=>{ restorePlace(); showToad(); });
   toadWin.webContents.on('render-process-gone',()=>{ try{ toadWin.reload(); }catch(e){} });
 }
 function resizeToad(){
@@ -371,7 +398,8 @@ function startRitual(o){
   closePanel();
   const g=geo(), box=toadBox(), wa=workAreaAt(box.x+g.S/2,box.y+g.S/2);
   const right=box.x+g.S/2>=wa.x+wa.width/2;
-  const corner={x:right?wa.x+wa.width-g.W:wa.x,y:wa.y+wa.height-g.H};
+  /* a little up from the very bottom, clear of a taskbar that pops up from the edge */
+  const corner={x:right?wa.x+wa.width-g.W:wa.x,y:wa.y+wa.height-g.H-10};
   const usual=[VIEW.settings.focus,VIEW.settings.brk], last=Array.isArray(S.mem.rhythm)?S.mem.rhythm:usual;
   const fixed=o.f!=null;
   ritual={wa,corner,home:{x:virt.x,y:virt.y},
@@ -386,7 +414,7 @@ function startRitual(o){
     webPreferences:{preload:path.join(__dirname,'preload.js'),contextIsolation:true,sandbox:true,nodeIntegration:false,backgroundThrottling:false,autoplayPolicy:'no-user-gesture-required'}});
   stageWin.setAlwaysOnTop(true,'pop-up-menu');
   stageWin.loadFile(path.join(__dirname,'stage.html'));
-  stageWin.on('closed',()=>{ stageWin=null; if(ritual){ ritual=null; try{ toadWin.showInactive(); }catch(e){} } });
+  stageWin.on('closed',()=>{ stageWin=null; if(ritual){ ritual=null; showToad(); } });
   /* if the stage never comes up, the toad mustn't stay hidden */
   setTimeout(()=>{ if(stageWin&&!stageWin.isVisible()){ try{ stageWin.close(); }catch(e){} } },8000);
 }
@@ -399,7 +427,7 @@ function endRitual(d){
     send(toadWin,'peek',{edge:null,p:0,animate:false});
     remember();
   }
-  setTimeout(()=>{ try{ toadWin.showInactive(); }catch(e){} },40);
+  setTimeout(()=>showToad(),40);
   setTimeout(()=>{ try{ if(stageWin) stageWin.close(); }catch(e){} },140);
   if(d&&d.pick) setTimeout(()=>openPanel('setup'),200);
   else if(d&&d.started) setTimeout(()=>send(toadWin,'react',{kind:'focusStart'}),200);
@@ -479,7 +507,7 @@ function menuTemplate(){
     {type:'separator'},
     {label:'Choose a toad',submenu:TOADS.map(t=>({label:NAMES[t],type:'radio',checked:S.toad===t,click:()=>setToad(t)}))},
     {label:'Size',submenu:[['s','Small'],['m','Medium'],['l','Large']].map(([k,l])=>({label:l,type:'radio',checked:S.size===k,click:()=>setSize(k)}))},
-    {label:'Bring the toad back',click:()=>{ const d=defaultSpot(); place(d.x,d.y,true); remember(); toadWin.showInactive(); }},
+    {label:'Bring the toad back',click:()=>{ const d=defaultSpot(); place(d.x,d.y,true); remember(); showToad(); }},
     {type:'separator'},
     {label:'Open Catching Days',click:openApp},
     {label:'Start with Windows',type:'checkbox',checked:!!S.startAtLogin,click:m=>setLogin(m.checked)},
@@ -500,14 +528,14 @@ ipcMain.handle('init',e=>{
   return {who, view:VIEW, ritual:who==='stage'&&ritual?ritual.params:null, toad:S.toad, size:S.size, geo:geo(), peek, mem:S.mem, login:!!S.startAtLogin,
     artBase:require('url').pathToFileURL(S.appDir+path.sep).href, names:NAMES, toads:TOADS};
 });
-ipcMain.on('ignore',(e,on)=>{ if(toadWin&&!drag) toadWin.setIgnoreMouseEvents(!!on,{forward:true}); });
+ipcMain.on('ignore',(e,on)=>{ if(toadWin&&!drag) setIgnore(!!on); });
 ipcMain.on('drag-start',()=>dragStart());
 ipcMain.on('drag-end',()=>dragEnd());
 ipcMain.on('toad-click',()=>{ if(stageWin) return; if(panelOpen) closePanel(); else openPanel('chat'); });
 ipcMain.on('toad-menu',()=>{ Menu.buildFromTemplate(menuTemplate()).popup({window:toadWin}); });
 ipcMain.on('panel-open',(e,mode)=>{ if(mode==='focus'&&VIEW&&!VIEW.session) startRitual(); else openPanel(mode); });
 ipcMain.on('focus-ritual',(e,o)=>startRitual(o));
-ipcMain.on('stage-ready',()=>{ if(!stageWin||!ritual) return; toadWin.hide(); stageWin.show(); stageWin.focus(); send(stageWin,'go',{}); });
+ipcMain.on('stage-ready',()=>{ if(!stageWin||!ritual) return; setIgnore(true); toadWin.hide(); stageWin.show(); stageWin.focus(); send(stageWin,'go',{}); });
 ipcMain.on('stage-done',(e,d)=>endRitual(d));
 ipcMain.on('panel-close',()=>closePanel());
 ipcMain.on('panel-height',(e,h)=>{ h=Math.max(120,Math.min(900,Math.round(+h||0))); if(h!==panelH){ panelH=h; if(panelOpen) placePanel(); } });
@@ -552,11 +580,11 @@ ipcMain.handle('op',(e,o)=>{
 });
 
 if(TEST) global.__toadTest={dragStart,dragEnd,dragTick,setCursor:(x,y)=>{ fakeCursor={x,y}; },
-  state:()=>({virt,peek,pos:toadWin.getPosition(),size:toadWin.getSize(),geo:geo(),panelOpen,panelMode,ops:OPS,view:VIEW,clients:clients.size}),
+  state:()=>({virt,peek,ignoreNow,pos:toadWin.getPosition(),size:toadWin.getSize(),geo:geo(),panelOpen,panelMode,ops:OPS,view:VIEW,clients:clients.size}),
   openPanel,closePanel,setToad,setSize,startRitual,stage:()=>stageWin};
 
 /* ════════════════════ start up, shut down ════════════════════ */
-app.on('second-instance',()=>{ if(toadWin){ toadWin.showInactive(); openPanel('chat'); } });
+app.on('second-instance',()=>{ if(toadWin){ showToad(); openPanel('chat'); } });
 app.whenReady().then(async()=>{
   loadSettings();
   if(process.argv.includes('--start-at-login')) S.startAtLogin=true;
@@ -566,7 +594,7 @@ app.whenReady().then(async()=>{
   readDb(); watchData();
   createToad(); createPanel();
   tray=new Tray(trayIcon()); tray.setToolTip('Catching Days toad'); rebuildTray();
-  tray.on('click',()=>{ toadWin.showInactive(); openPanel('chat'); });
+  tray.on('click',()=>{ showToad(); openPanel('chat'); });
   if(S.startAtLogin) setLogin(true);
   if(process.argv.includes('--make-shortcut')) makeShortcut();
   screen.on('display-metrics-changed',()=>place(virt.x,virt.y,false));

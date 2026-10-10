@@ -4,12 +4,12 @@
    click-through except over the toad itself, and turns pointer presses into
    either a tap (talk) or a drag (the main process moves the window).
 
-   Motion: the art only animates under a .td-mv ancestor. A toad that moved
-   every frame all day would cost real battery for nothing, so this one sits
-   still like a real toad and wakes for a few seconds now and then (a breath,
-   a blink, a glance), and whenever you hover, drag, or talk to it. While it's
-   awake its animations are stepped at 30 frames a second: in a see-through
-   window on a 120-144 Hz screen, letting them run free costs most of a core. */
+   Motion: the toad is always alive: it breathes, its throat pumps, it glances
+   about and blinks every few seconds, like the toads in the app. The art's own
+   animations run, but a see-through window repainting at a 120-144 Hz screen's
+   full rate costs far more than a toad is worth, so they're paused and stepped
+   by hand: 15 frames a second while it idles (plenty for breathing and a
+   blink), 30 while you hover, drag or it reacts. */
 'use strict';
 (async function(){
 const $=id=>document.getElementById(id);
@@ -98,6 +98,7 @@ function pivotFor(edge,p){
 window.__applyPeek=(e,p)=>{ PEEK={edge:e,p}; applyPeek(false); };
 window.__eye=()=>EYE;
 window.__wakeFor=ms=>wake(ms);
+window.__pace=()=>({stepMs,running:!!stepT,anims:document.getAnimations().length,hovering,held,busy:busyUntil-Date.now()});
 function applyPeek(animate){
   const t=$('toad'), {S}=G, pv=pivotFor(PEEK.edge,PEEK.p);
   t.classList.toggle('glide',!!animate);
@@ -113,32 +114,33 @@ function placePill(){
   else { p.style.left='50%'; p.style.bottom='3px'; p.style.marginLeft='-36px'; }
 }
 
-/* ── awake / asleep ── */
-let awakeUntil=0, hovering=false, held=false, panelOpen=false, wakeT=null;
+/* ── always moving; how smoothly depends on whether anything's happening ── */
+let busyUntil=0, hovering=false, held=false, panelOpen=false, paceT=null;
+const IDLE_MS=66, BUSY_MS=33;
 function setAwake(){
-  const on=hovering||held||Date.now()<awakeUntil;
-  $('art').classList.toggle('td-mv',on);
-  if(on) stepOn(); else stepOff();
+  $('art').classList.add('td-mv');
+  const busy=hovering||held||Date.now()<busyUntil;
+  pace(busy?BUSY_MS:IDLE_MS);
 }
-/* every running animation is paused and moved on by hand, 30 times a second */
-let stepT=null, stepLast=0, STEP_MS=33;
-function stepOn(){ if(stepT) return; stepLast=performance.now(); stepT=setInterval(step,STEP_MS); }
-/* once paused from script, a CSS animation no longer stops by itself when its class goes,
-   so the art's are cancelled here (td-mv is already off, so they don't come back) */
-function stepOff(){ if(!stepT) return; clearInterval(stepT); stepT=null;
-  document.getAnimations().forEach(a=>{ try{ if(typeof CSSAnimation!=='undefined'&&a instanceof CSSAnimation) a.cancel(); else if(a.playState==='paused') a.play(); }catch(e){} }); }
-window.__stepMs=ms=>{ STEP_MS=ms; if(stepT){ clearInterval(stepT); stepT=setInterval(step,STEP_MS); } };
+function wake(ms){ busyUntil=Math.max(busyUntil,Date.now()+ms); setAwake(); clearTimeout(paceT); paceT=setTimeout(setAwake,busyUntil-Date.now()+30); }
+/* every running animation is paused and moved on by hand */
+let stepT=null, stepMs=0, stepLast=0;
+function pace(ms){
+  if(document.hidden){ stop(); return; }
+  if(stepT&&ms===stepMs) return;
+  if(stepT) clearInterval(stepT); else stepLast=performance.now();
+  stepMs=ms; stepT=setInterval(step,ms);
+}
+function stop(){ if(stepT){ clearInterval(stepT); stepT=null; } }
 function step(){
   const now=performance.now(), dt=now-stepLast; stepLast=now;
   document.getAnimations().forEach(a=>{
     try{ if(a.playState!=='paused') a.pause(); a.currentTime=(a.currentTime||0)+dt; }catch(e){}
   });
 }
-function wake(ms){ awakeUntil=Math.max(awakeUntil,Date.now()+ms); setAwake(); clearTimeout(wakeT); wakeT=setTimeout(setAwake,ms+30); }
-(function fidget(){
-  /* every 40 to 90 seconds: eight seconds of being a toad (long enough for a blink) */
-  setTimeout(()=>{ wake(8000); fidget(); },40000+Math.random()*50000);
-})();
+/* hidden (during the focus ritual): nothing to draw, so nothing to step */
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) stop(); else setAwake(); });
+window.__stepMs=ms=>{ stop(); stepMs=0; pace(ms); };
 
 /* ── reactions: a hop, a face, a sound ── */
 const FACES={
@@ -224,12 +226,15 @@ function overToad(x,y){
   const svg=el.closest('#art svg');
   return !!svg&&el!==svg;
 }
-document.addEventListener('mousemove',e=>{
-  if(held) return;
-  const over=overToad(e.clientX,e.clientY);
+function hover(over){
   setIgnore(!over);
   if(over!==hovering){ hovering=over; setAwake(); if(!over) wake(2500); }
-});
+}
+document.addEventListener('mousemove',e=>{ if(!held) hover(overToad(e.clientX,e.clientY)); });
+/* the main process reads the cursor too (Windows can stop forwarding moves to a
+   click-through window), and asks: is that point on the toad? */
+window.pet.on('probe',p=>{ if(held||down) return; hover(!!p.inside&&overToad(p.x,p.y)); });
+window.pet.on('hit-reset',()=>{ ignoring=true; hovering=false; held=false; down=null; $('toad').classList.remove('held'); setAwake(); });
 document.addEventListener('mouseleave',()=>{ if(held) return; hovering=false; setIgnore(true); setAwake(); });
 
 /* ── press: a tap talks, a drag moves ── */
