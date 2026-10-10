@@ -397,10 +397,23 @@ function setToad(name){
   rebuildTray();
 }
 function setSize(k){ if(!SIZES[k]||k===S.size) return; S.size=k; saveSettings(); resizeToad(); refresh(); rebuildTray(); }
+/* the toad starts again the way it was started this time (its folder, its settings folder, where the app is) */
+const keepArgs=()=>process.argv.filter(a=>/^--(profile|app-dir|page)=/.test(a));
+const launchArgs=()=>(app.isPackaged?[]:[app.getAppPath()]).concat(keepArgs());
 function setLogin(on){
   S.startAtLogin=!!on; saveSettings();
-  try{ app.setLoginItemSettings({openAtLogin:!!on,path:process.execPath,args:app.isPackaged?[]:[app.getAppPath()]}); }catch(e){}
+  try{ app.setLoginItemSettings({openAtLogin:!!on,path:process.execPath,args:launchArgs()}); }catch(e){}
   rebuildTray();
+}
+/* --make-shortcut: a "Catching Days Toad" entry in the Start menu */
+function makeShortcut(){
+  const icon=[path.join(S.appDir,'catching-days.ico'),path.join(__dirname,'assets','toad.ico')].find(f=>fs.existsSync(f));
+  const q=a=>/\s/.test(a)?'"'+a+'"':a;
+  try{
+    shell.writeShortcutLink(path.join(app.getPath('appData'),'Microsoft','Windows','Start Menu','Programs','Catching Days Toad.lnk'),
+      {target:process.execPath,args:launchArgs().map(q).join(' '),cwd:__dirname,description:'A toad from Catching Days, on your desktop',
+       icon:icon||process.execPath,iconIndex:0});
+  }catch(e){}
 }
 function menuTemplate(){
   return [
@@ -497,6 +510,7 @@ app.whenReady().then(async()=>{
   tray=new Tray(trayIcon()); tray.setToolTip('Catching Days toad'); rebuildTray();
   tray.on('click',()=>{ toadWin.showInactive(); openPanel('chat'); });
   if(S.startAtLogin) setLogin(true);
+  if(process.argv.includes('--make-shortcut')) makeShortcut();
   screen.on('display-metrics-changed',()=>place(virt.x,virt.y,false));
   screen.on('display-removed',()=>restorePlace());
 });

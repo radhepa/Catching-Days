@@ -375,6 +375,6 @@ window.pet.on('open',o=>{
 });
 window.pet.on('closed',()=>{ $('card').classList.remove('show'); clearInterval(sayT); });
 
-setInterval(()=>{ if(V&&V.session){ tickRun(); paintTabs(); } },250);
+setInterval(()=>{ if(V&&V.session&&!document.hidden){ tickRun(); paintTabs(); } },250);
 paintWho(); render(true); paintFoot();
 })();

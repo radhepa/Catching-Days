@@ -24,9 +24,7 @@ if errorlevel 1 (
   exit /b 1
 )
 
-powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0make-shortcut.ps1"
-
-start "" "%~dp0node_modules\electron\dist\electron.exe" "%~dp0." --start-at-login
+start "" "%~dp0node_modules\electron\dist\electron.exe" "%~dp0." --start-at-login --make-shortcut
 echo.
 echo   Your toad is on the desktop. Tap it to talk, drag it to move it,
 echo   and push it against the edge of the screen to hide it.

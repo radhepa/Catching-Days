@@ -5,9 +5,11 @@
    either a tap (talk) or a drag (the main process moves the window).
 
    Motion: the art only animates under a .td-mv ancestor. A toad that moved
-   every frame all day would cost a few percent of a core for nothing, so this
-   one sits still like a real toad and wakes for a few seconds now and then
-   (a breath, a blink, a glance), and whenever you hover, drag, or talk to it. */
+   every frame all day would cost real battery for nothing, so this one sits
+   still like a real toad and wakes for a few seconds now and then (a breath,
+   a blink, a glance), and whenever you hover, drag, or talk to it. While it's
+   awake its animations are stepped at 30 frames a second: in a see-through
+   window on a 120-144 Hz screen, letting them run free costs most of a core. */
 'use strict';
 (async function(){
 const $=id=>document.getElementById(id);
@@ -95,6 +97,7 @@ function pivotFor(edge,p){
 }
 window.__applyPeek=(e,p)=>{ PEEK={edge:e,p}; applyPeek(false); };
 window.__eye=()=>EYE;
+window.__wakeFor=ms=>wake(ms);
 function applyPeek(animate){
   const t=$('toad'), {S}=G, pv=pivotFor(PEEK.edge,PEEK.p);
   t.classList.toggle('glide',!!animate);
@@ -113,13 +116,28 @@ function placePill(){
 /* ── awake / asleep ── */
 let awakeUntil=0, hovering=false, held=false, panelOpen=false, wakeT=null;
 function setAwake(){
-  const on=hovering||held||panelOpen||Date.now()<awakeUntil;
+  const on=hovering||held||Date.now()<awakeUntil;
   $('art').classList.toggle('td-mv',on);
+  if(on) stepOn(); else stepOff();
+}
+/* every running animation is paused and moved on by hand, 30 times a second */
+let stepT=null, stepLast=0, STEP_MS=33;
+function stepOn(){ if(stepT) return; stepLast=performance.now(); stepT=setInterval(step,STEP_MS); }
+/* once paused from script, a CSS animation no longer stops by itself when its class goes,
+   so the art's are cancelled here (td-mv is already off, so they don't come back) */
+function stepOff(){ if(!stepT) return; clearInterval(stepT); stepT=null;
+  document.getAnimations().forEach(a=>{ try{ if(typeof CSSAnimation!=='undefined'&&a instanceof CSSAnimation) a.cancel(); else if(a.playState==='paused') a.play(); }catch(e){} }); }
+window.__stepMs=ms=>{ STEP_MS=ms; if(stepT){ clearInterval(stepT); stepT=setInterval(step,STEP_MS); } };
+function step(){
+  const now=performance.now(), dt=now-stepLast; stepLast=now;
+  document.getAnimations().forEach(a=>{
+    try{ if(a.playState!=='paused') a.pause(); a.currentTime=(a.currentTime||0)+dt; }catch(e){}
+  });
 }
 function wake(ms){ awakeUntil=Math.max(awakeUntil,Date.now()+ms); setAwake(); clearTimeout(wakeT); wakeT=setTimeout(setAwake,ms+30); }
 (function fidget(){
-  /* every 25 to 55 seconds: nine seconds of being a toad (long enough for a blink) */
-  setTimeout(()=>{ wake(9000); fidget(); },25000+Math.random()*30000);
+  /* every 40 to 90 seconds: eight seconds of being a toad (long enough for a blink) */
+  setTimeout(()=>{ wake(8000); fidget(); },40000+Math.random()*50000);
 })();
 
 /* ── reactions: a hop, a face, a sound ── */
