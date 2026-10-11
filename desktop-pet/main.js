@@ -214,10 +214,16 @@ function virtFor(x,y,edge){
   const g=geo();
   return edge==='r'?{x:x+g.travel,y}:edge==='l'?{x:x-g.travel,y}:edge==='b'?{x,y:y+g.travel}:{x,y};
 }
+/* moved with its size spelled out every time: on a 150%-scaled screen setPosition
+   rounds the window a pixel bigger on each call, and a few drags left it many
+   times the toad's size, hanging off the screen */
+function setSpot(x,y){
+  const g=geo(), b=toadWin.getBounds();
+  if(b.x!==x||b.y!==y||b.width!==g.W||b.height!==g.H) toadWin.setBounds({x,y,width:g.W,height:g.H});
+}
 function place(vx,vy,animate){
   const L=layout(vx,vy); virt={x:vx,y:vy};
-  const [cx,cy]=toadWin.getPosition();
-  if(cx!==L.x||cy!==L.y) toadWin.setPosition(L.x,L.y);
+  setSpot(L.x,L.y);
   if(L.edge!==peek.edge||Math.abs(L.p-peek.p)>.004||animate){
     peek={edge:L.edge,p:L.p}; send(toadWin,'peek',Object.assign({animate:!!animate},peek));
   }
@@ -277,10 +283,8 @@ function dragEnd(){
 
 /* ── clicks fall through the toad's window except over the toad itself ──
    The window ignores the mouse, and the toad's page says when the cursor is over
-   the drawing. It used to learn that only from mouse moves Windows forwards to an
-   ignoring window, and Windows stops forwarding them once the window has been
-   hidden and shown again (the focus ritual does that), which left the toad
-   impossible to click or drag. So the cursor is also read here, ten times a
+   the drawing, from the mouse moves Windows forwards to an ignoring window. In
+   case one of those goes missing, the cursor is also read here, ten times a
    second while it's over the toad's window, and handed to the page to test. */
 let ignoreNow=true, probeIn=false;
 function setIgnore(on){ ignoreNow=on; try{ toadWin.setIgnoreMouseEvents(on,{forward:true}); }catch(e){} }
@@ -291,7 +295,7 @@ function showToad(){
   send(toadWin,'hit-reset',{});
 }
 setInterval(()=>{
-  if(!toadWin||drag||!toadWin.isVisible()) return;
+  if(!toadWin||toadWin.isDestroyed()||drag||!toadWin.isVisible()) return;
   const c=screen.getCursorScreenPoint(), b=toadWin.getBounds();
   const inside=c.x>=b.x&&c.x<b.x+b.width&&c.y>=b.y&&c.y<b.y+b.height;
   if(inside||probeIn) send(toadWin,'probe',{x:c.x-b.x,y:c.y-b.y,inside});
@@ -423,14 +427,16 @@ function endRitual(d){
   if(d&&d.started){
     /* the desktop toad takes over in the corner, out of hiding */
     virt={x:r.corner.x,y:r.corner.y}; peek={edge:null,p:0};
-    toadWin.setPosition(r.corner.x,r.corner.y);
+    setSpot(r.corner.x,r.corner.y);
     send(toadWin,'peek',{edge:null,p:0,animate:false});
     remember();
   }
   setTimeout(()=>showToad(),40);
+  /* the set-up opens before the stage closes: closing the window that has the focus
+     hands it to whatever's behind, which could take it straight off the new panel */
+  if(d&&d.pick) setTimeout(()=>openPanel('setup'),60);
   setTimeout(()=>{ try{ if(stageWin) stageWin.close(); }catch(e){} },140);
-  if(d&&d.pick) setTimeout(()=>openPanel('setup'),200);
-  else if(d&&d.started) setTimeout(()=>send(toadWin,'react',{kind:'focusStart'}),200);
+  if(d&&d.started) setTimeout(()=>send(toadWin,'react',{kind:'focusStart'}),200);
 }
 
 /* ════════════════════ the bell: focus time up, break over ════════════════════ */

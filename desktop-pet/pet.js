@@ -123,8 +123,20 @@ function setAwake(){
   pace(busy?BUSY_MS:IDLE_MS);
 }
 function wake(ms){ busyUntil=Math.max(busyUntil,Date.now()+ms); setAwake(); clearTimeout(paceT); paceT=setTimeout(setAwake,busyUntil-Date.now()+30); }
-/* every running animation is paused and moved on by hand */
-let stepT=null, stepMs=0, stepLast=0;
+/* every running animation is paused and moved on by hand. A CSS animation paused
+   that way outlives the class that started it: each hop left its splash behind,
+   stepped forever, and a few hundred of those froze the toad (and a new drawing,
+   from a size or toad change, was the only thing that cleared them). So every
+   animation paused here is kept track of, and once a second the ones nothing asks
+   for any more (and transitions that are over) are dropped. */
+let stepT=null, stepMs=0, stepLast=0, sweptAt=0;
+const paused=new Set();
+function stale(a){
+  const t=a.effect&&a.effect.target;
+  if(!t||!t.isConnected) return true;
+  if(!a.animationName) return a.currentTime>=a.effect.getComputedTiming().endTime;   // a transition
+  return !getComputedStyle(t).animationName.split(',').some(n=>n.trim()===a.animationName);
+}
 function pace(ms){
   if(document.hidden){ stop(); return; }
   if(stepT&&ms===stepMs) return;
@@ -135,8 +147,12 @@ function stop(){ if(stepT){ clearInterval(stepT); stepT=null; } }
 function step(){
   const now=performance.now(), dt=now-stepLast; stepLast=now;
   document.getAnimations().forEach(a=>{
-    try{ if(a.playState!=='paused') a.pause(); a.currentTime=(a.currentTime||0)+dt; }catch(e){}
+    try{ if(a.playState!=='paused'){ a.pause(); paused.add(a); } a.currentTime=(a.currentTime||0)+dt; }catch(e){}
   });
+  if(now-sweptAt>1000){
+    sweptAt=now;
+    paused.forEach(a=>{ try{ if(a.playState==='idle'||stale(a)){ a.cancel(); paused.delete(a); } }catch(e){ paused.delete(a); } });
+  }
 }
 /* hidden (during the focus ritual): nothing to draw, so nothing to step */
 document.addEventListener('visibilitychange',()=>{ if(document.hidden) stop(); else setAwake(); });
@@ -235,7 +251,10 @@ document.addEventListener('mousemove',e=>{ if(!held) hover(overToad(e.clientX,e.
    click-through window), and asks: is that point on the toad? */
 window.pet.on('probe',p=>{ if(held||down) return; hover(!!p.inside&&overToad(p.x,p.y)); });
 window.pet.on('hit-reset',()=>{ ignoring=true; hovering=false; held=false; down=null; $('toad').classList.remove('held'); setAwake(); });
-document.addEventListener('mouseleave',()=>{ if(held) return; hovering=false; setIgnore(true); setAwake(); });
+/* no 'mouseleave' here: Windows sends the page a burst of them after every forwarded
+   move, even with the cursor still on the toad, and each one made it click-through
+   again, so a quick press fell straight through it. Leaving is seen anyway: by the
+   next mouse move, or by the main process's probe once the cursor is off the window. */
 
 /* ── press: a tap talks, a drag moves ── */
 let down=null;

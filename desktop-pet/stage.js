@@ -113,13 +113,17 @@ function slither(from,to,ms){
 }
 
 /* ── choices ── */
-let choose=null, phase='ask', aborted=false;
+let choose=null, phase='ask', aborted=false, hurry=null;
 const answer=v=>{ if(choose){ const c=choose; choose=null; c(v); } };
+const hurried=new Promise(r=>{ hurry=r; });
 $('yes').onclick=()=>answer('yes');
 $('no').onclick=()=>answer('no');
 $('pick').onclick=()=>answer('pick');
+/* saying goodbye after "Not yet": a tap on the toad or its bubble sends it home now */
+$('toad').addEventListener('pointerdown',()=>{ if(phase==='bye') hurry(); });
+$('bubble').addEventListener('pointerdown',()=>{ if(phase==='bye') hurry(); });
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){ e.preventDefault(); if(phase==='ask') answer('no'); else if(phase==='count') aborted=true; }
+  if(e.key==='Escape'){ e.preventDefault(); if(phase==='ask') answer('no'); else if(phase==='count') aborted=true; else if(phase==='bye') hurry(); }
   else if(e.key==='Enter'&&phase==='ask'&&!(document.activeElement&&document.activeElement.closest('.rhy,.lnk,.no'))){ e.preventDefault(); answer('yes'); }
 });
 
@@ -147,9 +151,10 @@ async function run(){
   if(v==='pick'){ return back('pick'); }
   $('bubble').classList.add('said');
   if(v==='no'){
+    /* the screen is yours again straight away; the toad says its piece and heads home */
+    $('dim').classList.remove('on'); phase='bye';
     face('notYet');
-    await say(pick(L.notYet)||'Okay. Later, then.');
-    await sleep(1300);
+    await Promise.race([say(pick(L.notYet)||'Okay. Later, then.').then(()=>sleep(1300)),hurried]);
     return back('no');
   }
   /* yes */
