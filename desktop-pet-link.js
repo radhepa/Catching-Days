@@ -7,8 +7,8 @@
    The toad never writes focus-data.json. What you do on it (tick a task,
    start a focus session, rate a block, end a session) arrives here as a list
    of ops, each stamped with the moment you did it, and is applied with the
-   app's own functions: toggleAsg, startSession, endFocus/afterRating,
-   endBreak, finishSession/saveSession. So a task ticked on the desktop
+   app's own functions: toggleAsg, newAsg, newSticky, startSession,
+   endFocus/afterRating, endBreak, finishSession/saveSession. So a task ticked on the desktop
    releases its fish, and a session started there is saved with its cycles,
    exactly as if it had happened in here. While an op is applied, Date.now()
    reads the op's own time, so a tick made while this page was closed is
@@ -98,6 +98,28 @@ const H={
     return 'done';
   }
 };
+/* made on the toad: a new task (as the app's own quick-add makes one) and the
+   Journal's sticky notes. The toad picks the ids, so a task it adds can be
+   ticked, or a note edited, before this page has seen either. */
+const ADD=o=>{
+  if(typeof o.aid!=='string'||asg(o.aid)) return;
+  const title=String(o.title||'').trim().slice(0,200); if(!title) return;
+  const cls=o.cls&&(db.classes||[]).some(c=>c.id===o.cls&&!c.archived)?o.cls:null;
+  const a=newAsg({title,classId:cls,due:/^\d{4}-\d{2}-\d{2}$/.test(o.due||'')?o.due:''});
+  a.id=o.aid; db.assignments.push(a);
+};
+const NOTE=o=>{
+  if(typeof o.nid!=='string') return;
+  db.stickies=db.stickies||[];
+  const s=db.stickies.find(x=>x.id===o.nid), text=String(o.text||'').trim().slice(0,5000);
+  const color=STICKY_COLORS.some(c=>c.k===o.color)?o.color:null;
+  if(o.act==='add'){
+    if(s||!text) return;
+    const n=newSticky({text,color:color||undefined}); n.id=o.nid; db.stickies.push(n);
+  } else if(!s) return;
+  else if(o.act==='edit'){ if(text) s.text=text; if(color) s.color=color; }
+  else if(o.act==='archive'&&!s.archived){ s.archived=true; s.archivedAt=Date.now(); }
+};
 const needsDialog=o=>o.k==='focus'&&(o.act==='rate'||o.act==='finish');
 
 async function take(ops){
@@ -106,7 +128,7 @@ async function take(ops){
   busy=true;
   try{
     await window.appReady;
-    const list=ops.filter(o=>o&&o.t>upto()&&(o.k==='task'||(o.k==='focus'&&H[o.act]))).sort((a,b)=>a.t-b.t);
+    const list=ops.filter(o=>o&&o.t>upto()&&(o.k==='task'||o.k==='add'||o.k==='note'||(o.k==='focus'&&H[o.act]))).sort((a,b)=>a.t-b.t);
     if(!list.length) return;
     const prevCur=cur;
     let u=upto(), did=false, goRun=false;
@@ -114,7 +136,7 @@ async function take(ops){
       /* a dialog of yours is open: the session's own dialogs would replace it, so wait */
       if(needsDialog(o)&&modalOpen()&&!ratingOpen()){ setTimeout(()=>{ if(!modalOpen()) take(lastSeen); },2500); break; }
       try{
-        const r=at(o.t,()=>o.k==='task'?H.task(o):H[o.act](o));
+        const r=at(o.t,()=>o.k==='task'?H.task(o):o.k==='add'?ADD(o):o.k==='note'?NOTE(o):H[o.act](o));
         if(r==='run') goRun=true;
         if(r==='done') goRun=false;
       }catch(e){ console.warn('Desktop toad: could not apply',o,e); }
@@ -146,7 +168,8 @@ async function readInbox(){
 function connect(p){
   if(es||!p) return;
   port=p;
-  try{ es=new EventSource(`http://127.0.0.1:${p}/events?id=${ID}`); }catch(e){ es=null; return; }
+  /* v=2: this page takes in tasks and sticky notes made on the toad, not only ticks and sessions */
+  try{ es=new EventSource(`http://127.0.0.1:${p}/events?id=${ID}&v=2`); }catch(e){ es=null; return; }
   es.addEventListener('ops',e=>{ try{ const d=JSON.parse(e.data); lastSeen=d.ops||[]; take(lastSeen); }catch(_){} });
   es.onopen=()=>{ backoff=5000; presence(); };
   es.onerror=()=>{

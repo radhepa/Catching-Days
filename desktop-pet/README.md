@@ -6,10 +6,13 @@ An optional add-on for Catching Days: one of the pond's nine toads lives on your
 
 - **Drag it anywhere.** It stays where you leave it.
 - **Push it against the left, right or bottom edge of the screen** and it hides there with only its head peeking out (at the bottom it sinks until just its eyes are above the line, like a toad in a pond). Drag it back out to see all of it.
-- **Tap it** and it says something, then gives you three places:
-  - **Tasks**: today's list, what's waiting in the reeds, and what's coming up. Tick one and it's released into the pond.
+- **Tap it** and it says something, then gives you four places:
+  - **Tasks**: add a task (for today, tomorrow or no date, in one of your classes if you like), then today's list, what's waiting in the reeds, and what's coming up. Tick one and it's released into the pond.
   - **My day**: your Calendar tab's timeline for today, what's on now and what's next, plus deadlines and tests coming up.
+  - **Notes**: jot a sticky note and it sticks to your desktop. It's one of the app's own sticky notes (Journal · Sticky notes), so it's kept there too. The notes afloat are listed here: put any of them on the desktop, take it off, or settle it.
   - **Focus**: the toad comes out to the middle of your screen and asks, in its own way, whether you're ready and mean it (pick Gentle, Classic, Deep or your usual rhythm right there). Say yes and it answers, counts down 3, 2, 1, starts the session, and slithers off into a bottom corner with the timer under it. Say not yet and it goes back where it was. It rings the bell when the block is done, and you can rate the block, take your break, and save the session without leaving what you're doing. "Pick tasks first" opens a set-up where you can bring tasks into the session.
+- **Sticky notes on the desktop**: drag one by its top strip, resize it from its edges, write in it (it saves a moment after you stop), change its colour, keep it on top of other windows, or settle it when you're done with it. **+** (or Ctrl+N) makes a new one. Taking a note off the desktop doesn't delete it; it stays in the app. Notes you leave on the desktop come back where they were when the toad starts again.
+- **Right-click the toad** for **New task…** and **New sticky note** straight away.
 - **Choose your toad**: Hasu, Ame, Sumi, Tabi, Hotaru, Neri, Oto, Kuri or Mame. Each one talks in its own voice. Right-click the toad (or use the tray icon) for the chooser, the size, and Start with Windows.
 
 ![The talk box's other places: a chat line, the day's timeline, and a focus session with its timer under the toad](../docs/images/desktop-toad-places.jpg)
@@ -34,7 +37,7 @@ If the toad can't find Catching Days next to it, it asks you to pick the folder 
 
 ## How it works with your data
 
-The toad never writes your save file. It reads `focus-data.json`, and puts what you do on it (a tick, a session started, a block rated) into `desktop-pet-inbox.json` next to it. The app, through `desktop-pet-link.js`, takes each one in with its own functions, so a task ticked on the desktop releases its fish and a session started there is saved with its cycles, exactly as if you'd done it in the app. Each action is stamped with the moment you did it.
+The toad never writes your save file. It reads `focus-data.json`, and puts what you do on it (a tick, a session started, a block rated) into `desktop-pet-inbox.json` next to it. The app, through `desktop-pet-link.js`, takes each one in with its own functions, so a task ticked on the desktop releases its fish, a task or a sticky note made there is made the way the app makes one, and a session started there is saved with its cycles, exactly as if you'd done it in the app. Each action is stamped with the moment you did it.
 
 - **App open:** it lands at once, even if the app's tab is in the background. If the session would need one of the app's dialogs while you have another dialog open, it waits for you to close yours.
 - **App closed:** it waits in the inbox, the toad shows it as done in the meantime, and it lands the next time you open the app.
@@ -49,6 +52,7 @@ core.js          reads the pond: today's list, the reeds, the do-score, the day,
 pet.js / .css    the toad on the desktop (art loaded from the app's own toad files)
 panel.js / .css  the talk box: chat, tasks, the day, focus
 stage.js / .css  the focus ritual: the toad in the middle of the screen, 3, 2, 1, off to a corner
+note.js / .css   a sticky note on the desktop
 pet-lines.js     what each of the nine toads says
 preload.js       the bridge between the windows and the rest
 test/            node tests for core.js

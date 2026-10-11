@@ -115,6 +115,28 @@ function pendingOps(db,ops){
   const u=uptoOf(db);
   return (ops||[]).filter(o=>o&&o.t>u).sort((a,b)=>a.t-b.t);
 }
+/* tasks added on the toad, shown as the app will make them (newAsg) until the file has them */
+function addOverlay(db,pend){
+  const have=new Set((db.assignments||[]).map(a=>a.id)), out=[];
+  pend.forEach(o=>{ if(o.k==='add'&&o.aid&&!have.has(o.aid)){ have.add(o.aid);
+    out.push({id:o.aid,title:o.title||'(untitled)',classId:o.cls||null,est:0,due:o.due||'',imp:0,assignedDate:'',subs:[],log:[],
+      done:false,doneAt:null,created:o.t,logged:0,notes:'',habitId:null,journeyId:null,ann:false}); } });
+  return out;
+}
+/* sticky notes (the app's Journal · Sticky notes), with the toad's notes and edits on top */
+const NOTE_COLORS=['lilac','mint','sky','butter','peach','blush'];
+function notesView(db,pend){
+  const list=(db.stickies||[]).filter(s=>s&&s.id).map(s=>({id:s.id,text:String(s.text||''),color:s.color||'lilac',created:+s.created||0,archived:!!s.archived}));
+  pend.forEach(o=>{
+    if(o.k!=='note'||!o.nid) return;
+    const s=list.find(x=>x.id===o.nid);
+    if(o.act==='add'){ if(!s&&String(o.text||'').trim()) list.push({id:o.nid,text:String(o.text).trim(),color:o.color||'mint',created:o.t,archived:false}); return; }
+    if(!s) return;
+    if(o.act==='edit'){ if(String(o.text||'').trim()) s.text=String(o.text).trim(); if(NOTE_COLORS.includes(o.color)) s.color=o.color; }
+    else if(o.act==='archive') s.archived=true;
+  });
+  return list.filter(s=>!s.archived).sort((a,b)=>b.created-a.created);
+}
 /* task ticks on top of the file: id → {done, doneAt} */
 function taskOverlay(db,pend){
   const m=new Map();
@@ -275,8 +297,10 @@ function taskRow(C,db,a,today,ov){
 function buildView(db,ops,now){
   now=now||Date.now();
   db=db||{};
+  const pend0=pendingOps(db,ops), added=addOverlay(db,pend0);
+  if(added.length) db=Object.assign({},db,{assignments:(db.assignments||[]).concat(added)});
   const tz=tzOf(db), today=dayKey(now,tz), C=ctx(db);
-  const pend=pendingOps(db,ops), ov=taskOverlay(db,pend);
+  const pend=pend0, ov=taskOverlay(db,pend);
   const A=db.assignments||[];
   const isDone=a=>ov.has(a.id)?ov.get(a.id).done:!!a.done;
   const picks=new Set(((db.dailyPicks||{})[today])||[]);
@@ -309,6 +333,8 @@ function buildView(db,ops,now){
     counts:{total:countable.length, done:countable.filter(r=>r.done).length,
       left:countable.filter(r=>!r.done).length, overdue:reeds.length},
     session, day, exams,
+    notes:notesView(db,pend),
+    classes:(db.classes||[]).filter(c=>c&&!c.archived).map(c=>({id:c.id,name:clsShort(C,c.id)||c.name||'',color:c.color||'#9399a0'})),
     mins:Math.round(netFocusOn(db,today,tz)/MIN),
     settings:{focus:+st.focus||25, brk:+st.brk||5, goal:+st.goal||0, sound:st.sound!==false},
     pending:pend.length, upto:uptoOf(db),
@@ -327,4 +353,4 @@ function lineState(v,extra){
 }
 
 module.exports={MIN,DAY,dayKey,wall,addDays,weekdayOf,daysBetween,hm,range,dueLabel,doScore,epochOf,
-  pendingOps,taskOverlay,stepSession,sessionView,copySession,elapsed,summarize,dayModel,buildView,lineState,uptoOf};
+  pendingOps,taskOverlay,addOverlay,notesView,NOTE_COLORS,stepSession,sessionView,copySession,elapsed,summarize,dayModel,buildView,lineState,uptoOf};

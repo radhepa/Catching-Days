@@ -1,8 +1,10 @@
 /* panel.js · the toad's talk box
    Opens beside the toad when you tap it: the toad says something (what it
-   says depends on your day, see pet-lines.js), and three places sit under it:
-   Tasks (today's list, the reeds, what's coming), My day (the planner's
-   timeline for today) and Focus (start a session, or the one that's running).
+   says depends on your day, see pet-lines.js), and four places sit under it:
+   Tasks (add one; today's list, the reeds, what's coming), My day (the
+   planner's timeline for today), Notes (jot a sticky note onto the desktop;
+   the ones afloat in the app's Sticky notes) and Focus (start a session, or
+   the one that's running).
    Every change goes to the main process as an op; nothing here touches your
    data directly. */
 'use strict';
@@ -104,9 +106,14 @@ const fTime=ts=>new Intl.DateTimeFormat('en-US',{timeZone:V.tz,hour:'numeric',mi
 
 function paintTabs(){
   const c=V.counts, s=V.session, d=V.day;
-  $('tab-tasks').textContent=!c.total&&!c.overdue?'nothing due':c.total&&!c.left?'all caught'+(c.overdue?` · ${c.overdue} late`:''):
-    [c.total?`${c.left} left`:'',c.overdue?`${c.overdue} late`:''].filter(Boolean).join(' · ');
+  /* four tabs share the width: the late count is a short red number, the words are in the tooltip */
+  const lateN=c.overdue?`<b class="lt">${c.overdue} late</b>`:'';
+  $('tab-tasks').innerHTML=!c.total&&!c.overdue?'nothing due':c.total&&!c.left?'all caught'+(c.overdue?' · '+lateN:''):
+    [c.total?`${c.left} left`:'',c.overdue?(c.total?`<b class="lt">+${c.overdue}</b>`:lateN):''].filter(Boolean).join(' · ');
+  $('tab-tasks').title=[c.total?`${c.left} of ${c.total} left today`:'',c.overdue?`${c.overdue} late, in the reeds`:''].filter(Boolean).join(' · ');
   $('tab-day').textContent=d.now?'now: '+d.now.title:d.next?'next '+d.next.at:'clear';
+  const nn=(V.notes||[]).length;
+  $('tab-notes').textContent=nn?`${nn} afloat`:'jot one';
   const ft=document.querySelector('.tabs [data-v="focus"]');
   if(s){ const rem=s.target-elapsed(s);
     $('tab-focus').textContent=s.phase==='rating'?'rate it':s.paused?'paused':(s.phase==='break'?'break ':'')+clock(rem);
@@ -164,6 +171,69 @@ function dayHTML(){
       <span class="tm">${esc(i.range)}</span><span class="bar"></span>
       <span class="tt"><b>${esc(i.title)}</b>${i.sub?`<span>${esc(i.sub)}</span>`:''}</span></div>`;
   });
+  return h;
+}
+
+/* ── adding a task (the bar above the list) ── */
+const RELOAD='Reload the Catching Days tab once (it’s from before the toad could add things), then try again. Nothing’s lost: what you typed is still here.';
+let addDue='today', addCls=null, addedT=null;
+function addBarHTML(){
+  const cl=V.classes||[];
+  if(addCls&&!cl.some(c=>c.id===addCls)) addCls=null;
+  return `<div class="add"><input id="add-t" maxlength="200" placeholder="Add a task…" autocomplete="off" aria-label="New task"><button class="add-go" id="add-go" disabled>Add</button></div>
+    <div class="add-o" id="add-o">${[['today','Today'],['tomorrow','Tomorrow'],['','No date']].map(([k,l])=>`<button class="opt${addDue===k?' on':''}" data-due="${k}">${l}</button>`).join('')}
+    ${cl.length?`<span class="opt-br"></span><button class="opt${!addCls?' on':''}" data-cls="">No class</button>${cl.map(c=>`<button class="opt${addCls===c.id?' on':''}" data-cls="${esc(c.id)}" style="--c:${esc(c.color)}" title="${esc(c.name)}"><i></i><span>${esc(short(c.name,18))}</span></button>`).join('')}`:''}</div>`;
+}
+function paintAddOpts(){
+  document.querySelectorAll('#add-o [data-due]').forEach(b=>b.classList.toggle('on',b.dataset.due===addDue));
+  document.querySelectorAll('#add-o [data-cls]').forEach(b=>b.classList.toggle('on',(b.dataset.cls||null)===addCls));
+}
+async function addTask(){
+  const el=$('add-t'); if(!el) return;
+  const title=el.value.replace(/\s+/g,' ').trim(); if(!title) return;
+  const res=await op({k:'add',title,due:addDue,cls:addCls});
+  if(res&&res.why==='reload'){ say(RELOAD); return; }
+  if(!res||!res.ok) return;
+  el.value=''; $('add-go').disabled=true; el.focus();
+  if(addDue==='tomorrow') showSoon=true;
+  const where=addDue==='today'?'':addDue==='tomorrow'?'Added for tomorrow · under Coming up':'Added with no date · it’s in the app’s Tasks';
+  /* where it went, in the empty field: nothing below moves when it goes */
+  if(where){ el.placeholder=where; clearTimeout(addedT); addedT=setTimeout(()=>{ const x=$('add-t'); if(x) x.placeholder='Add a task…'; },4000); }
+  window.pet.send('react',{kind:'done'});
+  say(line('added',title));
+}
+
+/* ── sticky notes: the jot box above, the notes afloat below ── */
+const NCOL=[['lilac','Lilac','#ddd0f2'],['mint','Mint','#cfeedb'],['sky','Sky','#d0e5f5'],['butter','Butter','#f7e9b5'],['peach','Peach','#f8d6c3'],['blush','Rose','#f4ccd8']];
+const nhex=k=>(NCOL.find(c=>c[0]===k)||NCOL[1])[2];
+let jotColor='mint';
+function jotBarHTML(){
+  return `<div class="jot" style="--nc:${nhex(jotColor)}"><textarea id="jot" maxlength="5000" placeholder="Jot a thought… (Ctrl+Enter sticks it on the desktop)" aria-label="New sticky note"></textarea>
+    <div class="jot-r"><div class="sw">${NCOL.map(([k,l,h])=>`<button class="${k===jotColor?'on':''}" data-jc="${k}" title="${l}" aria-label="${l}" style="background:${h}"></button>`).join('')}</div>
+    <button class="jot-go" id="jot-go" disabled>Stick it</button></div></div>`;
+}
+async function stickJot(){
+  const el=$('jot'); if(!el) return;
+  const text=el.value.trim(); if(!text) return;
+  const res=await op({k:'note',act:'add',text,color:jotColor,desk:true});
+  if(res&&res.why==='reload'){ say(RELOAD); return; }
+  if(!res||!res.ok) return;
+  el.value=''; $('jot-go').disabled=true; el.focus();
+  window.pet.send('react',{kind:'done'});
+  say(line('noted'));
+}
+const fDay=ts=>ts?new Intl.DateTimeFormat('en-US',{timeZone:V.tz,month:'short',day:'numeric'}).format(ts):'';
+function notesHTML(){
+  const N=V.notes||[], desk=new Set(V.desk||[]);
+  let h=`<div class="sec"><b>Afloat</b><span>${N.length?`${N.length} note${N.length===1?'':'s'} · ${desk.size} on the desktop`:''}</span><button class="lnk" data-act="note-blank">Blank note</button></div>`;
+  if(!N.length) return h+`<p class="empty">No notes afloat. Jot one above and it sticks to your desktop, and in the app’s Sticky notes.</p>`;
+  h+=N.slice(0,30).map(n=>{ const on=desk.has(n.id);
+    return `<div class="nt" data-nid="${esc(n.id)}" style="--c:${nhex(n.color)}" title="${on?'Show it':'Put it on the desktop'}">
+      <div class="nt-t">${esc(n.text)}</div>
+      <div class="nt-m">${on?'<span class="desk">On the desktop</span> · ':''}<span>${esc(fDay(n.created))}</span>
+        ${on?`<button class="lnk" data-nact="hide">Take off</button>`:`<button class="lnk" data-nact="show">Put on desktop</button>`}
+        <button class="lnk" data-nact="settle" title="Archive it: still readable in Sticky notes">Settle</button></div></div>`; }).join('');
+  if(N.length>30) h+=`<p class="empty">And ${N.length-30} more in the app’s Sticky notes.</p>`;
   return h;
 }
 
@@ -255,6 +325,7 @@ function render(force){
   const b=$('body'); let h='';
   if(mode==='tasks') h=tasksHTML();
   else if(mode==='day') h=dayHTML();
+  else if(mode==='notes') h=notesHTML();
   else if(mode==='focus'||mode==='setup') h=V.session?runHTML():focusSetupHTML();
   else if(mode==='rate') h=V.session?rateHTML(false):focusSetupHTML();
   else if(mode==='end') h=V.session?rateHTML(true):focusSetupHTML();
@@ -267,14 +338,44 @@ function render(force){
   const top=b.scrollTop; bodySig=sig; b.innerHTML=h; b.scrollTop=top;
   tickRun();
 }
+let barMode='';
+function paintBar(){
+  const want=mode==='tasks'?'tasks':mode==='notes'?'notes':'';
+  if(want===barMode) return;
+  barMode=want;
+  const b=$('bar'); b.classList.remove('open');
+  b.innerHTML=want==='tasks'?addBarHTML():want==='notes'?jotBarHTML():'';
+}
 function go(m){
   mode=m; showAllReeds=false; rateVal=(m==='rate'||m==='end')?rateVal:0;
+  paintBar();
   render(true);
   $('body').scrollTop=0;
 }
 
 /* ════════════════ clicks ════════════════ */
 async function op(o){ try{ return await window.pet.op(o); }catch(e){ return {ok:false}; } }
+const bar=$('bar');
+/* the options stay put while you click them: they never take the focus from the field */
+bar.addEventListener('mousedown',e=>{ if(e.target.closest('.opt,.add-go,[data-jc],.jot-go')) e.preventDefault(); });
+bar.addEventListener('click',e=>{
+  const d=e.target.closest('[data-due]'); if(d){ addDue=d.dataset.due; paintAddOpts(); return; }
+  const c=e.target.closest('[data-cls]'); if(c){ addCls=c.dataset.cls||null; paintAddOpts(); return; }
+  if(e.target.closest('#add-go')){ addTask(); return; }
+  const j=e.target.closest('[data-jc]');
+  if(j){ jotColor=j.dataset.jc; bar.querySelectorAll('[data-jc]').forEach(b=>b.classList.toggle('on',b===j)); const w=bar.querySelector('.jot'); if(w) w.style.setProperty('--nc',nhex(jotColor)); return; }
+  if(e.target.closest('#jot-go')){ stickJot(); return; }
+});
+bar.addEventListener('input',e=>{
+  if(e.target.id==='add-t'){ $('add-go').disabled=!e.target.value.trim(); bar.classList.add('open'); }
+  if(e.target.id==='jot') $('jot-go').disabled=!e.target.value.trim();
+});
+bar.addEventListener('focusin',e=>{ if(e.target.id==='add-t') bar.classList.add('open'); });
+bar.addEventListener('focusout',e=>{ if(e.target.id==='add-t'&&!e.target.value.trim()) bar.classList.remove('open'); });
+bar.addEventListener('keydown',e=>{
+  if(e.target.id==='add-t'&&e.key==='Enter'){ e.preventDefault(); addTask(); }
+  if(e.target.id==='jot'&&e.key==='Enter'&&(e.ctrlKey||e.metaKey)){ e.preventDefault(); stickJot(); }
+});
 $('body').addEventListener('click',async e=>{
   const t=e.target;
   const ck=t.closest('.ck');
@@ -290,7 +391,16 @@ $('body').addEventListener('click',async e=>{
     say(lastOne?line('allDone'):on?line('done',r.title):line('undone'));
     return;
   }
+  const na=t.closest('[data-nact]'), nt=t.closest('.nt');
+  if(nt){
+    const nid=nt.dataset.nid, k=na?na.dataset.nact:'show';
+    if(k==='show') window.pet.send('note-show',nid);
+    else if(k==='hide') window.pet.send('note-hide',nid);
+    else if(k==='settle'){ const r=await op({k:'note',act:'archive',nid}); if(r&&r.ok){ nt.remove(); say(line('settled')); } }
+    return;
+  }
   const a=t.closest('[data-act]'); const act=a&&a.dataset.act;
+  if(act==='note-blank'){ window.pet.send('note-new',jotColor); return; }
   if(act==='reeds'){ showAllReeds=!showAllReeds; render(true); return; }
   if(act==='soon'){ showSoon=!showSoon; render(true); return; }
   if(act==='pickall'){ pickAll=!pickAll; render(true); return; }
@@ -340,6 +450,7 @@ $('b-set').addEventListener('click',()=>go(mode==='settings'?'chat':'settings'))
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){ e.preventDefault(); window.pet.send('panel-close'); return; }
   const typing=e.target&&e.target.matches&&e.target.matches('input,textarea');
+  if(!typing&&(e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='n'){ e.preventDefault(); window.pet.send('note-new',jotColor); return; }
   if(!typing&&(mode==='rate'||mode==='end')&&/^[1-5]$/.test(e.key)){ const b=document.querySelector(`[data-rate="${e.key}"]`); if(b) b.click(); }
 });
 /* the toad's window activates this one when you click into it, even after a quiet open */
@@ -356,20 +467,34 @@ function paintFoot(){
   const o=$('ft-open'); if(o) o.onclick=()=>window.pet.send('open-app');
 }
 
-/* ════════════════ sizing: the window fits the card ════════════════ */
-new ResizeObserver(()=>window.pet.send('panel-height',$('card').offsetHeight+48)).observe($('card'));
+/* ════════════════ sizing: the window fits the card ════════════════
+   and the card fits the screen: on a short one the list scrolls sooner,
+   so the bar and the footer are never cut off below the window */
+let maxH=0;
+function fitMain(){
+  const m=$('body'); if(!maxH||!m) return;
+  const other=$('card').offsetHeight-m.offsetHeight;
+  const h=Math.max(150,Math.min(430,maxH-48-other))+'px';
+  if(m.style.maxHeight!==h) m.style.maxHeight=h;
+}
+new ResizeObserver(()=>{ fitMain(); window.pet.send('panel-height',$('card').offsetHeight+48); }).observe($('card'));
+window.pet.on('side',d=>{ if(d&&d.maxH){ maxH=d.maxH; fitMain(); } });
 
 /* ════════════════ messages ════════════════ */
 window.pet.on('view',v=>{
   const hadSession=!!(V&&V.session); V=v;
   if(hadSession&&!V.session&&['rate','end','break-over'].includes(mode)) mode='chat';
+  if(barMode==='tasks'&&!$('add-t').value&&document.activeElement!==$('add-t')){ barMode=''; paintBar(); }   // new classes show up
   render(false); paintFoot();
 });
 window.pet.on('toad',t=>{ NAME=t.name; paintWho(); say(line('choose')); if(mode==='settings') render(true); });
 window.pet.on('open',o=>{
   peeking=!!o.peeking;
   const m=o.mode||'chat';
-  rateVal=0; go(m);
+  rateVal=0; barMode=''; addDue='today'; addCls=null;
+  go(m);
+  if(o.add&&$('add-t')) setTimeout(()=>{ const i=$('add-t'); if(i) i.focus(); },60);
+  if(m==='notes'&&$('jot')) setTimeout(()=>{ const i=$('jot'); if(i) i.focus(); },60);
   if(o.reason==='bell') say(line('bell'));
   else if(o.reason==='breakOver') say(line('breakOver'));
   else if(m==='chat') say(chatLine());

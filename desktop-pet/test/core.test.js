@@ -96,3 +96,39 @@ test('epochOf is the wall clock in the app zone, across a DST change',()=>{
   assert.equal(new Date(core.epochOf('2026-10-10',9*60,TZ)).toISOString(),'2026-10-10T13:00:00.000Z');
   assert.equal(new Date(core.epochOf('2026-11-02',9*60,TZ)).toISOString(),'2026-11-02T14:00:00.000Z');
 });
+
+test('a task added on the toad shows at once, can be ticked, and gives way to the file',()=>{
+  const db=sample();
+  const ops=[{id:'o1',t:NOW-2000,k:'add',aid:'n1',title:'Email the TA',due:'2026-10-10',cls:'c1'},
+             {id:'o2',t:NOW-1000,k:'add',aid:'n2',title:'Someday thing',due:''}];
+  let v=core.buildView(db,ops,NOW);
+  const r=v.tasks.today.find(x=>x.id==='n1');
+  assert.ok(r&&!r.done&&r.cls==='CS 159');
+  assert.equal(v.counts.total,4);
+  assert.ok(v.tasks.open.some(x=>x.id==='n2'));
+  assert.ok(!v.tasks.today.some(x=>x.id==='n2'));
+  v=core.buildView(db,ops.concat({id:'o3',t:NOW-500,k:'task',aid:'n1',on:true}),NOW);
+  assert.equal(v.tasks.today.find(x=>x.id==='n1').done,true);
+  /* the app took it in: the file's copy is used, never two */
+  db.assignments.push({id:'n1',title:'Email the TA (edited in app)',classId:'c1',due:'2026-10-10',subs:[],log:[],done:false});
+  db.desktopPet={upto:NOW-2000};
+  v=core.buildView(db,ops,NOW);
+  assert.equal(v.tasks.today.filter(x=>x.id==='n1').length,1);
+  assert.equal(v.tasks.today.find(x=>x.id==='n1').title,'Email the TA (edited in app)');
+});
+
+test('sticky notes: the toad\'s add, edit and settle on top of the file',()=>{
+  const db=sample();
+  db.stickies=[{id:'s1',text:'old',color:'sky',created:NOW-9e6,archived:false},{id:'s2',text:'gone',color:'sky',created:NOW-8e6,archived:true}];
+  const ops=[{id:'o1',t:NOW-3000,k:'note',act:'add',nid:'s3',text:' buy stamps ',color:'peach'},
+             {id:'o2',t:NOW-2000,k:'note',act:'edit',nid:'s3',text:'buy stamps x2',color:'butter'},
+             {id:'o3',t:NOW-1000,k:'note',act:'archive',nid:'s1'},
+             {id:'o4',t:NOW-900,k:'note',act:'edit',nid:'s3',text:'   '}];
+  const v=core.buildView(db,ops,NOW);
+  assert.deepEqual(v.notes.map(n=>n.id),['s3']);
+  assert.equal(v.notes[0].text,'buy stamps x2');                 // a blank edit never wipes a note
+  assert.equal(v.notes[0].color,'butter');
+  assert.equal(db.stickies[0].archived,false);                    // the file itself is never touched
+  assert.deepEqual(core.buildView(db,[],NOW).notes.map(n=>n.id),['s1']);
+  assert.deepEqual(core.buildView(db,[],NOW).classes.map(c=>c.id),['c1']);
+});

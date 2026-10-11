@@ -20,7 +20,8 @@
        the meantime, so nothing you tick flickers back.
 
    Windows: a small transparent window for the toad (clicks fall through
-   everywhere except the toad itself), and a second one for the talk box. */
+   everywhere except the toad itself), a second one for the talk box, and one
+   for each sticky note you've put on the desktop. */
 'use strict';
 const {app,BrowserWindow,ipcMain,screen,Tray,Menu,nativeImage,shell,dialog}=require('electron');
 const path=require('path'), fs=require('fs'), http=require('http'), crypto=require('crypto');
@@ -41,13 +42,14 @@ const TOADS=['hasu','ame','sumi','tabi','hotaru','neri','oto','kuri','mame'];
 const SIZES={s:96,m:120,l:150};
 const SETTINGS_FILE=()=>path.join(app.getPath('userData'),'settings.json');
 const DEFAULTS={appDir:'',toad:'hasu',size:'m',pos:null,peek:null,startAtLogin:false,port:8765,page:'',
-  mem:{said:{},recent:[],rung:{}}};
+  mem:{said:{},recent:[],rung:{}},notes:{}};
 let S=null;
 function loadSettings(){
   try{ S=Object.assign({},DEFAULTS,JSON.parse(fs.readFileSync(SETTINGS_FILE(),'utf8'))); }catch(e){ S=Object.assign({},DEFAULTS); }
   S.mem=Object.assign({said:{},recent:[],rung:{}},S.mem||{});
   if(!TOADS.includes(S.toad)) S.toad='hasu';
   if(!SIZES[S.size]) S.size='m';
+  if(!S.notes||typeof S.notes!=='object') S.notes={};
 }
 let saveT=null;
 function saveSettings(now){
@@ -132,8 +134,12 @@ function refresh(){
   VIEW=core.buildView(DB,OPS,Date.now());
   VIEW.appOpen=clients.size>0;
   VIEW.appVisible=[...clients].some(c=>c.visible);
+  VIEW.appOld=oldApp();
   VIEW.toad=S.toad; VIEW.size=S.size;
+  VIEW.desk=[...noteWins.keys()];
   send(toadWin,'view',VIEW); send(panelWin,'view',VIEW);
+  syncNotes();
+  if(!notesRestored&&toadWin) restoreNotes();
   bellCheck();
 }
 /* the clock moves on its own: today's list and the timeline roll over at midnight,
@@ -144,6 +150,10 @@ function send(win,ch,data){ try{ if(win&&!win.isDestroyed()) win.webContents.sen
 /* ════════════════════ the little event stream the app listens to ════════════════════ */
 let PORT=0;
 const clients=new Set();
+/* an app tab still running last version's desktop-pet-link.js takes ticks and sessions but
+   would pass over a new task or note (and, taking a later tick, count it as seen). Until it's
+   reloaded, the toad doesn't make them. With the app closed they wait, and its next load is new. */
+const oldApp=()=>[...clients].some(c=>c.v<2);
 function sse(event,data){
   const msg=`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
   clients.forEach(c=>{ try{ c.res.write(msg); }catch(e){} });
@@ -160,7 +170,7 @@ function startServer(){
       if(req.method==='GET'&&u.pathname==='/events'){
         res.writeHead(200,Object.assign({'Content-Type':'text/event-stream','Cache-Control':'no-store','Connection':'keep-alive'},cors));
         res.write('retry: 15000\n\n');
-        const c={res,id:String(u.searchParams.get('id')||'').slice(0,40),visible:false,cur:'',at:Date.now()};
+        const c={res,id:String(u.searchParams.get('id')||'').slice(0,40),v:+u.searchParams.get('v')||1,visible:false,cur:'',at:Date.now()};
         clients.add(c);
         res.write(`event: ops\ndata: ${JSON.stringify({ops:DB?core.pendingOps(DB,OPS):OPS})}\n\n`);
         req.on('close',()=>{ clients.delete(c); refresh(); });
@@ -360,13 +370,13 @@ function placePanel(){
   y=Math.round(Math.min(Math.max(y,wa.y+4),bottom-h-4));
   const side=x+PANEL_W/2<r.x+r.w/2?'left':'right';
   panelWin.setBounds({x,y,width:PANEL_W,height:h});
-  send(panelWin,'side',{side,toadY:Math.round(r.y+r.h/2-y)});
+  send(panelWin,'side',{side,toadY:Math.round(r.y+r.h/2-y),maxH:Math.round(wa.height-16)});
 }
 function openPanel(mode,opts){
   opts=opts||{};
   if(!panelWin||!VIEW) return;
   panelMode=mode||'chat';
-  send(panelWin,'open',{mode:panelMode,peeking:!!(peek.edge&&peek.p>.5),reason:opts.reason||'tap'});
+  send(panelWin,'open',{mode:panelMode,peeking:!!(peek.edge&&peek.p>.5),reason:opts.reason||'tap',add:!!opts.add});
   placePanel();
   panelOpen=true;
   if(opts.quiet){ panelActive=false; panelWin.showInactive(); }
@@ -381,6 +391,76 @@ function closePanel(){
   send(panelWin,'closed',{});
   send(toadWin,'panel',{open:false});
 }
+
+/* ════════════════════ sticky notes on the desktop (note.js) ════════════════════
+   The app's own sticky notes (Journal · Sticky notes), each in a little window
+   of its own. A note made on the toad goes to the app like everything else,
+   as an op; which notes sit on the desktop, where, and whether they stay on
+   top is the toad's own business (settings.notes). A brand-new blank note is
+   only a window until you write something in it. */
+const NOTE_HEX={lilac:'#ddd0f2',mint:'#cfeedb',sky:'#d0e5f5',butter:'#f7e9b5',peach:'#f8d6c3',blush:'#f4ccd8'};
+const noteWins=new Map();                 // note id → its window
+const newId=()=>Date.now().toString(36)+crypto.randomBytes(4).toString('hex').slice(0,5);
+const noteOf=id=>VIEW&&(VIEW.notes||[]).find(n=>n.id===id)||null;
+function noteSpot(){
+  /* beside the toad, each new one a little up and in from the last */
+  const r=toadRect(), wa=workAreaAt(r.x+r.w/2,r.y+r.h/2), n=noteWins.size%6, W=240, H=220;
+  const left=r.x+r.w/2>wa.x+wa.width/2;
+  let x=left?r.x-W-16-n*26:r.x+r.w+16+n*26, y=r.y+r.h-H-n*26;
+  x=Math.min(Math.max(x,wa.x+8),wa.x+wa.width-W-8); y=Math.min(Math.max(y,wa.y+8),wa.y+wa.height-H-8);
+  return {x:Math.round(x),y:Math.round(y),w:W,h:H};
+}
+function openNote(id,o){
+  o=o||{};
+  if(noteWins.has(id)){ const w=noteWins.get(id); if(o.focus){ w.show(); w.focus(); } else w.showInactive(); return w; }
+  const n=noteOf(id), had=S.notes[id];
+  const spot=had&&isFinite(had.x)&&isFinite(had.y)?Object.assign({},had):Object.assign(noteSpot(),{top:false});
+  spot.w=Math.max(170,+spot.w||240); spot.h=Math.max(130,+spot.h||220);
+  /* a monitor that's gone: next to the toad again */
+  const wa=workAreaAt(spot.x+spot.w/2,spot.y+20);
+  if(spot.x+spot.w<wa.x+20||spot.x>wa.x+wa.width-20||spot.y<wa.y-10||spot.y>wa.y+wa.height-30) Object.assign(spot,noteSpot());
+  S.notes[id]={x:spot.x,y:spot.y,w:spot.w,h:spot.h,top:!!spot.top};
+  if(n) saveSettings();
+  const color=(n&&n.color)||o.color||'mint';
+  const w=new BrowserWindow({x:spot.x,y:spot.y,width:spot.w,height:spot.h,minWidth:170,minHeight:130,frame:false,resizable:true,
+    alwaysOnTop:!!spot.top,skipTaskbar:true,fullscreenable:false,maximizable:false,minimizable:false,show:false,
+    backgroundColor:NOTE_HEX[color]||NOTE_HEX.mint,title:'Sticky note',
+    webPreferences:{preload:path.join(__dirname,'preload.js'),contextIsolation:true,sandbox:true,nodeIntegration:false}});
+  w.__note={id,draft:!n,color};
+  noteWins.set(id,w);
+  w.loadFile(path.join(__dirname,'note.html'));
+  w.once('ready-to-show',()=>{ if(o.focus){ w.show(); w.focus(); } else w.showInactive(); });
+  let mvT=null;
+  const keep=()=>{ clearTimeout(mvT); mvT=setTimeout(()=>{ if(w.isDestroyed()||!S.notes[id]) return; const b=w.getBounds();
+    Object.assign(S.notes[id],{x:b.x,y:b.y,w:b.width,h:b.height}); if(!w.__note.draft) saveSettings(); },300); };
+  w.on('move',keep); w.on('resize',keep);
+  w.on('closed',()=>{ noteWins.delete(id); if(w.__note.draft){ delete S.notes[id]; } refresh(); });
+  return w;
+}
+function closeNote(id,forget){
+  const w=noteWins.get(id);
+  if(forget){ delete S.notes[id]; saveSettings(); }
+  if(w&&!w.isDestroyed()) w.close();
+}
+function newNote(color){ const id=newId(); openNote(id,{focus:true,color:NOTE_HEX[color]?color:'mint'}); return id; }
+/* every view goes to the note windows too; a note settled or deleted in the app leaves the desktop */
+function syncNotes(){
+  noteWins.forEach((w,id)=>{
+    if(w.isDestroyed()) return;
+    const n=noteOf(id);
+    if(!n&&!w.__note.draft){ closeNote(id,true); return; }
+    if(n){ w.__note.draft=false; w.__note.color=n.color; }
+    send(w,'note',{note:n,top:!!(S.notes[id]&&S.notes[id].top)});
+  });
+}
+/* at start-up: the notes you left on the desktop come back */
+let notesRestored=false;
+function restoreNotes(){
+  if(notesRestored||!VIEW) return; notesRestored=true;
+  Object.keys(S.notes).forEach(id=>{ if(noteOf(id)) openNote(id); else delete S.notes[id]; });
+  saveSettings(); refresh();
+}
+function noteFront(){ noteWins.forEach(w=>{ try{ w.showInactive(); w.moveTop(); }catch(e){} }); }
 
 /* ════════════════════ the focus ritual (stage.js) ════════════════════
    Focus, when no session is running, doesn't open a form: the toad comes out
@@ -511,6 +591,11 @@ function menuTemplate(){
     {label:'My day',click:()=>openPanel('day')},
     {label:'Focus',click:()=>{ if(VIEW&&!VIEW.session) startRitual(); else openPanel('focus'); }},
     {type:'separator'},
+    {label:'New task…',click:()=>openPanel('tasks',{add:true})},
+    {label:'New sticky note',click:()=>newNote()},
+    {label:'Sticky notes',click:()=>openPanel('notes')},
+    ...(noteWins.size?[{label:'Bring my notes to the front',click:noteFront}]:[]),
+    {type:'separator'},
     {label:'Choose a toad',submenu:TOADS.map(t=>({label:NAMES[t],type:'radio',checked:S.toad===t,click:()=>setToad(t)}))},
     {label:'Size',submenu:[['s','Small'],['m','Medium'],['l','Large']].map(([k,l])=>({label:l,type:'radio',checked:S.size===k,click:()=>setSize(k)}))},
     {label:'Bring the toad back',click:()=>{ const d=defaultSpot(); place(d.x,d.y,true); remember(); showToad(); }},
@@ -530,8 +615,9 @@ function trayIcon(){
 
 /* ════════════════════ messages from the two windows ════════════════════ */
 ipcMain.handle('init',e=>{
-  const who=e.sender===toadWin?.webContents?'toad':e.sender===stageWin?.webContents?'stage':'panel';
-  return {who, view:VIEW, ritual:who==='stage'&&ritual?ritual.params:null, toad:S.toad, size:S.size, geo:geo(), peek, mem:S.mem, login:!!S.startAtLogin,
+  const nw=noteFor(e.sender);
+  const who=e.sender===toadWin?.webContents?'toad':e.sender===stageWin?.webContents?'stage':nw?'note':'panel';
+  return {who, view:VIEW, note:nw?{id:nw.__note.id,draft:nw.__note.draft,color:nw.__note.color,top:!!(S.notes[nw.__note.id]&&S.notes[nw.__note.id].top),data:noteOf(nw.__note.id)}:null, ritual:who==='stage'&&ritual?ritual.params:null, toad:S.toad, size:S.size, geo:geo(), peek, mem:S.mem, login:!!S.startAtLogin,
     artBase:require('url').pathToFileURL(S.appDir+path.sep).href, names:NAMES, toads:TOADS};
 });
 ipcMain.on('ignore',(e,on)=>{ if(toadWin&&!drag) setIgnore(!!on); });
@@ -555,6 +641,13 @@ ipcMain.on('quit',()=>app.quit());
 ipcMain.on('tray-icon',(e,url)=>{
   try{ if(tray&&typeof url==='string'&&url.startsWith('data:image/png;base64,')){ const img=nativeImage.createFromDataURL(url); if(!img.isEmpty()) tray.setImage(img.resize({width:16,height:16,quality:'best'})); } }catch(err){}
 });
+function noteFor(sender){ for(const w of noteWins.values()) if(!w.isDestroyed()&&w.webContents===sender) return w; return null; }
+ipcMain.on('note-new',(e,c)=>newNote(c));
+ipcMain.on('note-show',(e,id)=>{ if(typeof id==='string'&&noteOf(id)){ closePanel(); openNote(id,{focus:true}); refresh(); } });
+ipcMain.on('note-hide',(e,id)=>{ if(typeof id==='string'){ closeNote(id,true); refresh(); } });
+ipcMain.on('note-close',e=>{ const w=noteFor(e.sender); if(w) closeNote(w.__note.id,true); });
+ipcMain.on('note-top',(e,on)=>{ const w=noteFor(e.sender); if(!w) return; const id=w.__note.id;
+  if(S.notes[id]){ S.notes[id].top=!!on; if(!w.__note.draft) saveSettings(); } w.setAlwaysOnTop(!!on); send(w,'note',{note:noteOf(id),top:!!on}); });
 ipcMain.on('mem',(e,m)=>{ if(m&&typeof m==='object'){ S.mem=Object.assign(S.mem,m); saveSettings(); } });
 /* ops: everything that changes your data goes through here, checked against what's showing */
 ipcMain.handle('op',(e,o)=>{
@@ -562,8 +655,36 @@ ipcMain.handle('op',(e,o)=>{
   const s=VIEW.session;
   if(o.k==='task'){
     if(typeof o.aid!=='string') return {ok:false};
-    const a=(DB.assignments||[]).find(x=>x.id===o.aid); if(!a||a.ann) return {ok:false};
+    const a=(DB.assignments||[]).find(x=>x.id===o.aid)||core.addOverlay(DB,core.pendingOps(DB,OPS)).find(x=>x.id===o.aid);
+    if(!a||a.ann) return {ok:false};
     return {ok:true,op:addOp({k:'task',aid:o.aid,on:!!o.on})};
+  }
+  /* a new task: due today or tomorrow on the app's clock, a date, or none */
+  if((o.k==='add'||o.k==='note')&&oldApp()) return {ok:false,why:'reload'};
+  if(o.k==='add'){
+    const title=String(o.title||'').replace(/\s+/g,' ').trim().slice(0,200); if(!title) return {ok:false};
+    const today=VIEW.today;
+    const due=o.due==='today'?today:o.due==='tomorrow'?core.addDays(today,1):/^\d{4}-\d{2}-\d{2}$/.test(o.due||'')?o.due:'';
+    const cls=typeof o.cls==='string'&&(DB.classes||[]).some(c=>c.id===o.cls&&!c.archived)?o.cls:null;
+    const op=addOp({k:'add',aid:newId(),title,due,cls});
+    return {ok:true,op,aid:op.aid};
+  }
+  /* sticky notes: add one (with its note window's id, or a new one), edit it, settle it */
+  if(o.k==='note'){
+    const text=String(o.text||'').trim().slice(0,5000), color=NOTE_HEX[o.color]?o.color:null;
+    if(o.act==='add'){
+      if(!text) return {ok:false};
+      const id=typeof o.nid==='string'&&/^[a-z0-9]{6,24}$/.test(o.nid)&&!noteOf(o.nid)?o.nid:newId();
+      if(noteWins.has(id)) noteWins.get(id).__note.draft=false;
+      const op=addOp({k:'note',act:'add',nid:id,text,color:color||'mint'});
+      if(o.desk) openNote(id);
+      saveSettings(); refresh();
+      return {ok:true,op,nid:id};
+    }
+    if(typeof o.nid!=='string'||!noteOf(o.nid)) return {ok:false};
+    if(o.act==='edit'){ if(!text&&!color) return {ok:false}; return {ok:true,op:addOp({k:'note',act:'edit',nid:o.nid,text,color})}; }
+    if(o.act==='archive'){ const op=addOp({k:'note',act:'archive',nid:o.nid}); closeNote(o.nid,true); return {ok:true,op}; }
+    return {ok:false};
   }
   if(o.k!=='focus') return {ok:false};
   if(o.act==='start'){
@@ -587,7 +708,7 @@ ipcMain.handle('op',(e,o)=>{
 
 if(TEST) global.__toadTest={dragStart,dragEnd,dragTick,setCursor:(x,y)=>{ fakeCursor={x,y}; },
   state:()=>({virt,peek,ignoreNow,pos:toadWin.getPosition(),size:toadWin.getSize(),geo:geo(),panelOpen,panelMode,ops:OPS,view:VIEW,clients:clients.size}),
-  openPanel,closePanel,setToad,setSize,startRitual,stage:()=>stageWin};
+  openPanel,closePanel,setToad,setSize,startRitual,stage:()=>stageWin,newNote,notes:()=>[...noteWins.keys()],noteWin:id=>noteWins.get(id),settings:()=>S};
 
 /* ════════════════════ start up, shut down ════════════════════ */
 app.on('second-instance',()=>{ if(toadWin){ showToad(); openPanel('chat'); } });
@@ -599,6 +720,7 @@ app.whenReady().then(async()=>{
   readInbox(); running=true; writeInbox();
   readDb(); watchData();
   createToad(); createPanel();
+  restoreNotes();
   tray=new Tray(trayIcon()); tray.setToolTip('Catching Days toad'); rebuildTray();
   tray.on('click',()=>{ showToad(); openPanel('chat'); });
   if(S.startAtLogin) setLogin(true);

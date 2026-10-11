@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com">
+<title>Sticky note</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="note.css">
+<body>
+<header id="hd">
+  <button id="b-col" class="ic" title="Colour" aria-label="Change colour"><i></i></button>
+  <span class="grab"></span>
+  <button id="b-new" class="ic" title="New sticky note (Ctrl+N)" aria-label="New sticky note">
+    <svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 2.5v9M2.5 7h9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
+  <button id="b-top" class="ic" title="Keep on top" aria-label="Keep on top" aria-pressed="false">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6l-1 6 3 3H7l3-3-1-6z"/><path d="M12 13v7"/></svg></button>
+  <button id="b-set" class="ic" title="Settle it (archived: still readable in Sticky notes)" aria-label="Settle this note">
+    <svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 7.3l2.6 2.6L11 4.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  <button id="b-x" class="ic" title="Take it off the desktop (it stays in Sticky notes)" aria-label="Take off the desktop">
+    <svg width="14" height="14" viewBox="0 0 14 14"><path d="M3.5 3.5l7 7M10.5 3.5l-7 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
+</header>
+<div id="sw" class="sw hide"></div>
+<textarea id="tx" spellcheck="true" maxlength="5000" placeholder="Write here. It’s kept in Catching Days, under Sticky notes."></textarea>
+<footer id="ft"></footer>
+<script src="note.js"></script>
+</body>
+</html>

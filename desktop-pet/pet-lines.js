@@ -7,6 +7,7 @@
      undone (2)  allDone (3)  focusStart (4)  bell (4)  breakStart (3)
      breakOver (3)  sessionEnd (3)  peek (4)  pulled (4)  choose (2)
      ready (4)  committed (4)  notYet (3)   the focus ritual, added below
+     added (3)  noted (3)  settled (2)     made on the desktop, added below
    s: hr, total, done, left, overdue, running, phase, paused, cycles, mins, goal,
       next {title,inMin}|null, now {title,untilMin}|null, exam {title,days}|null, peeking.
    In the pond: a finished task is a fish released, focus minutes open the lotus,
@@ -946,7 +947,122 @@ const RITUAL={
       'That’s okay! Even explorers take snack breaks!',
       'Oh! Okay. Can we do it later? Promise?']}
 };
+/* ── made on the desktop (panel.js)
+   added (3)    a task added from the toad; {task} is its shortened title
+   noted (3)    a sticky note stuck onto the desktop
+   settled (2)  a sticky note settled (archived)                                       */
+const MAKE={
+  hasu:{
+    added:[
+      'Hm. “{task}.” Written down is half caught.',
+      'In the water it goes: “{task}.” We’ll fish it out when it’s time.',
+      'Noted, “{task}.” Don’t carry it in your head. That’s what the pond is for.'],
+    noted:[
+      'Hm. A note on the glass. Old toads do the same with mud.',
+      'There. Stuck where you’ll trip over it. That’s the point.',
+      'A small thought, kept. Good habit.'],
+    settled:[
+      'Hm. Settled to the bottom. Still there if you dive for it.',
+      'Let it sink. The pond keeps everything.']},
+  ame:{
+    added:[
+      '“{task}.” In.',
+      'Got it. “{task}.”',
+      'Added. One more drop.'],
+    noted:[
+      'Stuck. Don’t lose it.',
+      'Note’s up.',
+      'Hm. Written. Good.'],
+    settled:[
+      'Settled.',
+      'Down it goes. Kept.']},
+  sumi:{
+    added:[
+      'Mm. “{task}.” Written plainly, and filed.',
+      'I have it in ink: “{task}.”',
+      'Recorded. A thing written down is a thing half done.'],
+    noted:[
+      'Mm. A marginal note, pinned where you will see it.',
+      'Stuck to the page. I approve of notes.',
+      'There. A thought, kept in good order.'],
+    settled:[
+      'Mm. Filed away, not discarded.',
+      'Settled. It will keep, like an old letter.']},
+  tabi:{
+    added:[
+      'On the map! “{task}.” Dango saw it too.',
+      'Added to the route: “{task}.” One more stop.',
+      'Ha, “{task}.” Packed and ready for later.'],
+    noted:[
+      'A note on the trail! Good for finding your way back.',
+      'Stuck up like a signpost. Nice.',
+      'Pinned! Travelers always keep notes.'],
+    settled:[
+      'Settled! Into the travel journal it goes.',
+      'Done with that one. It’s still in the pack if you need it.']},
+  hotaru:{
+    added:[
+      '…Mm. “{task}.” I’ll remember. Probably.',
+      '…Added. “{task}.” Lantern noted it.',
+      '…Okay. “{task}.” It’s in the pond now.'],
+    noted:[
+      '…A little note. Glowing on your screen. Nice.',
+      '…Stuck. So neither of us forgets.',
+      '…Mm. Good thought. Kept.'],
+    settled:[
+      '…Settled. It’s resting now.',
+      '…Okay. Down it goes. Quietly.']},
+  neri:{
+    added:[
+      'On the shelf: “{task}.” We’ll fire it later.',
+      'Good. “{task}.” Now it’s out of your head and into the clay.',
+      'Added, “{task}.” One more pot to throw.'],
+    noted:[
+      'A note on the wall of the workshop. I do that too.',
+      'Stuck up there. Sketches matter.',
+      'Good. Write it down before it cools.'],
+    settled:[
+      'Settled. Kept in the drawer, not the bin.',
+      'Put away. The good ones always come back.']},
+  oto:{
+    added:[
+      'Um… I wrote it down. “{task}.” Is that right?',
+      '“{task}.” Added. Sorry, I mean, done. Added.',
+      'Oh! “{task}.” It’s in. Quietly.'],
+    noted:[
+      'A little note… like a song you hum so you don’t forget it.',
+      'Stuck. I hope that’s where you wanted it…',
+      'Oh, that’s a nice thought. I’ll leave it be.'],
+    settled:[
+      '…Settled. It’s still there if you want it back.',
+      'Okay… put away gently.']},
+  kuri:{
+    added:[
+      'Planted: “{task}.”',
+      'Hm. “{task}.” In the ground. It’ll keep.',
+      '“{task}.” Seed in. Now it waits for you.'],
+    noted:[
+      'Note’s pinned. Good.',
+      'Hm. Marked the spot.',
+      'Stuck. Like a tag on a seed row.'],
+    settled:[
+      'Settled. Back to the soil.',
+      'Hm. Put away. Not gone.']},
+  mame:{
+    added:[
+      'Ooh! “{task}”! It’s on the list now! Officially!',
+      'I added it! “{task}”! Can I help? I can’t really help.',
+      'New mission: “{task}”! Very important. I can tell.'],
+    noted:[
+      'A STICKY NOTE! On your screen! That’s so cool!',
+      'I stuck it! Don’t let it fall off! It won’t fall off.',
+      'Yay, a note! Is it a secret? I won’t read it. Okay, I read it.'],
+    settled:[
+      'Bye-bye, note! It’s going to the bottom of the pond!',
+      'Settled! Like a pebble! Plip!']}
+};
 Object.keys(RITUAL).forEach(k=>{ if(L[k]) Object.assign(L[k],RITUAL[k]); });
+Object.keys(MAKE).forEach(k=>{ if(L[k]) Object.assign(L[k],MAKE[k]); });
 if(typeof window!=='undefined') window.PET_LINES=L;
 if(typeof module!=='undefined') module.exports=L;
 })();

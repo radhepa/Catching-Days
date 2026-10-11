@@ -1,0 +1,31 @@
+/* note.css · a sticky note on the desktop, in the app's sticky-note colours */
+:root{--c:#cfeedb;--tx:#2f3a44;--sans:'Outfit','Segoe UI',sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden}
+body{display:flex;flex-direction:column;background:var(--c);color:var(--tx);font:400 14px/1.5 var(--sans);transition:background .2s}
+button{font:inherit;color:inherit;cursor:pointer}
+
+/* the top strip: drag it to move the note */
+header{flex:none;display:flex;align-items:center;gap:1px;height:30px;padding:0 4px;background:rgba(47,58,68,.06);-webkit-app-region:drag;user-select:none}
+.grab{flex:1;height:100%}
+.ic{-webkit-app-region:no-drag;width:26px;height:24px;border:none;border-radius:7px;background:none;padding:0;display:flex;align-items:center;justify-content:center;
+  color:var(--tx);opacity:.42;transition:opacity .15s,background .15s}
+body:hover .ic{opacity:.7}
+.ic:hover{opacity:1!important;background:rgba(255,255,255,.55)}
+.ic:focus-visible{outline:2px solid rgba(47,58,68,.5);outline-offset:-2px}
+#b-col i{width:13px;height:13px;border-radius:50%;background:var(--c);border:1.5px solid rgba(47,58,68,.45)}
+#b-top[aria-pressed="true"]{opacity:1;background:rgba(255,255,255,.5)}
+#b-top[aria-pressed="true"] svg{fill:currentColor}
+.draft #b-set{display:none}
+
+.sw{-webkit-app-region:no-drag;flex:none;display:flex;gap:7px;padding:7px 10px 4px}
+.sw.hide{display:none}
+.sw button{width:20px;height:20px;border-radius:50%;border:1.5px solid rgba(47,58,68,.25);padding:0}
+.sw button.on{border:2px solid var(--tx);box-shadow:0 0 0 2px rgba(255,255,255,.7) inset}
+
+textarea{flex:1;min-height:0;width:100%;resize:none;border:none;outline:none;background:transparent;padding:8px 13px 4px;
+  font:400 14px/1.5 var(--sans);color:var(--tx);white-space:pre-wrap;word-break:break-word}
+textarea::placeholder{color:var(--tx);opacity:.45}
+textarea::-webkit-scrollbar{width:6px}
+textarea::-webkit-scrollbar-thumb{background:rgba(47,58,68,.18);border-radius:3px}
+footer{flex:none;height:20px;padding:0 13px 4px;font:400 10px/16px var(--sans);opacity:.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;user-select:none}
