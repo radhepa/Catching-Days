@@ -299,7 +299,7 @@ function dragEnd(){
 let ignoreNow=true, probeIn=false;
 function setIgnore(on){ ignoreNow=on; try{ toadWin.setIgnoreMouseEvents(on,{forward:true}); }catch(e){} }
 function showToad(){
-  if(!toadWin) return;
+  if(!toadWin||toadWin.isDestroyed()) return;
   toadWin.showInactive();
   setIgnore(true); probeIn=false;
   send(toadWin,'hit-reset',{});
@@ -322,6 +322,8 @@ function createToad(){
   toadWin.loadFile(path.join(__dirname,'pet.html'));
   toadWin.once('ready-to-show',()=>{ restorePlace(); showToad(); });
   toadWin.webContents.on('render-process-gone',()=>{ try{ toadWin.reload(); }catch(e){} });
+  /* closing the toad's window closes the toad, so no hidden talk box keeps it running unseen */
+  toadWin.on('closed',()=>{ toadWin=null; app.quit(); });
 }
 function resizeToad(){
   const g=geo();
@@ -711,7 +713,7 @@ if(TEST) global.__toadTest={dragStart,dragEnd,dragTick,setCursor:(x,y)=>{ fakeCu
   openPanel,closePanel,setToad,setSize,startRitual,stage:()=>stageWin,newNote,notes:()=>[...noteWins.keys()],noteWin:id=>noteWins.get(id),settings:()=>S};
 
 /* ════════════════════ start up, shut down ════════════════════ */
-app.on('second-instance',()=>{ if(toadWin){ showToad(); openPanel('chat'); } });
+app.on('second-instance',()=>{ if(toadWin&&!toadWin.isDestroyed()){ showToad(); openPanel('chat'); } });
 app.whenReady().then(async()=>{
   loadSettings();
   if(process.argv.includes('--start-at-login')) S.startAtLogin=true;
