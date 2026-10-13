@@ -311,6 +311,13 @@ setInterval(()=>{
   if(inside||probeIn) send(toadWin,'probe',{x:c.x-b.x,y:c.y-b.y,inside});
   probeIn=inside;
 },100);
+/* Windows can knock a window off the top (Show desktop does), leaving the toad
+   under everything; once a second it climbs back up, and so do pinned notes */
+setInterval(()=>{
+  const up=w=>{ try{ if(w&&!w.isDestroyed()&&w.isVisible()&&!w.isAlwaysOnTop()) w.setAlwaysOnTop(true); }catch(e){} };
+  up(toadWin);
+  noteWins.forEach((w,id)=>{ if(S.notes[id]&&S.notes[id].top) up(w); });
+},1000);
 
 function createToad(){
   const g=geo();
