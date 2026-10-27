@@ -257,7 +257,7 @@ html[data-mode=hosted] .hide-hosted{display:none}
    (logo rows, roles at one place grouped under it, computed durations)
    because that is the shape an application wants. Life is not a resume, so
    each of its sections gets a layout that suits what it holds: an orbit for
-   your people, a poster shelf, colour tiles, a gallery. */
+   your people, colour tiles, a gallery. */
 .bio{display:flex;flex-direction:column;gap:14px}
 .bio-cover{height:140px;border-radius:var(--r) var(--r) 0 0;background:
   radial-gradient(circle at 14% 28%,rgba(255,255,255,.6) 0 34px,transparent 35px),
@@ -394,29 +394,6 @@ button.bio-tl:hover .em{transform:rotate(-8deg) scale(1.18)}
 button.bio-tl.img{color:#fff;background-size:cover;background-position:center;border-color:transparent}
 button.bio-tl.img::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,.6))}
 .bio-tl .t{position:relative;word-break:break-word}
-/* the shelf, for shows, films, books, games */
-/* align-items:start — a button stretched to its row's height centres its
-   content, so one-line titles would sit lower than two-line ones */
-.bio-shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:18px 14px;padding-top:6px;align-items:start}
-button.bio-pst{display:block;background:none;border:none;padding:0;text-align:left;color:var(--tx);font-weight:600;border-radius:10px;min-width:0}
-button.bio-pst:hover{background:none}
-.bio-pst .cv{display:block;position:relative;aspect-ratio:2/3;border-radius:10px;overflow:hidden;background:var(--panel2);
-  box-shadow:0 4px 12px rgba(70,85,100,.2);transition:transform .2s cubic-bezier(.2,.8,.3,1),box-shadow .2s}
-button.bio-pst:hover .cv{transform:translateY(-5px) rotate(-1.2deg);box-shadow:0 16px 28px rgba(70,85,100,.3)}
-.bio-pst .cv img{width:100%;height:100%;object-fit:cover;display:block}
-.bio-gen{position:absolute;inset:0;padding:10px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;
-  background:linear-gradient(160deg,hsl(var(--h) 58% 62%),hsl(calc(var(--h) + 38) 52% 30%));color:#fff}
-.bio-gen::before{content:'';position:absolute;inset:0;background:linear-gradient(115deg,rgba(255,255,255,.24),rgba(255,255,255,0) 45%)}
-.bio-gen b{position:absolute;right:-4px;top:-10px;font-family:var(--serif);font-size:96px;line-height:1;opacity:.17;font-weight:700}
-.bio-gen span{position:relative;font-family:var(--serif);font-weight:600;font-size:14px;line-height:1.22;
-  text-shadow:0 1px 8px rgba(0,0,0,.25);display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;
-  overflow:hidden;word-break:break-word}
-.bio-pst .nm{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
-  font-size:12.5px;font-weight:700;margin-top:8px;line-height:1.3;word-break:break-word}
-.bio-pst .sb{display:block;font-size:11.5px;color:var(--meta);margin-top:1px}
-.bio-badge{position:absolute;top:6px;left:6px;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:999px;
-  background:rgba(255,255,255,.92);color:var(--tile);line-height:1.4}
-.bio-badge.r{left:auto;right:6px}
 /* gallery, for things */
 .bio-gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;padding-top:4px}
 button.bio-gi{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line2);border-radius:14px;
@@ -521,7 +498,6 @@ button.bio-pc:hover{background:var(--panel);border-color:var(--ckline);transform
   .bio-stat span{white-space:normal;line-height:1.3}
   button.bio-more{width:calc(100% + 32px);margin:12px -16px -16px}
   .bio-logo{width:42px;height:42px;font-size:14px}
-  .bio-shelf{grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:16px 11px}
   .bio-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
   .bio-gal,.bio-ppl{grid-template-columns:repeat(2,minmax(0,1fr))}
   .bio-cm{gap:9px}
@@ -540,8 +516,8 @@ button.bio-pc:hover{background:var(--panel);border-color:var(--ckline);transform
 @media (prefers-reduced-motion:reduce){
   .bio.fresh>*,.orb.fresh .orb-face,.bio-str.fresh .bar i,.bio>.bio-flash{animation:none}
   .orb-ring,.orb-cr,.orb-you::before{animation:none}
-  button.bio-tl,.bio-tl .em,.bio-pst .cv,.orb-face{transition:none}
-  button.bio-tl:hover,button.bio-tl:hover .em,button.bio-pst:hover .cv,button.bio-gi:hover,button.bio-pc:hover,
+  button.bio-tl,.bio-tl .em,.orb-face{transition:none}
+  button.bio-tl:hover,button.bio-tl:hover .em,button.bio-gi:hover,button.bio-pc:hover,
   button.bio-chip:hover,button.bio-stat:hover,button.orb-p:hover .orb-face,button.orb-p:focus-visible .orb-face{transform:none}
 }
 .item{display:flex;gap:11px;align-items:flex-start;padding:11px 4px;border-bottom:1px solid var(--line2);
@@ -1800,10 +1776,6 @@ th.r,td.r{text-align:right}
 .bi-pp div{display:flex;flex-direction:column;gap:4px;min-width:0}
 .bi-pp b{font:500 14px/1.15 'Outfit',sans-serif;color:var(--tx)}
 .bi-pp em{font:400 12px/1 'Outfit',sans-serif;font-style:normal;color:var(--faint)}
-.bi-shelf{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
-.bi-shelf button{aspect-ratio:2/3;border-radius:12px;padding:12px 10px;display:flex;align-items:flex-end;box-shadow:inset 0 -40px 40px -20px rgba(0,0,0,.25);border:none;text-align:left;transition:transform .2s}
-.bi-shelf button:hover{transform:translateY(-3px)}
-.bi-shelf span{font:400 14px/1.15 var(--serif);color:#fbf8f2;text-wrap:balance;text-shadow:0 1px 6px rgba(0,0,0,.35)}
 /* you · stats & history */
 .st-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
 .st-tile{border-radius:22px;padding:18px 20px;display:flex;flex-direction:column;gap:8px}
@@ -2150,7 +2122,6 @@ const BIO_VIEWS={
   timeline:'Timeline',
   orbit   :'Circle',
   people  :'Cards',
-  shelf   :'Posters',
   tiles   :'Tiles',
   chips   :'Chips',
   gallery :'Gallery',
@@ -2241,6 +2212,19 @@ function ensureBio(d){
   if(!b.profile||typeof b.profile!=='object') b.profile={};
   if(!Array.isArray(b.entries)) b.entries=[];
   if(!Array.isArray(b.cats)||!b.cats.length) b.cats=clone(BIO_CATS_DEFAULT);
+  /* Media tracking (the poster shelf for shows, films, books, games) was
+     taken out on 2026-10-26. Once, the sections it drew and what was filed
+     under them go; a section named like that later is just a list. */
+  if(!b.noMedia){
+    const media=/\b(shows?|movies?|films?|tv|anime|manga|series|books?|reading|novels?|albums?|music|songs?|artists?|bands?|games?|podcasts?|watch(ed|ing|list)?|comics?)\b/i;
+    const gone=new Set(b.cats.filter(c=>!BIO_CATS_DEFAULT.some(x=>x.id===c.id)&&(c.view==='shelf'||
+      (!c.view&&c.kind!=='person'&&c.kind!=='role'&&media.test(String(c.name||''))))).map(c=>c.id));
+    const lost=new Set(b.entries.filter(e=>e&&gone.has(e.cat)).map(e=>e.id));
+    b.cats=b.cats.filter(c=>!gone.has(c.id));
+    b.entries=b.entries.filter(e=>!(e&&gone.has(e.cat)));
+    (d.diary||[]).forEach(e=>{ if(e&&lost.has(e.bioEntryId)) e.bioEntryId=null; });
+    b.noMedia=true;
+  }
   BIO_CATS_DEFAULT.forEach((c,i)=>{ if(!b.cats.some(x=>x.id===c.id)) b.cats.splice(i,0,{...c}); });
   b.cats.forEach(c=>{
     if(!BIO_KINDS[c.kind]) c.kind='plain';
@@ -6636,19 +6620,15 @@ function bioModal(edit,presetCat){
   /* Lives outside #be-fields so switching category never clears a picked
      image. Falls back to the same tile the list uses, so an entry without a
      picture still looks deliberate rather than broken. */
-  /* A shelf category shows posters, so its picture is cropped tall (2:3)
-     instead of square, and the preview here takes the same shape. */
-  const isShelf=()=>{ const c=bioCat($('be-cat').value); return !!c&&bioView(c)==='shelf'; };
   const paintImg=()=>{
     const c=bioCat($('be-cat').value)||{icon:'\u{1F4CC}',kind:'plain'};
     const round=c.kind==='person'?'50%':'12px';
     const hue=bioHue(($('be-title')?$('be-title').value:'')+c.id);
-    const tall=isShelf()?87:58;
     $('be-img-wrap').innerHTML=`
       ${imgVal
-        ? `<img src="${imgVal}" alt="" style="width:58px;height:${tall}px;border-radius:${round};
+        ? `<img src="${imgVal}" alt="" style="width:58px;height:58px;border-radius:${round};
              object-fit:cover;border:1px solid var(--line2);flex:none">`
-        : `<div style="width:58px;height:${tall}px;border-radius:${round};flex:none;display:flex;
+        : `<div style="width:58px;height:58px;border-radius:${round};flex:none;display:flex;
              align-items:center;justify-content:center;font-size:24px;border:1px solid var(--line2);
              background:hsl(${hue} 42% 93%);color:hsl(${hue} 38% 34%)">${c.icon}</div>`}
       <div class="row wrapf" style="gap:7px">
@@ -6662,7 +6642,7 @@ function bioModal(edit,presetCat){
         const f=inp.files&&inp.files[0]; if(!f) return;
         if(!/^image\//.test(f.type)){ toast('That is not an image.'); return; }
         const rd=new FileReader();
-        rd.onload=()=>bioShrink(rd.result,isShelf()?'poster':'thumb').then(u=>{ imgVal=u; paintImg(); },
+        rd.onload=()=>bioShrink(rd.result,'thumb').then(u=>{ imgVal=u; paintImg(); },
                                                         ()=>toast('Could not read that image.'));
         rd.onerror=()=>toast('Could not read that file.');
         rd.readAsDataURL(f);
@@ -6989,9 +6969,9 @@ function openBioJournalEntry(id){
 /* ── Bio view ──
    Two halves. Career (roles, skills, education) reads like LinkedIn: logo
    rows, several roles at one place grouped under it, "Aug 2025 – Present ·
-   1 yr 2 mos". Life (people, hobbies, shows, things) is not a resume, so each
+   1 yr 2 mos". Life (people, hobbies, things) is not a resume, so each
    of its sections gets a layout that suits what it holds: your people orbit
-   you, shows sit on a poster shelf, hobbies are colour tiles. Which half a
+   you, hobbies are colour tiles. Which half a
    section sits in and how it is drawn are both optional per category (`side`,
    `view`); bioSide()/bioView() pick from its kind and name when they're unset,
    so a new category looks right without being configured. */
@@ -7007,14 +6987,12 @@ let bioAnim=false;       // …and this carries it to the renderers during the p
 let bioJ=new Map();      // entry id -> its journal entries, rebuilt every paint
 let bioW=0;              // content width at the last paint; the circle is sized to it
 
-const BIO_MEDIA=/\b(shows?|movies?|films?|tv|anime|manga|series|books?|reading|novels?|albums?|music|songs?|artists?|bands?|games?|podcasts?|watch(ed|ing|list)?|comics?)\b/i;
 function bioView(c,autoOnly){
   if(!autoOnly&&c.view&&BIO_VIEWS[c.view]) return c.view;
   const n=String(c.name||'');
   if(c.kind==='person') return 'orbit';
   if(c.kind==='role') return 'timeline';
   if(c.id==='skill'||/skill|language|tool|stack|tech|certif/i.test(n)) return 'chips';
-  if(BIO_MEDIA.test(n)) return 'shelf';
   if(c.id==='hobby'||/hobb|interest|passion|fav/i.test(n)) return 'tiles';
   if(c.kind==='thing') return 'gallery';
   return 'list';
@@ -7121,8 +7099,8 @@ function bioStrengthHtml(){
 }
 
 /* ═══════════════ You · Bio ═══════════════
-   A cover of water, your people drawn as ripples around you, the shows on
-   a shelf. Career stays what an application wants to see. */
+   A cover of water, your people drawn as ripples around you. Career stays
+   what an application wants to see. */
 const bioH=s=>[...String(s)].reduce((a,c)=>a+c.charCodeAt(0)*7,0)%360;
 const bioIni=n=>String(n||'').split(/[\s-]+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase()||'•';
 const BIO_LEVELS=[[0,'Seedling'],[30,'Rooted'],[55,'Budding'],[80,'Blooming'],[100,'In full bloom']];
@@ -7142,8 +7120,6 @@ function paintBio(){
       P.pad(1040*f,40,52,40,'#5f9470','great'),P.pad(460*f,170,36,200,'#6f9e7a',null),P.glints(W,190,8),P.petals(190,2)].join('')}</div>`;
   const cats=bioCats(), side=c=>bioSide(c);
   const people=bioSort(all.filter(e=>(bioCat(e.cat)||{}).kind==='person'&&e.relation!=='dislike'),'person');
-  const shelfCats=cats.filter(c=>side(c)==='life'&&bioView(c)==='shelf'&&bioIn(c.id).length);
-  const shows=shelfCats.flatMap(c=>bioIn(c.id));
   const hobbies=bioIn('hobby');
   const statCats=cats.map(c=>({c,n:bioIn(c.id).length})).filter(x=>x.n).sort((a,b)=>b.n-a.n).slice(0,3);
   const s=bioStrength(), lvl=[...BIO_LEVELS].reverse().find(l=>s.score>=l[0]), next=BIO_LEVELS.find(l=>l[0]>s.score);
@@ -7174,8 +7150,8 @@ function paintBio(){
     </div>`).join('')
     :`<div class="bi-empty"><span>Nothing here yet. Start with whatever is easiest to remember.</span>
       <div>${cats.filter(c=>side(c)==='career').slice(0,6).map(c=>`<button onclick="bioModal(null,'${c.id}')">+ ${esc(c.name.replace(/ & /,' & ').replace(/^(.)(.*)$/,(m,a,b)=>a+b.toLowerCase()))}</button>`).join('')}</div></div>`;
-  /* the rest of life, for sections that aren't people, shows or hobbies */
-  const otherLife=cats.filter(c=>side(c)==='life'&&c.id!=='hobby'&&bioView(c)!=='shelf'&&c.kind!=='person'&&bioIn(c.id).length);
+  /* the rest of life, for sections that aren't people or hobbies */
+  const otherLife=cats.filter(c=>side(c)==='life'&&c.id!=='hobby'&&c.kind!=='person'&&bioIn(c.id).length);
   el.innerHTML=`<div class="scr" style="gap:22px">
     <div class="pcard" style="padding:0;overflow:hidden;border-radius:28px">
       <div class="water bi-cover">${cover}<button class="bi-cv" onclick="bioPickImage('cover')">${p.cover?'Change cover':'Change cover'}</button></div>
@@ -7217,10 +7193,6 @@ function paintBio(){
             <button class="bp-chip" style="align-self:flex-start;margin-top:4px" onclick="bioModal(null,'people')">+ Add a person</button>
           </div>
         </div>
-        ${shelfCats.map(c=>`<div class="pcard" id="bio-sec-${c.id}" style="padding:20px 22px;display:flex;flex-direction:column;gap:14px">
-          <div class="pcard-h"><span style="font:400 20px/1 var(--serif)">${esc(c.name)}</span><span class="pcard-s">${bioIn(c.id).length} on the shelf</span></div>
-          <div class="bi-shelf">${bioIn(c.id).map(e=>{ const H=bioH(e.title); return `<button onclick="bioPeek('${e.id}')" style="background:${e.img?`url('${e.img}') center/cover`:`linear-gradient(160deg,hsl(${H} 45% 58%),hsl(${(H+40)%360} 40% 32%))`}"><span>${esc(e.title)}</span></button>`; }).join('')}</div>
-        </div>`).join('')}
         ${otherLife.map(c=>`<div class="pcard" id="bio-sec-${c.id}" style="padding:20px 22px;display:flex;flex-direction:column;gap:6px">
           <div class="pcard-h"><span style="font:400 20px/1 var(--serif)">${esc(c.name)}</span><button class="tadd" onclick="bioModal(null,'${c.id}')">+ Add</button></div>
           ${bioIn(c.id).map(e=>`<div class="bi-row" onclick="bioPeek('${e.id}')"><span class="lg" style="background:#f1ebdf">${bioGlyph(e,c)}</span>
@@ -7234,14 +7206,13 @@ function paintBio(){
    "Show all" footer beyond it; searching or filtering always shows all. */
 function bioSection(c,list,narrowed,st){
   const v=bioView(c), career=bioSide(c)==='career';
-  const LIM={timeline:4,list:6,shelf:12,tiles:12,gallery:8,chips:40,people:12,orbit:80}[v]||8;
+  const LIM={timeline:4,list:6,tiles:12,gallery:8,chips:40,people:12,orbit:80}[v]||8;
   let units=v==='timeline'?bioGroups(list):list;
   const over=!narrowed&&units.length>LIM, cut=over&&!bioOpen.has(c.id);
   if(cut) units=units.slice(0,LIM);
   const inner = v==='timeline' ? units.map(g=>g.items.length>1?bioXpGroup(g,c):bioXpRow(g.items[0],c)).join('')
     : v==='orbit'   ? bioOrbit(units,c)
     : v==='people'  ? bioPeople(units,c)
-    : v==='shelf'   ? bioShelf(units,c)
     : v==='tiles'   ? bioTiles(units,c)
     : v==='chips'   ? bioChips(units,c)
     : v==='gallery' ? bioGallery(units,c)
@@ -7503,22 +7474,6 @@ function bioPeople(list,c,note){
       ${k||e.sensitive?`<span class="sb">${[k?`📓 ${k}`:'',e.sensitive?'◆ Private':''].filter(Boolean).join(' · ')}</span>`:''}
     </button>`; }).join('')}</div>`;
 }
-/* Posters. A picture fills the frame; without one the poster is painted from
-   the title's own hue, so a shelf of plain titles still looks like a shelf. */
-function bioPoster(e,c,extra){
-  return `<span class="cv" style="--h:${bioHue(e.title+c.id)}">${e.img
-    ?`<img src="${e.img}" alt="" loading="lazy">`
-    :`<span class="bio-gen"><b>${esc(bioFirstChar(e.title))}</b><span>${esc(e.title)}</span></span>`}${extra||''}</span>`;
-}
-function bioShelf(list,c){
-  return `<div class="bio-shelf">${list.map(e=>{ const k=(bioJ.get(e.id)||[]).length;
-    return `<button class="bio-pst" onclick="bioPeek('${e.id}')" title="${esc(e.title)}">
-      ${bioPoster(e,c,(k?`<span class="bio-badge">📓 ${k}</span>`:'')+
-        (e.sensitive?'<span class="bio-badge r" title="Private">◆</span>':''))}
-      <span class="nm">${esc(e.title)}</span>
-      ${e.org?`<span class="sb">${esc(e.org)}</span>`:''}
-    </button>`; }).join('')}</div>`;
-}
 function bioTiles(list,c){
   return `<div class="bio-tiles">${list.map(e=>`<button class="bio-tl${e.img?' img':''}"
       style="--h:${bioHue(e.title+c.id)};${e.img?`background-image:url('${e.img}')`:''}"
@@ -7545,14 +7500,13 @@ function bioGallery(list,c){
     </button>`).join('')}</div>`;
 }
 
-/* ── the quick card ── what a tile, poster or face opens: everything about
+/* ── the quick card ── what a tile or face opens: everything about
    the entry, plus what you've written about it in the Journal. Rows already
    show all of that, so they still open straight into the editor. */
 function bioPeekArt(e,c){
   const h=bioHue(e.title+c.id);
   if(c.kind==='person') return `<span style="--a:76px;width:76px;height:76px;flex:none;display:block">${
     bioFace(e,bioTier(e.relation)||BIO_AVOID)}</span>`;
-  if(bioView(c)==='shelf') return `<span class="bio-pst" style="width:86px;flex:none;display:block">${bioPoster(e,c)}</span>`;
   if(e.img) return `<img src="${e.img}" alt="" style="width:76px;height:76px;border-radius:14px;object-fit:cover;flex:none;border:1px solid var(--line2)">`;
   const ini=c.kind==='role'&&e.org;
   return `<span style="width:76px;height:76px;border-radius:16px;flex:none;display:flex;align-items:center;
@@ -7846,7 +7800,9 @@ let _rowCtx=null;
 /* ═══════════════ the pond ═══════════════
    The game layer over everything else. Each class adopts a species, and
    every task you finish releases a fish: 30% of the time its class's own,
-   otherwise any species, weighted by rarity (Pond.rollSpecies). The roll is
+   otherwise any species, weighted by rarity (Pond.rollSpecies). Only one
+   new species is let in per visit, though (see pondState), so a big day
+   of tasks is one find, not a parade; the rest wait their turn. The roll is
    seeded by the task's id, so it's the same fish every time — the pond is
    worked out from your real tasks, sessions and journal on each paint rather
    than stored. Only two things are kept, in db.pond: which species each
@@ -7896,10 +7852,11 @@ const pondRoll=a=>PondArt.rollSpecies(a.id,db.pond.adopt[a.classId]||null,
 
 /* The whole collection, worked out fresh — cached until the next save. */
 let _pondCache=null, _pondKey='';
-/* _pondLiveDb: the db the pond has already been worked out for once, so
-   a first sighting on it is a real find (see pondState). The unlock queue
-   lives here too: pondState can run before the rest of the script has. */
-let _pondLiveDb=null, _ulQ=[], _ulCur=null, _ulT=null, _ulFocusT=null, _ulAt=0;
+/* _ulVisit: the one new species this visit has let in (null until it has).
+   A visit is opening the app, or coming back to it after half an hour away.
+   The unlock queue lives here too: pondState can run before the rest of the
+   script has. */
+let _ulVisit=null, _ulAwayAt=0, _ulQ=[], _ulCur=null, _ulT=null, _ulFocusT=null, _ulAt=0;
 function pondState(){
   // One-time fresh collection. Study records stay intact; old sightings remain
   // recoverable but no longer count toward this collection's discoveries.
@@ -7937,27 +7894,37 @@ function pondState(){
   const M={tasks:done.length, focusH:focusMs/HR, jdays:jdays.length, fstreak:fst, streak:Math.max(fst,wst),
     blooms:bloomDays.length, bloomRun, noon:done.filter(a=>a.doneAt&&etHour(a.doneAt)<12).length, late,
     reeds:overdue.length===0&&late>0?1:0};
-  /* releases */
-  const rel=new Map(), count={}, first={}, firstBy={};
-  done.forEach(a=>{ const k=pondRoll(a); rel.set(a.id,k); count[k]=(count[k]||0)+1;
+  /* what each finished task rolled, and what that and your milestones turn up */
+  const roll=new Map(), first={}, firstBy={}, turned={};
+  done.forEach(a=>{ const k=pondRoll(a); roll.set(a.id,k); turned[k]='task';
     const ts=a.doneAt||Date.now(); if(!first[k]||ts<first[k]){ first[k]=ts; firstBy[k]=a; } });
-  /* who's found, and how */
+  PondArt.SPEC.forEach(sp=>{ if(!turned[sp.k]&&sp.goal&&M[sp.goal.m]>=sp.goal.n) turned[sp.k]='goal'; });
+  /* who's found, and how: a species is yours once it's in db.pond.seen */
   const found={}, adoptBy={};
   activeClasses().forEach(c=>{ const k=db.pond.adopt[c.id]; if(k) (adoptBy[k]=adoptBy[k]||[]).push(c.id); });
-  Object.keys(count).forEach(k=>{ if(!found[k]) found[k]={how:'task'}; });
-  PondArt.SPEC.forEach(sp=>{ if(!found[sp.k]&&sp.goal&&M[sp.goal.m]>=sp.goal.n) found[sp.k]={how:'goal'}; });
-  Object.keys(db.pond.seen).forEach(k=>{ if(PondArt.SP[k]&&db.pond.seen[k]>since&&!found[k]) found[k]={how:'kept'}; });
-  const fresh=[];
-  Object.keys(found).forEach(k=>{
-    if(!(db.pond.seen[k]>since)){ db.pond.seen[k]=found[k].how==='task'?first[k]:Date.now(); changed=true; fresh.push(k); }
-    found[k].at=db.pond.seen[k];
-  });
-  /* A first sighting on a pond that was already open is a real find, and
-     gets its moment (the unlock screen). The first look at a pond just
-     loaded, synced in or reset only takes stock, so opening the app never
-     sets off a parade of old finds. */
-  if(_pondLiveDb===db&&!reset) fresh.forEach(k=>unlockQueue(k,found[k].how,found[k].how==='task'?firstBy[k]:null));
-  _pondLiveDb=db;
+  Object.keys(db.pond.seen).forEach(k=>{ if(PondArt.SP[k]&&db.pond.seen[k]>since) found[k]={how:turned[k]||'kept',at:db.pond.seen[k]}; });
+  /* One new species per visit, however much got done since the last one.
+     Milestone finds go first, then task finds oldest first; the rest wait
+     for a later visit. Coming in to a pile of finished tasks is one find
+     and its moment (the unlock screen), not a parade. If the visit's find
+     goes missing (a reload from the file or the cloud landed on top of it)
+     it's put back quietly. */
+  const fresh=[], admit=k=>{ db.pond.seen[k]=Date.now(); found[k]={how:turned[k],at:db.pond.seen[k]}; changed=true; };
+  if(_ulVisit){ if(turned[_ulVisit]&&!found[_ulVisit]) admit(_ulVisit); }
+  else{
+    const wait=Object.keys(turned).filter(k=>!found[k]&&PondArt.SP[k])
+      .sort((x,y)=>(turned[x]==='goal'?0:1)-(turned[y]==='goal'?0:1)||(first[x]||0)-(first[y]||0));
+    if(wait.length){ _ulVisit=wait[0]; admit(_ulVisit); fresh.push(_ulVisit); }
+  }
+  if(!reset) fresh.forEach(k=>unlockQueue(k,found[k].how,found[k].how==='task'?firstBy[k]:null));
+  /* releases: a task whose own species is still waiting its turn releases
+     one you already have (its class's, else your first find), so no fish
+     shows up anywhere before it's been found */
+  const firstFound=Object.keys(found).sort((x,y)=>found[x].at-found[y].at)[0];
+  const rel=new Map(), count={};
+  done.forEach(a=>{ let k=roll.get(a.id);
+    if(!found[k]){ const ad=db.pond.adopt[a.classId]; k=found[ad]?ad:firstFound||k; }
+    rel.set(a.id,k); count[k]=(count[k]||0)+1; });
   /* progress towards everything still hidden */
   const prog=sp=>{ if(!sp.goal) return null;
     const cur=sp.goal.m==='reeds'?(found[sp.k]?1:0):Math.floor(M[sp.goal.m]||0);
@@ -8413,9 +8380,18 @@ function unlockQueue(k,how,task){
     box.innerHTML=unlockBtns(); if(had) unlockFocus(); }
 }
 function unlockNext(){
+  /* the visit's find waits for the Hello page to close */
+  if(_ulQ.length&&!_ulCur&&typeof helloOpen==='function'&&helloOpen()){ clearTimeout(_ulT); _ulT=setTimeout(unlockNext,600); return; }
   const it=_ulQ.shift();
   if(it) unlockShow(it,false); else unlockHide();
 }
+/* back after half an hour away is a new visit, with a new find in it */
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){ _ulAwayAt=Date.now(); return; }
+  if(!_ulAwayAt||Date.now()-_ulAwayAt<30*MIN) return;
+  _ulAwayAt=0; _ulVisit=null; _pondCache=null;
+  if(db&&db.pond){ pondState(); repaint(); }
+});
 /* the Collection: read a found species' card again */
 function unlockView(k){
   const f=pondState().found[k]; if(!f||unlockOpen()) return;
