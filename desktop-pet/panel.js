@@ -317,7 +317,9 @@ let ckEvery=init.checkEvery, ckAway=false, ckSaid='', ckT=null;
 const CK_OPTS=init.checkOpts||[0,15,30,45,60,90,120];
 const ckName=m=>m?m<60?m+'m':m/60+'h':'Off';
 const hourNow=()=>+new Intl.DateTimeFormat('en-US',{timeZone:V.tz,hour:'numeric',hourCycle:'h23'}).format(Date.now());
-const ckCtx=()=>({toad:NAME,hr:hourNow(),away:ckAway,onBreak:!!(V.session&&V.session.phase==='break'),prev:MEM.ckPrev,prevDid:MEM.ckDid});
+const weekend=()=>/^(Sat|Sun)/.test(new Intl.DateTimeFormat('en-US',{timeZone:V.tz,weekday:'short'}).format(Date.now()));
+const ckCtx=()=>({toad:NAME,hr:hourNow(),away:ckAway,onBreak:!!(V.session&&V.session.phase==='break'),prev:MEM.ckPrev,prevDid:MEM.ckDid,
+  first:MEM.ckDay!==V.today,weekend:weekend()});
 function checkupHTML(){
   if(ckSaid) return `<p class="empty">${esc(ckSaid)}</p>
     <div class="btns"><button class="pri" data-act="ck-close">Okay</button></div>`;
@@ -334,8 +336,8 @@ async function checkupSend(){
   clearTimeout(ckT);
   say(window.CHECKIN.reply(r,ctx,pick));
   if(['switched','resisted','finished','turnaround'].includes(r.kind)) window.pet.send('react',{kind:'done'});
-  MEM.ckPrev=r.kind; MEM.ckDid=r.did||r.want||'';
-  window.pet.send('mem',{ckPrev:MEM.ckPrev,ckDid:MEM.ckDid});
+  MEM.ckPrev=r.kind; MEM.ckDid=r.did||r.want||''; MEM.ckDay=V.today;
+  window.pet.send('mem',{ckPrev:MEM.ckPrev,ckDid:MEM.ckDid,ckDay:MEM.ckDay});
   ckSaid=V.appOpen?'Kept in your Journal, under Check-ins.':'Kept for your Journal. It lands under Check-ins when you open Catching Days.';
   render(true);
 }

@@ -21,7 +21,7 @@ const LEX=[
   [/\bbed ?rot\w*|\brotting in bed\b|\blying in bed\b/,'bed rotting','D'],
   [/\bnot doing (anything|much)\b|\bdoing nothing\b|\bnothing (much|really|productive)\b|\bnot much\b|\bnothing\b/,'nothing much','I'],
   [/\bprocrastinat\w*|\bwast(ing|ed) (my )?time\b|\btime wast\w*|\bslack(ing|ed)( off)?\b|\bzon(ing|ed) out\b|\bgoofing off\b|\bmessing around\b/,'procrastinating','I'],
-  [/\b(tiktok|instagram|insta|reels|youtube shorts|shorts|twitter|reddit|snapchat|facebook|social media|threads)\b/,m=>({tiktok:'TikTok',instagram:'Instagram',insta:'Instagram',reels:'Reels','youtube shorts':'YouTube Shorts',shorts:'YouTube Shorts',twitter:'Twitter',reddit:'Reddit',snapchat:'Snapchat',facebook:'Facebook','social media':'social media',threads:'Threads'})[m]||m,'D'],
+  [/\b(tiktok|instagram|insta|reels|youtube shorts|shorts|twitter|reddit|snapchat|facebook|social media|threads)\b/,m=>({tiktok:'TikTok',instagram:'Instagram',insta:'Instagram',reels:'Instagram','youtube shorts':'YouTube',shorts:'YouTube',twitter:'Twitter',reddit:'Reddit',snapchat:'Snapchat',facebook:'Facebook','social media':'social media',threads:'Threads'})[m]||m,'D'],
   [/\bscroll\w*/,'scrolling','D'],
   [/\b(on )?(my|the) phone\b|\bphone\b/,'your phone','D'],
   [/\b(video games?|gaming|games|valorant|fortnite|minecraft|roblox|league of legends|league|xbox|playstation|ps5|steam)\b/,'gaming','W'],
@@ -37,7 +37,9 @@ const LEX=[
   [/\b(essay|paper|report)s?\b/,'the essay','P'],
   [/\b(stud(y|ying|ied)|revis\w*|review\w*|cramm?\w*|flashcards?|anki|quizlet|practice problems?|practice exams?|textbook|notes)\b/,'studying','P'],
   [/\b(exam|midterm|final|quiz) (prep|review|studying)\b/,'exam prep','P'],
-  [/\b(calc|calculus|math|physics|chem|chemistry|biology|spanish|history|economics|c programming)\b/,m=>'studying '+m,'P'],
+  [/\b(calc|calculus|math|algebra|geometry|trig|stats|statistics|physics|chem|chemistry|biology|bio|anatomy|spanish|french|german|italian|japanese|chinese|mandarin|korean|latin|history|art history|economics|econ|psychology|psych|philosophy|sociology|literature|government|c programming)\b/,m=>'studying '+m.replace(/^(spanish|french|german|italian|japanese|chinese|mandarin|korean|latin|c)\b/,w=>w[0].toUpperCase()+w.slice(1)),'P'],
+  [/\b(piano|guitar|violin|viola|cello|bass|drums?|flute|clarinet|sax(ophone)?|trumpet|ukulele|singing|vocals|choir|band practice|music practice|making music|making beats)\b/,m=>/drum/.test(m)?'drumming':/^sax/.test(m)?'saxophone':/sing|vocal|choir/.test(m)?'singing':/band practice/.test(m)?'band practice':/making|music/.test(m)?'music':m,'P'],
+  [/\b(draw(ing)?|drew|paint(ing|ed)?|sketch\w*|doodl\w*|illustrat\w*|crochet\w*|knit\w*|sew(ing)?|pottery|ceramics|digital art|art)\b/,m=>/^dr/.test(m)?'drawing':/^paint/.test(m)?'painting':/^sketch/.test(m)?'sketching':/^doodl/.test(m)?'doodling':/^illustrat/.test(m)?'illustrating':/^crochet/.test(m)?'crochet':/^knit/.test(m)?'knitting':/^sew/.test(m)?'sewing':/pottery|ceramics/.test(m)?'pottery':'art','P'],
   [/\b(lectures?|class|classes|seminar|tutoring|office hours|lessons?)\b/,'class','P'],
   [/\b(cod(e|ing)|programm\w*|debugg?\w*|leetcode)\b/,'coding','P'],
   [/\bproject\b/,'the project','P'],
@@ -222,6 +224,7 @@ const FEEL_BAD_ADD=[' And go easy on yourself after this.',' Rest after, too.'];
 const LATE_ADD=[' It’s late, though. Don’t trade your sleep for it.',' Mind the hour. Sleep is studying too.'];
 const LONG_ADD=[' A few hours is a lot, though. Maybe a walk to reset?'];
 const BACK_ADD=['Nice turnaround since last time. ','Better than last time! '];
+const STREAK_ADD=['Two good ones in a row. ','That’s a run going. '];
 
 const cap=s=>s?s[0].toUpperCase()+s.slice(1):s;
 const rnd=a=>a[Math.floor(Math.random()*a.length)];
@@ -243,11 +246,27 @@ const TOPIC_NAME={'exam prep':'study',homework:'homework','the assignment':'home
   'the gym':'gym','a workout':'gym','a run':'run','a walk':'walk',cooking:'cooking','a nap':'sleep',sleep:'sleep','a break':'break',
   'bed rotting':'bedrot',gaming:'gaming'};
 const TOPIC_CAT={X:'sport',C:'cleaning',H:'selfcare',E:'food',S:'people',D:'scrolling',W:'watching',I:'idle'};
+const SUBJECT=[[/calc|math|algebra|geometry|trig|stat/,'math'],[/physics|chem|bio|anatomy/,'science'],
+  [/spanish|french|german|italian|japanese|chinese|mandarin|korean|latin/,'language'],[/c programming/,'coding'],
+  [/history|econ|psych|philosophy|sociology|literature|government/,'humanities']];
+const MUSIC=/^(piano|guitar|violin|viola|cello|bass|drumming|flute|clarinet|saxophone|trumpet|ukulele|singing|band practice|music)$/;
 function topicOf(name,cat){
   if(!name) return '';
-  if(/^studying\b/.test(name)) return 'study';
+  if(/^studying\b/.test(name)){ const s=SUBJECT.find(([re])=>re.test(name.toLowerCase())); return s?s[1]:'study'; }
+  if(MUSIC.test(name)) return 'music';
+  if(/^(drawing|painting|sketching|doodling|illustrating|crochet|knitting|sewing|pottery|art)$/.test(name)) return 'art';
   return TOPIC_NAME[name]||TOPIC_CAT[cat]||'';
 }
+/* a line that names one subject or craft (calc, piano, clay) only answers that one: guitar shouldn't get a piano line */
+const SPECIFIC=[['calc'],['algebra'],['stat(s|istic)','stat'],['geometr'],['trig'],['physic'],['chem'],['bio'],['anatom'],
+  ['spanish'],['french'],['german'],['italian'],['japanese'],['chinese|mandarin','chinese|mandarin'],['korean'],['latin'],
+  ['histor'],['econ'],['psych'],['philosoph'],['sociolog'],['literat'],['government'],
+  ['piano'],['guitar'],['violin'],['viola'],['cello'],['bass'],['drum'],['flute'],['clarinet'],['sax'],['trumpet'],['ukulele'],
+  ['sing(?!le)|vocal|choir','sing'],['band'],['draw'],['paint'],['sketch'],['doodl'],['illustrat'],
+  ['crochet|yarn','crochet|knit'],['knit'],['sew|stitch','sew|knit|crochet'],['potter|ceramic|clay|kiln|glaze','potter']]
+  .map(([w,n])=>[new RegExp('\\b('+w+')','i'),new RegExp(n||w,'i')]);
+const PICKY=/^(math|science|language|humanities|music|art)$/;
+const fitsName=name=>s=>{ const hit=SPECIFIC.filter(([re])=>re.test(s)); return !hit.length||hit.some(([,n])=>n.test(name)); };
 const TOPIC_SIDE={switched:'did yes avoided no',resisted:'avoided no',finished:'did yes',good:'did yes',started:'did yes',trying:'did yes',
   turnaround:'did yes',slipping:'avoided yes',driftAware:'did yes want no',drift:'did yes',unwinding:'did yes',missed:'avoided no',
   reluctant:'want no',plan:'want yes',rest:'did yes',eating:'did yes',social:'did yes',selfcare:'did yes'};
@@ -256,7 +275,8 @@ function topicLine(V,r,pick){
   if(!V.topics) return '';
   for(let i=0;i+1<s.length;i+=2){
     const name=r[s[i]], h=(r.hits||[]).find(x=>x.name===name), o=V.topics[topicOf(name,h&&h.cat)];
-    if(o&&o[s[i+1]]&&o[s[i+1]].length) pools.push(o[s[i+1]]);
+    const k=topicOf(name,h&&h.cat), all=o&&o[s[i+1]]||[], fit=PICKY.test(k)?all.filter(fitsName(name)):all;
+    if(all.length) pools.push(fit.length?fit:all);
   }
   return pools.length?pick([].concat(...pools)):'';
 }
@@ -271,6 +291,8 @@ function reply(r,ctx,pick){
   if(!pool.length) pool=V.unknown||R.unknown;
   let out=fill(pick(pool),r);
   if(GOODISH.includes(r.kind)&&['drift','driftAware','slipping'].includes(ctx.prev)) out=pick(V.back||BACK_ADD)+out;
+  /* good last time and good again: sometimes the toad notices the run (ctx.streakOdds as topicOdds) */
+  else if(GOODISH.includes(r.kind)&&GOODISH.includes(ctx.prev)&&Math.random()<(ctx.streakOdds==null?0.5:ctx.streakOdds)) out=pick(V.streak||STREAK_ADD)+out;
   if(r.kind==='drift'&&r.long) out+=pick(V.long||LONG_ADD);
   else if(GOODISH.includes(r.kind)&&r.feel==='bad') out+=pick(V.tired||FEEL_BAD_ADD);
   else if(['good','started','trying','plan'].includes(r.kind)&&(ctx.hr>=23||ctx.hr<4)) out+=pick(V.late||LATE_ADD);
@@ -289,6 +311,7 @@ const ASK={
   askBack:['Welcome back. What were you up to?','You’re back. What have you been doing?'],
   askLate:['It’s late. What are you still up to?','Still awake? What are you doing?'],
   askBreak:['On a break? What are you doing with it?'],
+  askFirst:['First check-in today. What are you up to?'],askWeekend:['It’s the weekend. What are you doing with it?'],
   askPrevGood:['Last time it was {prev}. Still at it, or something new?'],askPrevDrift:['Last time it was {prev}. Where are you now?']
 };
 function questions(ctx){
@@ -298,7 +321,9 @@ function questions(ctx){
   if(hr>=23||hr<4) return L('askLate');
   if(ctx.onBreak) return L('askBreak');
   if(ctx.now) return [`Your calendar says “${ctx.now}”. Is that what you’re doing?`];
+  if(ctx.first) return L('askFirst');
   const q=L('ask').slice();
+  if(ctx.weekend) q.push(...L('askWeekend'));
   const tod=hr>=5&&hr<12?'askMorning':hr>=12&&hr<18?'askAfternoon':hr>=18&&hr<23?'askEvening':'';
   if(tod) q.push(...L(tod));
   const p=ctx.prevDid, prev=k=>L(k).map(s=>s.replace(/(^|[.!?…]\s*)\{prev\}/g,(m,a)=>a+cap(p)).replace(/\{prev\}/g,p));
@@ -307,7 +332,7 @@ function questions(ctx){
   return q;
 }
 
-const API={read,reply,questions,norm,topicOf};
+const API={read,reply,questions,norm,topicOf,fitsName};
 if(typeof window!=='undefined') window.CHECKIN=API;
 if(typeof module!=='undefined') module.exports=API;
 })();

@@ -1,6 +1,6 @@
 // the check-up's reading of what you said (checkin.js) and the nine voices (checkin-lines/), with plain node
 const test=require('node:test'), assert=require('node:assert/strict');
-const {read,reply,questions,topicOf}=require('../checkin');
+const {read,reply,questions,topicOf,fitsName}=require('../checkin');
 const LINES=require('../checkin-lines');
 const check=require('./voice-shape');
 
@@ -11,7 +11,7 @@ const all=V=>Object.values(V).flatMap(v=>Array.isArray(v)?v:Object.values(v).fla
 
 test('a good thing instead of a bad one is praised, not scolded', ()=>{
   for(const s of ['instead of doom scrolling, I hit the gym','I hit the gym instead of doom scrolling',
-    'went to the gym rather than doomscrolling','chose studying over tiktok']){
+    'went to the gym rather than doomscrolling','chose studying over tiktok','practicing guitar instead of tiktok']){
     const r=read(s);
     assert.equal(r.kind,'switched',s);
   }
@@ -75,12 +75,22 @@ test('kinds without a name never leave a hole, for any toad or kind', ()=>{
 });
 
 test('topics: the toad says something about the thing itself', ()=>{
-  const want=[['studying calc','P','study'],['exam prep','P','study'],['the lab','P','homework'],['writing','P','essay'],
+  const want=[['studying calc','P','math'],['studying physics','P','science'],['studying spanish','P','language'],
+    ['studying history','P','humanities'],['studying','P','study'],['guitar','P','music'],['singing','P','music'],
+    ['drawing','P','art'],['crochet','P','art'],['exam prep','P','study'],['the lab','P','homework'],['writing','P','essay'],
     ['email','P','work'],['the gym','X','gym'],['a run','X','run'],['swimming','X','sport'],['laundry','C','cleaning'],
     ['a shower','H','selfcare'],['dinner','E','food'],['mom','S','people'],['a nap','R','sleep'],['TikTok','D','scrolling'],
     ['your phone','D','scrolling'],['bed rotting','D','bedrot'],['gaming','W','gaming'],['Netflix','W','watching'],
     ['procrastinating','I','idle']];
   for(const [name,cat,k] of want) assert.equal(topicOf(name,cat),k,name);
+  /* a line naming one subject or craft only answers that one */
+  assert.ok(!fitsName('guitar')('Piano keys never lie.')); assert.ok(fitsName('piano')('Piano keys never lie.'));
+  assert.ok(!fitsName('drawing')('Clay remembers your hands.')); assert.ok(fitsName('pottery')('Clay remembers your hands.'));
+  assert.ok(fitsName('studying calc')('Calc again. Good.')); assert.ok(fitsName('guitar')('The hard bit gets easier.'));
+  for(const t of TOADS){
+    const pool=reply(read('just finished practicing guitar'),{toad:t,topicOdds:1},a=>a.find(s=>/piano/i.test(s))||a[0]);
+    assert.doesNotMatch(pool,/piano/i,t);
+  }
   const sw=read('instead of doom scrolling, I hit the gym');
   for(const t of TOADS){
     const T=LINES[t].topics;
@@ -89,6 +99,16 @@ test('topics: the toad says something about the thing itself', ()=>{
     assert.ok(reply(read('skipped the gym'),{toad:t,topicOdds:1},first).endsWith(' '+T.gym.no[0]),t);
     assert.ok(reply(read('scrolling tiktok'),{toad:t,topicOdds:1},first).endsWith(' '+T.scrolling.yes[0]),t);
     assert.ok(!reply(sw,{toad:t,topicOdds:0},first).includes(T.gym.yes[0]),t);
+  }
+});
+
+test('two good answers in a row get noticed, a slip after a good one does not', ()=>{
+  const fin=read('just finished my calc homework'), drift=read('scrolling tiktok');
+  for(const t of TOADS){
+    const V=LINES[t];
+    assert.ok(reply(fin,{toad:t,prev:'finished',streakOdds:1,topicOdds:0},first).startsWith(V.streak[0]),t);
+    assert.ok(!reply(fin,{toad:t,prev:'drift',streakOdds:1,topicOdds:0},first).startsWith(V.streak[0]),t);
+    assert.ok(!reply(drift,{toad:t,prev:'finished',streakOdds:1,topicOdds:0},first).startsWith(V.streak[0]),t);
   }
 });
 
@@ -101,6 +121,8 @@ test('questions: one voice per toad, by time of day, and about last time', ()=>{
     assert.deepEqual(questions({toad:t,hr:1}),V.askLate);
     assert.deepEqual(questions({toad:t,hr:14,away:true}),V.askBack);
     assert.deepEqual(questions({toad:t,hr:14,onBreak:true}),V.askBreak);
+    assert.deepEqual(questions({toad:t,hr:14,first:true}),V.askFirst);
+    assert.deepEqual(questions({toad:t,hr:14,weekend:true}),[...V.ask,...V.askWeekend,...V.askAfternoon]);
     const good=questions({toad:t,hr:14,prev:'switched',prevDid:'the gym'}), bad=questions({toad:t,hr:14,prev:'drift',prevDid:'TikTok'});
     assert.equal(good.length,V.ask.length+V.askAfternoon.length+V.askPrevGood.length,t);
     assert.equal(bad.length,V.ask.length+V.askAfternoon.length+V.askPrevDrift.length,t);
