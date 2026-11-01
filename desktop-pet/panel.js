@@ -24,6 +24,8 @@ function load(src,base){
   return new Promise(res=>{ const s=document.createElement('script'); s.src=(base||'')+src; s.onload=()=>res(true); s.onerror=()=>res(false); document.head.appendChild(s); });
 }
 await load('pet-lines.js');
+await Promise.all(TOADS.map(t=>load('checkin-lines/'+t+'.js')));
+await load('checkin.js');
 for(const f of ['toad-art.js','toads-design/toad-art-cast.js','toad-companions.js']) await load(f,init.artBase);
 try{ window.ToadArt.injectCSS(); window.ToadArt.injectCastCSS&&window.ToadArt.injectCastCSS(); window.ToadCompanions&&window.ToadCompanions.injectCSS(); }catch(e){}
 
@@ -53,13 +55,14 @@ function state(){
     running:!!s,phase:s?s.phase:null,paused:!!(s&&s.paused),cycles:s?s.cycles.length:0,mins:V.mins,goal:V.settings.goal,
     next:V.day.next,now:V.day.now,exam:ex?{title:ex.title,days:ex.days}:null,peeking};
 }
+const RECENT=40;   // lines the toad won't say again soon (a check-up reply can use three)
 function saveMem(){ window.pet.send('mem',{said:MEM.said,recent:MEM.recent}); }
-(function prune(){ const keep={}; Object.keys(MEM.said||{}).forEach(k=>{ if(k.includes(V&&V.today)) keep[k]=1; }); MEM.said=keep; MEM.recent=(MEM.recent||[]).slice(-12); })();
+(function prune(){ const keep={}; Object.keys(MEM.said||{}).forEach(k=>{ if(k.includes(V&&V.today)) keep[k]=1; }); MEM.said=keep; MEM.recent=(MEM.recent||[]).slice(-RECENT); })();
 function pick(arr){
   if(!arr||!arr.length) return '';
   const fresh=arr.filter(t=>!MEM.recent.includes(t));
   const t=(fresh.length?fresh:arr)[Math.floor(Math.random()*(fresh.length||arr.length))];
-  MEM.recent.push(t); MEM.recent=MEM.recent.slice(-12); saveMem();
+  MEM.recent.push(t); MEM.recent=MEM.recent.slice(-RECENT); saveMem();
   return t;
 }
 function line(kind,task){
@@ -309,8 +312,37 @@ function summ(s){ const c=s.cycles||[]; const f=c.reduce((x,y)=>x+(y.actual||0),
 function breakOverHTML(){
   return `<div class="btns" style="margin-top:10px"><button class="pri" data-act="break-end">Back to focus</button><button class="end" data-act="end">End session</button></div>`;
 }
+/* ── check-ups: the toad asks what you're up to, reads the answer, answers back, keeps it in the Journal ── */
+let ckEvery=init.checkEvery, ckAway=false, ckSaid='', ckT=null;
+const CK_OPTS=init.checkOpts||[0,15,30,45,60,90,120];
+const ckName=m=>m?m<60?m+'m':m/60+'h':'Off';
+const hourNow=()=>+new Intl.DateTimeFormat('en-US',{timeZone:V.tz,hour:'numeric',hourCycle:'h23'}).format(Date.now());
+const ckCtx=()=>({toad:NAME,hr:hourNow(),away:ckAway,onBreak:!!(V.session&&V.session.phase==='break'),prev:MEM.ckPrev,prevDid:MEM.ckDid});
+function checkupHTML(){
+  if(ckSaid) return `<p class="empty">${esc(ckSaid)}</p>
+    <div class="btns"><button class="pri" data-act="ck-close">Okay</button></div>`;
+  return `<div class="fld"><input id="ck-t" maxlength="500" placeholder="I’m…" autocomplete="off" aria-label="What you’re doing"></div>
+    <div class="btns"><button class="pri" data-act="ck-send" id="ck-go" disabled>Tell ${esc(NAMES[NAME])}</button><button data-act="ck-close">Not now</button></div>`;
+}
+async function checkupSend(){
+  const el=$('ck-t'); if(!el) return;
+  const text=el.value.replace(/\s+/g,' ').trim(); if(!text) return;
+  const ctx=ckCtx(), r=window.CHECKIN.read(text,ctx);
+  const res=await op({k:'checkin',text,kind:r.kind});
+  if(res&&res.why==='reload'){ say('Reload the Catching Days tab once (it’s from before check-ups), then tell me again. What you typed is still here.'); return; }
+  if(!res||!res.ok) return;
+  clearTimeout(ckT);
+  say(window.CHECKIN.reply(r,ctx,pick));
+  if(['switched','resisted','finished','turnaround'].includes(r.kind)) window.pet.send('react',{kind:'done'});
+  MEM.ckPrev=r.kind; MEM.ckDid=r.did||r.want||'';
+  window.pet.send('mem',{ckPrev:MEM.ckPrev,ckDid:MEM.ckDid});
+  ckSaid=V.appOpen?'Kept in your Journal, under Check-ins.':'Kept for your Journal. It lands under Check-ins when you open Catching Days.';
+  render(true);
+}
 function settingsHTML(){
-  return `<div class="sec"><b>Your desktop toad</b></div>
+  return `<div class="sec"><b>Check-ups</b><span>${ckEvery?esc(NAMES[NAME])+' asks what you’re up to':'off'}</span></div>
+    <div class="seg">${CK_OPTS.map(m=>`<button class="${ckEvery===m?'on':''}" data-ck="${m}">${ckName(m)}</button>`).join('')}</div>
+    <div class="sec"><b>Your desktop toad</b></div>
     <div class="grid9">${TOADS.map(t=>`<button class="${t===NAME?'on':''}" data-toad="${t}"><span class="fig">${art(t,64)}</span><b>${esc(NAMES[t])}</b><span>${esc(shortTitle(t))}</span></button>`).join('')}</div>
     <div class="sec"><b>Size</b></div>
     <div class="seg">${[['s','Small'],['m','Medium'],['l','Large']].map(([k,l])=>`<button class="${SIZE===k?'on':''}" data-size="${k}">${l}</button>`).join('')}</div>
@@ -331,6 +363,7 @@ function render(force){
   else if(mode==='end') h=V.session?rateHTML(true):focusSetupHTML();
   else if(mode==='break-over') h=V.session?breakOverHTML():'';
   else if(mode==='settings') h=settingsHTML();
+  else if(mode==='checkup') h=checkupHTML();
   /* redraw only when it changed (keeps your scroll, your hover, anything typed) */
   const sig=mode+'|'+h.replace(/id="(r-clk|r-sub|r-ph)"[^<]*/g,'');
   if(!force&&sig===bodySig) { tickRun(); return; }
@@ -428,6 +461,10 @@ $('body').addEventListener('click',async e=>{
     if(res&&res.ok){ rateVal=0; go('chat'); window.pet.send('react',{kind:'sessionEnd'}); say(line('sessionEnd')); }
     return;
   }
+  if(act==='ck-send'){ checkupSend(); return; }
+  if(act==='ck-close'){ clearTimeout(ckT); window.pet.send('panel-close'); return; }
+  const ckb=t.closest('[data-ck]');
+  if(ckb){ ckEvery=+ckb.dataset.ck; window.pet.send('set-checkup',ckEvery); render(true); return; }
   if(act==='open-app'){ window.pet.send('open-app'); return; }
   if(act==='quit'){ window.pet.send('quit'); return; }
   const rh=t.closest('[data-rhy]');
@@ -444,6 +481,8 @@ $('body').addEventListener('click',async e=>{
   const sz=t.closest('[data-size]');
   if(sz){ SIZE=sz.dataset.size; window.pet.send('set-size',SIZE); render(true); return; }
 });
+$('body').addEventListener('input',e=>{ if(e.target.id==='ck-t'){ $('ck-go').disabled=!e.target.value.trim(); clearTimeout(ckT); } });
+$('body').addEventListener('keydown',e=>{ if(e.target.id==='ck-t'&&e.key==='Enter'){ e.preventDefault(); checkupSend(); } });
 $('body').addEventListener('change',e=>{ if(e.target.id==='login'){ LOGIN=e.target.checked; window.pet.send('set-login',LOGIN); } });
 $('b-x').addEventListener('click',()=>window.pet.send('panel-close'));
 $('b-set').addEventListener('click',()=>go(mode==='settings'?'chat':'settings'));
@@ -491,8 +530,17 @@ window.pet.on('toad',t=>{ NAME=t.name; paintWho(); say(line('choose')); if(mode=
 window.pet.on('open',o=>{
   peeking=!!o.peeking;
   const m=o.mode||'chat';
-  rateVal=0; barMode=''; addDue='today'; addCls=null;
+  rateVal=0; barMode=''; addDue='today'; addCls=null; ckSaid=''; ckAway=!!o.away; clearTimeout(ckT);
   go(m);
+  if(m==='checkup'){
+    setTimeout(()=>{ const i=$('ck-t'); if(i) i.focus(); },60);
+    /* asked while you were busy elsewhere and never answered: it quietly goes again */
+    if(o.reason==='checkup') ckT=setTimeout(()=>{ if(mode==='checkup'&&!ckSaid&&!($('ck-t')&&$('ck-t').value.trim())) window.pet.send('panel-close'); },4*MIN);
+    say(pick(window.CHECKIN.questions(ckCtx())));
+    paintFoot();
+    const c=$('card'); c.classList.remove('show'); void c.offsetWidth; c.classList.add('show');
+    return;
+  }
   if(o.add&&$('add-t')) setTimeout(()=>{ const i=$('add-t'); if(i) i.focus(); },60);
   if(m==='notes'&&$('jot')) setTimeout(()=>{ const i=$('jot'); if(i) i.focus(); },60);
   if(o.reason==='bell') say(line('bell'));
@@ -502,6 +550,7 @@ window.pet.on('open',o=>{
   paintFoot();
   const c=$('card'); c.classList.remove('show'); void c.offsetWidth; c.classList.add('show');
 });
+window.pet.on('checkup',d=>{ ckEvery=d.every; if(mode==='settings') render(true); });
 window.pet.on('closed',()=>{ $('card').classList.remove('show'); clearInterval(sayT); });
 
 setInterval(()=>{ if(V&&V.session&&!document.hidden){ tickRun(); paintTabs(); } },250);

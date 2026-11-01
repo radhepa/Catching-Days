@@ -120,6 +120,17 @@ const NOTE=o=>{
   else if(o.act==='edit'){ if(text) s.text=text; if(color) s.color=color; }
   else if(o.act==='archive'&&!s.archived){ s.archived=true; s.archivedAt=Date.now(); }
 };
+/* a check-up answered on the toad: one Journal page a day, tagged Check-ins,
+   with a line for each answer and the time it was given */
+const CHECKIN=o=>{
+  const text=String(o.text||'').replace(/\s+/g,' ').trim().slice(0,500); if(!text) return;
+  const date=dayKey(o.t);
+  const time=new Intl.DateTimeFormat('en-US',{timeZone:TZ(),hour:'numeric',minute:'2-digit'}).format(o.t);
+  db.diary=db.diary||[];
+  let e=db.diary.find(x=>x.tagId==='checkin'&&x.date===date);
+  if(!e){ e=diaryEntry({tagId:'checkin',title:'Check-ins',body:'',date,createdAt:o.t}); db.diary.push(e); }
+  e.body=(e.body?e.body+'\n':'')+time+' · '+text;
+};
 const needsDialog=o=>o.k==='focus'&&(o.act==='rate'||o.act==='finish');
 
 async function take(ops){
@@ -128,7 +139,7 @@ async function take(ops){
   busy=true;
   try{
     await window.appReady;
-    const list=ops.filter(o=>o&&o.t>upto()&&(o.k==='task'||o.k==='add'||o.k==='note'||(o.k==='focus'&&H[o.act]))).sort((a,b)=>a.t-b.t);
+    const list=ops.filter(o=>o&&o.t>upto()&&(o.k==='task'||o.k==='add'||o.k==='note'||o.k==='checkin'||(o.k==='focus'&&H[o.act]))).sort((a,b)=>a.t-b.t);
     if(!list.length) return;
     const prevCur=cur;
     let u=upto(), did=false, goRun=false;
@@ -136,7 +147,7 @@ async function take(ops){
       /* a dialog of yours is open: the session's own dialogs would replace it, so wait */
       if(needsDialog(o)&&modalOpen()&&!ratingOpen()){ setTimeout(()=>{ if(!modalOpen()) take(lastSeen); },2500); break; }
       try{
-        const r=at(o.t,()=>o.k==='task'?H.task(o):o.k==='add'?ADD(o):o.k==='note'?NOTE(o):H[o.act](o));
+        const r=at(o.t,()=>o.k==='task'?H.task(o):o.k==='add'?ADD(o):o.k==='note'?NOTE(o):o.k==='checkin'?CHECKIN(o):H[o.act](o));
         if(r==='run') goRun=true;
         if(r==='done') goRun=false;
       }catch(e){ console.warn('Desktop toad: could not apply',o,e); }
@@ -168,8 +179,8 @@ async function readInbox(){
 function connect(p){
   if(es||!p) return;
   port=p;
-  /* v=2: this page takes in tasks and sticky notes made on the toad, not only ticks and sessions */
-  try{ es=new EventSource(`http://127.0.0.1:${p}/events?id=${ID}&v=2`); }catch(e){ es=null; return; }
+  /* v=2: this page takes in tasks and sticky notes made on the toad, not only ticks and sessions; v=3: check-ups too */
+  try{ es=new EventSource(`http://127.0.0.1:${p}/events?id=${ID}&v=3`); }catch(e){ es=null; return; }
   es.addEventListener('ops',e=>{ try{ const d=JSON.parse(e.data); lastSeen=d.ops||[]; take(lastSeen); }catch(_){} });
   es.onopen=()=>{ backoff=5000; presence(); };
   es.onerror=()=>{

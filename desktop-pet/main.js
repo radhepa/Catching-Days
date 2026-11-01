@@ -23,7 +23,7 @@
    everywhere except the toad itself), a second one for the talk box, and one
    for each sticky note you've put on the desktop. */
 'use strict';
-const {app,BrowserWindow,ipcMain,screen,Tray,Menu,nativeImage,shell,dialog}=require('electron');
+const {app,BrowserWindow,ipcMain,screen,Tray,Menu,nativeImage,shell,dialog,powerMonitor}=require('electron');
 const path=require('path'), fs=require('fs'), http=require('http'), crypto=require('crypto');
 const {spawn}=require('child_process');
 const core=require('./core');
@@ -41,7 +41,8 @@ if(!app.requestSingleInstanceLock()){ app.quit(); return; }
 const TOADS=['hasu','ame','sumi','tabi','hotaru','neri','oto','kuri','mame'];
 const SIZES={s:96,m:120,l:150};
 const SETTINGS_FILE=()=>path.join(app.getPath('userData'),'settings.json');
-const DEFAULTS={appDir:'',toad:'hasu',size:'m',pos:null,peek:null,startAtLogin:false,port:8765,page:'',
+const CHECK_EVERY=[0,15,30,45,60,90,120];   // minutes between check-ups; 0 is off
+const DEFAULTS={appDir:'',toad:'hasu',size:'m',pos:null,peek:null,startAtLogin:false,port:8765,page:'',checkEvery:30,
   mem:{said:{},recent:[],rung:{}},notes:{}};
 let S=null;
 function loadSettings(){
@@ -49,6 +50,7 @@ function loadSettings(){
   S.mem=Object.assign({said:{},recent:[],rung:{}},S.mem||{});
   if(!TOADS.includes(S.toad)) S.toad='hasu';
   if(!SIZES[S.size]) S.size='m';
+  if(!CHECK_EVERY.includes(S.checkEvery)) S.checkEvery=30;
   if(!S.notes||typeof S.notes!=='object') S.notes={};
 }
 let saveT=null;
@@ -153,7 +155,7 @@ const clients=new Set();
 /* an app tab still running last version's desktop-pet-link.js takes ticks and sessions but
    would pass over a new task or note (and, taking a later tick, count it as seen). Until it's
    reloaded, the toad doesn't make them. With the app closed they wait, and its next load is new. */
-const oldApp=()=>[...clients].some(c=>c.v<2);
+const oldApp=(v=2)=>[...clients].some(c=>c.v<v);
 function sse(event,data){
   const msg=`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
   clients.forEach(c=>{ try{ c.res.write(msg); }catch(e){} });
@@ -385,7 +387,7 @@ function openPanel(mode,opts){
   opts=opts||{};
   if(!panelWin||!VIEW) return;
   panelMode=mode||'chat';
-  send(panelWin,'open',{mode:panelMode,peeking:!!(peek.edge&&peek.p>.5),reason:opts.reason||'tap',add:!!opts.add});
+  send(panelWin,'open',{mode:panelMode,peeking:!!(peek.edge&&peek.p>.5),reason:opts.reason||'tap',add:!!opts.add,away:!!opts.away});
   placePanel();
   panelOpen=true;
   if(opts.quiet){ panelActive=false; panelWin.showInactive(); }
@@ -551,6 +553,32 @@ function bellCheck(){
 }
 setInterval(()=>{ if(VIEW&&VIEW.session) bellCheck(); },1000);
 
+/* ════════════════════ check-ups: every so often, while you're at the computer, the toad asks what you're up to ════════════════════ */
+let checkNext=0, awayFrom=0, wasAway=false;
+function checkTick(){
+  if(!S||!S.checkEvery||!VIEW||!toadWin) return;
+  const now=Date.now(), every=S.checkEvery*60000;
+  if(!checkNext) checkNext=now+every;
+  /* away or locked: wait, and ask once you're back */
+  if(powerMonitor.getSystemIdleState(90)!=='active'){ if(!awayFrom) awayFrom=now-powerMonitor.getSystemIdleTime()*1000; return; }
+  if(awayFrom){ if(now-awayFrom>10*60000) wasAway=true; awayFrom=0; }
+  if(now<checkNext) return;
+  /* not in the middle of something: the ritual, a drag, the talk box (or a bell in it), a running focus block */
+  const s=VIEW.session;
+  if(stageWin||drag||panelOpen||(s&&s.phase==='focus'&&!s.paused)) return;
+  checkNext=now+every;
+  openPanel('checkup',{quiet:true,reason:'checkup',away:wasAway});
+  wasAway=false;
+}
+setInterval(checkTick,20000);
+function checkupNow(){ if(S.checkEvery) checkNext=Date.now()+S.checkEvery*60000; openPanel('checkup',{reason:'checkup'}); }
+function setCheckEvery(m){
+  m=+m; if(!CHECK_EVERY.includes(m)) return;
+  S.checkEvery=m; saveSettings(); checkNext=m?Date.now()+m*60000:0; rebuildTray();
+  send(panelWin,'checkup',{every:m});
+}
+const checkLabel=m=>m?'Every '+(m<60?m+' minutes':m===60?'hour':m/60+' hours'):'Off';
+
 /* ════════════════════ opening the app itself ════════════════════ */
 function appUrl(){ return `http://127.0.0.1:${S.port||8765}/${encodeURI(appPage())}`; }
 function serverUp(){
@@ -605,6 +633,9 @@ function menuTemplate(){
     {label:'Sticky notes',click:()=>openPanel('notes')},
     ...(noteWins.size?[{label:'Bring my notes to the front',click:noteFront}]:[]),
     {type:'separator'},
+    {label:'Check in now',click:checkupNow},
+    {label:'Check-ups',submenu:CHECK_EVERY.map(m=>({label:checkLabel(m),type:'radio',checked:S.checkEvery===m,click:()=>setCheckEvery(m)}))},
+    {type:'separator'},
     {label:'Choose a toad',submenu:TOADS.map(t=>({label:NAMES[t],type:'radio',checked:S.toad===t,click:()=>setToad(t)}))},
     {label:'Size',submenu:[['s','Small'],['m','Medium'],['l','Large']].map(([k,l])=>({label:l,type:'radio',checked:S.size===k,click:()=>setSize(k)}))},
     {label:'Bring the toad back',click:()=>{ const d=defaultSpot(); place(d.x,d.y,true); remember(); showToad(); }},
@@ -626,7 +657,7 @@ function trayIcon(){
 ipcMain.handle('init',e=>{
   const nw=noteFor(e.sender);
   const who=e.sender===toadWin?.webContents?'toad':e.sender===stageWin?.webContents?'stage':nw?'note':'panel';
-  return {who, view:VIEW, note:nw?{id:nw.__note.id,draft:nw.__note.draft,color:nw.__note.color,top:!!(S.notes[nw.__note.id]&&S.notes[nw.__note.id].top),data:noteOf(nw.__note.id)}:null, ritual:who==='stage'&&ritual?ritual.params:null, toad:S.toad, size:S.size, geo:geo(), peek, mem:S.mem, login:!!S.startAtLogin,
+  return {who, view:VIEW, note:nw?{id:nw.__note.id,draft:nw.__note.draft,color:nw.__note.color,top:!!(S.notes[nw.__note.id]&&S.notes[nw.__note.id].top),data:noteOf(nw.__note.id)}:null, ritual:who==='stage'&&ritual?ritual.params:null, toad:S.toad, size:S.size, geo:geo(), peek, mem:S.mem, login:!!S.startAtLogin, checkEvery:S.checkEvery, checkOpts:CHECK_EVERY,
     artBase:require('url').pathToFileURL(S.appDir+path.sep).href, names:NAMES, toads:TOADS};
 });
 ipcMain.on('ignore',(e,on)=>{ if(toadWin&&!drag) setIgnore(!!on); });
@@ -645,6 +676,7 @@ ipcMain.on('react',(e,r)=>send(toadWin,'react',r));
 ipcMain.on('set-toad',(e,n)=>setToad(n));
 ipcMain.on('set-size',(e,k)=>setSize(k));
 ipcMain.on('set-login',(e,on)=>setLogin(on));
+ipcMain.on('set-checkup',(e,m)=>setCheckEvery(m));
 ipcMain.on('open-app',()=>openApp());
 ipcMain.on('quit',()=>app.quit());
 ipcMain.on('tray-icon',(e,url)=>{
@@ -670,6 +702,13 @@ ipcMain.handle('op',(e,o)=>{
   }
   /* a new task: due today or tomorrow on the app's clock, a date, or none */
   if((o.k==='add'||o.k==='note')&&oldApp()) return {ok:false,why:'reload'};
+  /* a check-up answer: a line in today's Check-ins page of the Journal */
+  if(o.k==='checkin'){
+    if(oldApp(3)) return {ok:false,why:'reload'};
+    const text=String(o.text||'').replace(/\s+/g,' ').trim().slice(0,500); if(!text) return {ok:false};
+    const kind=typeof o.kind==='string'?o.kind.slice(0,20):'';
+    return {ok:true,op:addOp({k:'checkin',text,kind,toad:S.toad})};
+  }
   if(o.k==='add'){
     const title=String(o.title||'').replace(/\s+/g,' ').trim().slice(0,200); if(!title) return {ok:false};
     const today=VIEW.today;
