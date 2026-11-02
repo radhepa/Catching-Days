@@ -4759,6 +4759,11 @@ function jnSaveJourney(){
     j.habits.filter(h=>!kept.has(h.id)).forEach(h=>removeHabitOccurrences(h.id,true));
     boundaryChanged=j.start!==start||j.days!==days;
     j.name=name; j.start=start; j.days=days;
+    /* dates that now end later reopen a journey that ran out under the old ones
+       (or ended before these dates even began) */
+    if(j.status==='completed'&&today()<journeyEndDate(j)&&(boundaryChanged||dayKey(j.endedAt)<=j.start)){
+      j.status='active'; j.endedAt=null; j.journalPrompted=false; boundaryChanged=true;
+    }
   }
   const oldById=new Map(j.habits.map(h=>[h.id,h]));
   j.habits=validHabits.map(d=>{
@@ -5136,11 +5141,11 @@ function saveDiaryEntry(){
   db.diary=db.diary||[];
   const fields={mood:diaryDraft.mood,tagId:diaryDraft.tagId,title,body,
     photos:diaryDraft.photos,date,bioEntryId:diaryDraft.bioEntryId||null};
-  let entry;
-  if(diaryEditId){
-    entry=db.diary.find(x=>x.id===diaryEditId);
-    Object.assign(fixDiary(entry),fields);
-  } else {
+  let entry=diaryEditId?db.diary.find(x=>x.id===diaryEditId):null;
+  // the toad's check-ins stay their own page: retyping one as something else makes a new entry
+  if(entry&&entry.tagId==='checkin'&&fields.tagId!=='checkin') entry=null;
+  if(entry) Object.assign(fixDiary(entry),fields);
+  else {
     entry=diaryEntry(fields);
     db.diary.push(entry);
   }
@@ -5291,7 +5296,8 @@ function diaShiftMonth(n){
 }
 function diaOpenDay(dk){
   const es=diaEntriesFor(dk);
-  diaSel=dk; diaEntrySel=es.length===1?es[0].id:null;
+  // a day holding only the toad's check-ins opens on the day, so its Daily is written fresh
+  diaSel=dk; diaEntrySel=es.length===1&&es[0].tagId!=='checkin'?es[0].id:null;
   paintDiary();
 }
 function diaOpenEntry(id){ diaEntrySel=id; paintDiary(); }
