@@ -42,12 +42,15 @@ const TOADS=['hasu','ame','sumi','tabi','hotaru','neri','oto','kuri','mame'];
 const SIZES={s:96,m:120,l:150};
 const SETTINGS_FILE=()=>path.join(app.getPath('userData'),'settings.json');
 const CHECK_EVERY=[0,15,30,45,60,90,120];   // minutes between check-ups; 0 is off
-const DEFAULTS={appDir:'',toad:'hasu',size:'m',pos:null,peek:null,startAtLogin:false,port:8765,page:'',checkEvery:30,
-  mem:{said:{},recent:[],rung:{}},notes:{}};
+const REMIND_OPTS=[0,30,45,60,120];       // minutes between reminders; 0 is off
+const DEFAULTS={appDir:'',toad:'hasu',size:'m',pos:null,peek:null,startAtLogin:false,port:8765,page:'',checkEvery:30,remind:45,
+  mem:{said:{},recent:[],rung:{},reminded:{}},notes:{}};
 let S=null;
 function loadSettings(){
   try{ S=Object.assign({},DEFAULTS,JSON.parse(fs.readFileSync(SETTINGS_FILE(),'utf8'))); }catch(e){ S=Object.assign({},DEFAULTS); }
-  S.mem=Object.assign({said:{},recent:[],rung:{}},S.mem||{});
+  S.mem=Object.assign({said:{},recent:[],rung:{},reminded:{}},S.mem||{});
+  if(!S.mem.reminded||typeof S.mem.reminded!=='object') S.mem.reminded={};
+  if(!REMIND_OPTS.includes(S.remind)) S.remind=DEFAULTS.remind;
   if(!TOADS.includes(S.toad)) S.toad='hasu';
   if(!SIZES[S.size]) S.size='m';
   if(!CHECK_EVERY.includes(S.checkEvery)) S.checkEvery=30;
@@ -268,11 +271,16 @@ let drag=null;
 const TEST=process.argv.includes('--test');
 let fakeCursor=null;
 const cursor=()=>TEST&&fakeCursor?fakeCursor:screen.getCursorScreenPoint();
-function dragStart(){
-  if(stageWin) return;
+function dragStart(press){
+  if(stageWin||drag||!toadWin||toadWin.isDestroyed()) return;
   closePanel();
+  setIgnore(false);
   const c=cursor();
-  drag={ox:c.x-virt.x, oy:c.y-virt.y, lastX:c.x, t:setInterval(dragTick,8)};
+  // The IPC can arrive after the cursor has already crossed the entire drag.
+  // Anchor to the original press, not the cursor's position when IPC arrives.
+  const start=press&&Number.isFinite(press.x)&&Number.isFinite(press.y)?press:c;
+  drag={ox:start.x-virt.x, oy:start.y-virt.y, lastX:c.x, t:setInterval(dragTick,8)};
+  dragTick();
   send(toadWin,'drag',{on:true,dx:0});
 }
 function dragTick(){
@@ -299,38 +307,65 @@ function dragEnd(){
    case one of those goes missing, the cursor is also read here, ten times a
    second while it's over the toad's window, and handed to the page to test. */
 let ignoreNow=true, probeIn=false;
-function setIgnore(on){ ignoreNow=on; try{ toadWin.setIgnoreMouseEvents(on,{forward:true}); }catch(e){} }
+function setIgnore(on){
+  if(!toadWin||toadWin.isDestroyed()) return;
+  if(ignoreNow===on) return;
+  try{ toadWin.setIgnoreMouseEvents(on,{forward:true}); ignoreNow=on; }catch(e){}
+}
 function showToad(){
   if(!toadWin||toadWin.isDestroyed()) return;
-  toadWin.showInactive();
-  setIgnore(true); probeIn=false;
+  // Restore input before showing the window. Probes reconcile the renderer's
+  // hit test even when Windows does not forward a new mouse move after hiding.
+  setIgnore(false); probeIn=true;
   send(toadWin,'hit-reset',{});
+  toadWin.showInactive();
+  keepToadOnTop();
 }
 setInterval(()=>{
   if(!toadWin||toadWin.isDestroyed()||drag||!toadWin.isVisible()) return;
-  const c=screen.getCursorScreenPoint(), b=toadWin.getBounds();
+  const c=cursor(), b=toadWin.getBounds();
   const inside=c.x>=b.x&&c.x<b.x+b.width&&c.y>=b.y&&c.y<b.y+b.height;
   if(inside||probeIn) send(toadWin,'probe',{x:c.x-b.x,y:c.y-b.y,inside});
   probeIn=inside;
 },100);
-/* Windows can knock a window off the top (Show desktop does), leaving the toad
-   under everything; once a second it climbs back up, and so do pinned notes */
+/* The topmost flag describes a window's band, not its position in that band.
+   Another app can cover the pet while isAlwaysOnTop() still returns true.
+   Reassert the band and raise it without activating it or taking keyboard focus. */
+function keepToadOnTop(){
+  if(!toadWin||toadWin.isDestroyed()||!toadWin.isVisible()||stageWin) return;
+  try{
+    toadWin.setAlwaysOnTop(true,'pop-up-menu');
+    toadWin.moveTop();
+    // Keep the pet's own controls usable when they overlap its drawing.
+    if(panelOpen&&panelWin&&!panelWin.isDestroyed()&&panelWin.isVisible()) panelWin.moveTop();
+  }catch(e){}
+}
+setInterval(()=>{
+  keepToadOnTop();
+},250);
+/* Pinned notes keep their independent always-on-top setting. */
 setInterval(()=>{
   const up=w=>{ try{ if(w&&!w.isDestroyed()&&w.isVisible()&&!w.isAlwaysOnTop()) w.setAlwaysOnTop(true); }catch(e){} };
-  up(toadWin);
   noteWins.forEach((w,id)=>{ if(S.notes[id]&&S.notes[id].top) up(w); });
 },1000);
 
 function createToad(){
   const g=geo();
   toadWin=new BrowserWindow({width:g.W,height:g.H,frame:false,transparent:true,resizable:false,movable:false,
-    alwaysOnTop:true,skipTaskbar:true,focusable:false,hasShadow:false,fullscreenable:false,maximizable:false,minimizable:false,
+    // Accept activation on a real click so Chromium can acquire pointer capture
+    // after the focus stage closes. showInactive() still avoids stealing focus
+    // when the pet merely appears or returns from a ritual.
+    alwaysOnTop:true,skipTaskbar:true,focusable:true,hasShadow:false,fullscreenable:false,maximizable:false,minimizable:false,
     show:false,backgroundColor:'#00000000',title:'Catching Days toad',
     webPreferences:{preload:path.join(__dirname,'preload.js'),contextIsolation:true,sandbox:true,nodeIntegration:false,backgroundThrottling:false,autoplayPolicy:'no-user-gesture-required'}});
   toadWin.setIgnoreMouseEvents(true,{forward:true});
+  ignoreNow=true;
   toadWin.loadFile(path.join(__dirname,'pet.html'));
   toadWin.once('ready-to-show',()=>{ restorePlace(); showToad(); });
-  toadWin.webContents.on('render-process-gone',()=>{ try{ toadWin.reload(); }catch(e){} });
+  toadWin.on('show',keepToadOnTop);
+  toadWin.on('blur',()=>setTimeout(keepToadOnTop,0));
+  toadWin.on('hide',()=>dragEnd());
+  toadWin.webContents.on('render-process-gone',()=>{ dragEnd(); try{ toadWin.reload(); }catch(e){} });
   /* closing the toad's window closes the toad, so no hidden talk box keeps it running unseen */
   toadWin.on('closed',()=>{ toadWin=null; app.quit(); });
 }
@@ -347,7 +382,7 @@ function resizeToad(){
 
 /* ════════════════════ the talk box ════════════════════ */
 const PANEL_W=388;   // a 340px card with 24px round it for its shadow
-let panelOpen=false, panelMode='chat', panelH=300, panelActive=false;
+let panelOpen=false, panelMode='chat', panelH=300, panelActive=false, panelReason='tap';
 function createPanel(){
   panelWin=new BrowserWindow({width:PANEL_W,height:panelH,frame:false,transparent:true,resizable:false,movable:false,
     alwaysOnTop:true,skipTaskbar:true,hasShadow:false,fullscreenable:false,maximizable:false,minimizable:false,show:false,
@@ -386,8 +421,8 @@ function placePanel(){
 function openPanel(mode,opts){
   opts=opts||{};
   if(!panelWin||!VIEW) return;
-  panelMode=mode||'chat';
-  send(panelWin,'open',{mode:panelMode,peeking:!!(peek.edge&&peek.p>.5),reason:opts.reason||'tap',add:!!opts.add,away:!!opts.away});
+  panelMode=mode||'chat'; panelReason=opts.reason||'tap';
+  send(panelWin,'open',{mode:panelMode,peeking:!!(peek.edge&&peek.p>.5),reason:panelReason,add:!!opts.add,away:!!opts.away,remind:opts.remind||null});
   placePanel();
   panelOpen=true;
   if(opts.quiet){ panelActive=false; panelWin.showInactive(); }
@@ -490,6 +525,7 @@ function startRitual(o){
   o=o||{};
   if(stageWin||!VIEW||!toadWin) return;
   if(VIEW.session){ openPanel('focus'); return; }
+  dragEnd();
   closePanel();
   const g=geo(), box=toadBox(), wa=workAreaAt(box.x+g.S/2,box.y+g.S/2);
   const right=box.x+g.S/2>=wa.x+wa.width/2;
@@ -509,9 +545,16 @@ function startRitual(o){
     webPreferences:{preload:path.join(__dirname,'preload.js'),contextIsolation:true,sandbox:true,nodeIntegration:false,backgroundThrottling:false,autoplayPolicy:'no-user-gesture-required'}});
   stageWin.setAlwaysOnTop(true,'pop-up-menu');
   stageWin.loadFile(path.join(__dirname,'stage.html'));
-  stageWin.on('closed',()=>{ stageWin=null; if(ritual){ ritual=null; showToad(); } });
+  const stage=stageWin;
+  stage.on('closed',()=>{
+    if(stageWin!==stage) return;
+    stageWin=null; ritual=null;
+    showToad();
+  });
+  stage.webContents.on('render-process-gone',()=>{ if(!stage.isDestroyed()) stage.destroy(); });
+  stage.webContents.on('did-fail-load',()=>{ if(!stage.isDestroyed()) stage.destroy(); });
   /* if the stage never comes up, the toad mustn't stay hidden */
-  setTimeout(()=>{ if(stageWin&&!stageWin.isVisible()){ try{ stageWin.close(); }catch(e){} } },8000);
+  setTimeout(()=>{ if(!stage.isDestroyed()&&!stage.isVisible()){ try{ stage.close(); }catch(e){} } },8000);
 }
 function endRitual(d){
   const r=ritual; if(!r) return; ritual=null;
@@ -522,11 +565,13 @@ function endRitual(d){
     send(toadWin,'peek',{edge:null,p:0,animate:false});
     remember();
   }
-  setTimeout(()=>showToad(),40);
   /* the set-up opens before the stage closes: closing the window that has the focus
      hands it to whatever's behind, which could take it straight off the new panel */
-  if(d&&d.pick) setTimeout(()=>openPanel('setup'),60);
-  setTimeout(()=>{ try{ if(stageWin) stageWin.close(); }catch(e){} },140);
+  if(d&&d.pick) openPanel('setup');
+  // The old fullscreen stage must be gone before the desktop toad accepts
+  // another press. Restoring it on 'closed' also covers Escape and crashes.
+  if(stageWin&&!stageWin.isDestroyed()) stageWin.close();
+  else showToad();
   if(d&&d.started) setTimeout(()=>send(toadWin,'react',{kind:'focusStart'}),200);
 }
 
@@ -578,6 +623,35 @@ function setCheckEvery(m){
   send(panelWin,'checkup',{every:m});
 }
 const checkLabel=m=>m?'Every '+(m<60?m+' minutes':m===60?'hour':m/60+' hours'):'Off';
+
+/* ════════════════════ reminders: between sessions, one thing to do ════════════════════
+   Every S.remind minutes (0: never) without a session or a word from you, the
+   toad opens its talk box quietly and brings up one thing (core.reminder picks
+   it from your day: the planner's next thing, a test, today's top task, one in
+   the reeds, tomorrow's, the focus goal). Never during a session, the focus
+   ritual or a drag, never while the talk box is open, and not between 10 PM and
+   8 AM. Left alone, the box goes away again by itself. */
+let lastTouch=Date.now(), remindT=null;
+const touch=()=>{ lastTouch=Date.now(); };
+function remindCheck(){
+  const every=S.remind||0, now=Date.now();
+  if(!every||!VIEW||!toadWin||toadWin.isDestroyed()) return;
+  /* a session, the ritual, a drag or the open box all count as being with the toad */
+  if(VIEW.session||stageWin||drag||panelOpen){ touch(); return; }
+  if(!toadWin.isVisible()||VIEW.hr<8||VIEW.hr>=22) return;
+  if(now-lastTouch<every*core.MIN) return;
+  touch();
+  const r=core.reminder(VIEW,S.mem.reminded,now); if(!r) return;
+  S.mem.reminded[r.key]=now;
+  const cut=now-core.DAY; Object.keys(S.mem.reminded).forEach(k=>{ if(S.mem.reminded[k]<cut) delete S.mem.reminded[k]; });
+  saveSettings();
+  send(toadWin,'react',{kind:'remind',sound:VIEW.settings.sound});
+  openPanel('chat',{quiet:true,reason:'remind',remind:r});
+  clearTimeout(remindT);
+  remindT=setTimeout(()=>{ if(panelOpen&&!panelActive&&panelReason==='remind') closePanel(); },45000);
+}
+setInterval(remindCheck,20000);
+function setRemind(m){ m=+m; if(!REMIND_OPTS.includes(m)) return; S.remind=m; touch(); saveSettings(); rebuildTray(); }
 
 /* ════════════════════ opening the app itself ════════════════════ */
 function appUrl(){ return `http://127.0.0.1:${S.port||8765}/${encodeURI(appPage())}`; }
@@ -638,6 +712,7 @@ function menuTemplate(){
     {type:'separator'},
     {label:'Choose a toad',submenu:TOADS.map(t=>({label:NAMES[t],type:'radio',checked:S.toad===t,click:()=>setToad(t)}))},
     {label:'Size',submenu:[['s','Small'],['m','Medium'],['l','Large']].map(([k,l])=>({label:l,type:'radio',checked:S.size===k,click:()=>setSize(k)}))},
+    {label:'Reminders',submenu:REMIND_OPTS.map(m=>({label:m?'Every '+(m<60?m+' minutes':m===60?'hour':m/60+' hours'):'Off',type:'radio',checked:S.remind===m,click:()=>{ setRemind(m); send(panelWin,'remind-set',m); }}))},
     {label:'Bring the toad back',click:()=>{ const d=defaultSpot(); place(d.x,d.y,true); remember(); showToad(); }},
     {type:'separator'},
     {label:'Open Catching Days',click:openApp},
@@ -657,18 +732,23 @@ function trayIcon(){
 ipcMain.handle('init',e=>{
   const nw=noteFor(e.sender);
   const who=e.sender===toadWin?.webContents?'toad':e.sender===stageWin?.webContents?'stage':nw?'note':'panel';
-  return {who, view:VIEW, note:nw?{id:nw.__note.id,draft:nw.__note.draft,color:nw.__note.color,top:!!(S.notes[nw.__note.id]&&S.notes[nw.__note.id].top),data:noteOf(nw.__note.id)}:null, ritual:who==='stage'&&ritual?ritual.params:null, toad:S.toad, size:S.size, geo:geo(), peek, mem:S.mem, login:!!S.startAtLogin, checkEvery:S.checkEvery, checkOpts:CHECK_EVERY,
+  return {who, view:VIEW, note:nw?{id:nw.__note.id,draft:nw.__note.draft,color:nw.__note.color,top:!!(S.notes[nw.__note.id]&&S.notes[nw.__note.id].top),data:noteOf(nw.__note.id)}:null, ritual:who==='stage'&&ritual?ritual.params:null, toad:S.toad, size:S.size, geo:geo(), peek, mem:S.mem, login:!!S.startAtLogin, checkEvery:S.checkEvery, checkOpts:CHECK_EVERY, remind:S.remind, remindOpts:REMIND_OPTS,
     artBase:require('url').pathToFileURL(S.appDir+path.sep).href, names:NAMES, toads:TOADS};
 });
+ipcMain.on('pet-ready',e=>{
+  if(e.sender!==toadWin?.webContents) return;
+  send(toadWin,'peek',Object.assign({animate:false},peek));
+  if(!stageWin) showToad();
+});
 ipcMain.on('ignore',(e,on)=>{ if(toadWin&&!drag) setIgnore(!!on); });
-ipcMain.on('drag-start',()=>dragStart());
+ipcMain.on('drag-start',(e,press)=>{ if(e.sender===toadWin?.webContents) dragStart(press); });
 ipcMain.on('drag-end',()=>dragEnd());
-ipcMain.on('toad-click',()=>{ if(stageWin) return; if(panelOpen) closePanel(); else openPanel('chat'); });
+ipcMain.on('toad-click',()=>{ if(stageWin) return; touch(); if(panelOpen) closePanel(); else openPanel('chat'); });
 ipcMain.on('toad-menu',()=>{ Menu.buildFromTemplate(menuTemplate()).popup({window:toadWin}); });
 ipcMain.on('panel-open',(e,mode)=>{ if(mode==='focus'&&VIEW&&!VIEW.session) startRitual(); else openPanel(mode); });
 ipcMain.on('focus-ritual',(e,o)=>startRitual(o));
-ipcMain.on('stage-ready',()=>{ if(!stageWin||!ritual) return; setIgnore(true); toadWin.hide(); stageWin.show(); stageWin.focus(); send(stageWin,'go',{}); });
-ipcMain.on('stage-done',(e,d)=>endRitual(d));
+ipcMain.on('stage-ready',e=>{ if(!stageWin||!ritual||e.sender!==stageWin.webContents) return; setIgnore(true); toadWin.hide(); stageWin.show(); stageWin.focus(); send(stageWin,'go',{}); });
+ipcMain.on('stage-done',(e,d)=>{ if(stageWin&&e.sender===stageWin.webContents) endRitual(d); });
 ipcMain.on('panel-close',()=>closePanel());
 ipcMain.on('panel-height',(e,h)=>{ h=Math.max(120,Math.min(900,Math.round(+h||0))); if(h!==panelH){ panelH=h; if(panelOpen) placePanel(); } });
 ipcMain.on('panel-pin',()=>{ panelActive=true; });
@@ -677,6 +757,7 @@ ipcMain.on('set-toad',(e,n)=>setToad(n));
 ipcMain.on('set-size',(e,k)=>setSize(k));
 ipcMain.on('set-login',(e,on)=>setLogin(on));
 ipcMain.on('set-checkup',(e,m)=>setCheckEvery(m));
+ipcMain.on('set-remind',(e,m)=>setRemind(m));
 ipcMain.on('open-app',()=>openApp());
 ipcMain.on('quit',()=>app.quit());
 ipcMain.on('tray-icon',(e,url)=>{
@@ -755,8 +836,8 @@ ipcMain.handle('op',(e,o)=>{
 });
 
 if(TEST) global.__toadTest={dragStart,dragEnd,dragTick,setCursor:(x,y)=>{ fakeCursor={x,y}; },
-  state:()=>({virt,peek,ignoreNow,pos:toadWin.getPosition(),size:toadWin.getSize(),geo:geo(),panelOpen,panelMode,ops:OPS,view:VIEW,clients:clients.size}),
-  openPanel,closePanel,setToad,setSize,startRitual,stage:()=>stageWin,newNote,notes:()=>[...noteWins.keys()],noteWin:id=>noteWins.get(id),settings:()=>S};
+  state:()=>({virt,peek,ignoreNow,dragging:!!drag,pos:toadWin.getPosition(),size:toadWin.getSize(),geo:geo(),panelOpen,panelMode,ops:OPS,view:VIEW,clients:clients.size}),
+  place,showToad,keepToadOnTop,openPanel,closePanel,setToad,setSize,startRitual,remindCheck,setRemind,touchAgo:ms=>{ lastTouch=Date.now()-ms; },stage:()=>stageWin,newNote,notes:()=>[...noteWins.keys()],noteWin:id=>noteWins.get(id),settings:()=>S};
 
 /* ════════════════════ start up, shut down ════════════════════ */
 app.on('second-instance',()=>{ if(toadWin&&!toadWin.isDestroyed()){ showToad(); openPanel('chat'); } });

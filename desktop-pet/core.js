@@ -312,8 +312,9 @@ function buildView(db,ops,now){
   /* ticked from the toad today: they stay in their place, ticked, till tomorrow */
   const tickedHere=A.filter(a=>ov.has(a.id)&&ov.get(a.id).done&&!inToday.has(a.id)&&a.due&&a.due<today&&live(C,a))
     .map(a=>taskRow(C,db,a,today,ov));
-  const soonEnd=addDays(today,3);
-  const soon=A.filter(a=>!isDone(a)&&!a.ann&&a.due&&a.due>today&&a.due<=soonEnd&&live(C,a)&&!inToday.has(a.id))
+  const soonEnd=addDays(today,3), tomorrow=addDays(today,1);
+  /* habits come up only for tomorrow: the rest of the week's repeats would crowd out the real work */
+  const soon=A.filter(a=>!isDone(a)&&!a.ann&&a.due&&a.due>today&&a.due<=soonEnd&&(!a.habitId||a.due===tomorrow)&&live(C,a)&&!inToday.has(a.id))
     .map(a=>taskRow(C,db,a,today,ov)).sort((x,y)=>x.due.localeCompare(y.due)||(y.score||0)-(x.score||0));
   const open=A.filter(a=>!isDone(a)&&!a.ann&&live(C,a)).map(a=>taskRow(C,db,a,today,ov))
     .sort((x,y)=>(y.score||0)-(x.score||0));
@@ -352,5 +353,34 @@ function lineState(v,extra){
     exam:ex?{title:ex.title,days:ex.days}:null, peeking:false}, extra||{});
 }
 
+/* ═══════════════ a reminder: one thing worth doing, brought up between sessions ═══════════════
+   From the view, in priority order: the planner's next thing (starting in 3-20
+   minutes), a test in the next two days, today's most pressing task, the oldest
+   one in the reeds, tomorrow's (from 3 PM), the focus goal, then the rest of
+   today and the reeds. The first one not brought up in the last three hours
+   wins (recent: key → when it was); if all were, the one brought up longest
+   ago. Nothing during a session, nothing if there's nothing to do. */
+const REMIND_GAP=3*3600000;
+function reminder(v,recent,now){
+  if(!v||!v.tasks||v.session) return null;
+  recent=recent||{}; now=now||v.now;
+  const T=v.tasks, tomorrow=addDays(v.today,1), out=[];
+  const task=(kind,r)=>({kind,key:'task|'+r.id,title:r.title,id:r.id,late:r.late||0});
+  const today=T.today.filter(r=>!r.done&&!r.ann), reeds=T.reeds.filter(r=>!r.done);
+  const n=v.day&&v.day.next;
+  if(n&&n.inMin>=3&&n.inMin<=20) out.push({kind:'next',key:'next|'+v.today+'|'+n.at+'|'+n.title,title:n.title,inMin:n.inMin});
+  const ex=(v.exams||[])[0];
+  if(ex&&ex.days>=0&&ex.days<=2) out.push({kind:'exam',key:'exam|'+v.today+'|'+ex.title,title:ex.title,days:ex.days});
+  if(today[0]) out.push(task('today',today[0]));
+  if(reeds[0]) out.push(task('late',reeds[0]));
+  if(v.hr>=15) T.soon.filter(r=>r.due===tomorrow).slice(0,2).forEach(r=>out.push(task('tomorrow',r)));
+  const goal=v.settings&&v.settings.goal;
+  if(goal>0&&v.mins<goal) out.push({kind:'focus',key:'focus|'+v.today+'|'+Math.floor(v.hr/3),left:goal-v.mins});
+  today.slice(1).forEach(r=>out.push(task('today',r)));
+  reeds.slice(1,4).forEach(r=>out.push(task('late',r)));
+  return out.find(x=>!recent[x.key]||now-recent[x.key]>REMIND_GAP)
+    ||out.slice().sort((a,b)=>recent[a.key]-recent[b.key])[0]||null;
+}
+
 module.exports={MIN,DAY,dayKey,wall,addDays,weekdayOf,daysBetween,hm,range,dueLabel,doScore,epochOf,
-  pendingOps,taskOverlay,addOverlay,notesView,NOTE_COLORS,stepSession,sessionView,copySession,elapsed,summarize,dayModel,buildView,lineState,uptoOf};
+  pendingOps,taskOverlay,addOverlay,notesView,NOTE_COLORS,stepSession,sessionView,copySession,elapsed,summarize,dayModel,buildView,lineState,uptoOf,reminder};

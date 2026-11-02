@@ -12,7 +12,8 @@
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const init=await window.pet.init();
-let V=init.view, NAME=init.toad, MEM=init.mem||{said:{},recent:[]}, LOGIN=!!init.login, SIZE=init.size;
+let V=init.view, NAME=init.toad, MEM=init.mem||{said:{},recent:[]}, LOGIN=!!init.login, SIZE=init.size, REMIND=init.remind||0;
+const REMIND_OPTS=init.remindOpts||[0,30,45,60,120];
 const NAMES=init.names, TOADS=init.toads, KEEPERS=['hasu','ame','sumi','tabi','hotaru'];
 const TITLES={neri:'Keeper of the Kiln',oto:'Keeper of the Reeds',kuri:'Keeper of the Roots',mame:'A Small Child of the Pond'};
 /* the portrait crops: the app's own for the keepers (toads.js), close-ups for the companions */
@@ -85,6 +86,18 @@ function chatLine(){
     }catch(e){}
   }
   return line(Math.random()<.45?'hello':'idle');
+}
+/* a reminder from the main process (core.reminder): the planner and tests in
+   the toad's own ctx lines, tasks and the focus goal in its remind lines */
+function remindLine(r){
+  const l=lines(); if(!l||!r) return chatLine();
+  if(r.kind==='next'||r.kind==='exam'){
+    const c=(l.ctx||[]).find(x=>x.id===r.kind);
+    try{ if(c) return c.t(Object.assign(state(),r.kind==='next'?{next:{title:r.title,inMin:r.inMin}}:{exam:{title:r.title,days:r.days}})); }catch(e){}
+  }
+  const k={today:'remindTask',late:'remindLate',tomorrow:'remindTomorrow',focus:'remindFocus'}[r.kind];
+  const t=pick(l[k]); if(!t) return chatLine();
+  return t.replace('{task}',short(r.title,28)).replace('{min}',String(r.left||0));
 }
 let sayT=null;
 function say(text){
@@ -180,15 +193,44 @@ function dayHTML(){
 /* ── adding a task (the bar above the list) ── */
 const RELOAD='Reload the Catching Days tab once (it’s from before the toad could add things), then try again. Nothing’s lost: what you typed is still here.';
 let addDue='today', addCls=null, addedT=null;
+/* a picked day (YYYY-MM-DD): its label, and how far off it is */
+const isDay=s=>/^\d{4}-\d{2}-\d{2}$/.test(s||'');
+const dUtc=s=>Date.UTC(+s.slice(0,4),+s.slice(5,7)-1,+s.slice(8,10));
+const daysOff=s=>Math.round((dUtc(s)-dUtc(V.today))/864e5);
+const fDue=s=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',weekday:'short',month:'short',day:'numeric'}).format(dUtc(s));
+const dueBtn=([k,l])=>`<button class="opt${addDue===k?' on':''}" data-due="${k}">${l}</button>`;
+/* the calendar is drawn in the card: Windows' own date popup opens behind the topmost panel */
+let calOpen=false, calMonth='';
+function calHTML(){
+  if(!calOpen) return '';
+  const y=+calMonth.slice(0,4), m=+calMonth.slice(5,7);
+  const lead=new Date(Date.UTC(y,m-1,1)).getUTCDay(), n=new Date(Date.UTC(y,m,0)).getUTCDate();
+  const pick=addDue==='today'?V.today:addDue==='tomorrow'?addDays(V.today,1):addDue;
+  let cells='<span></span>'.repeat(lead);
+  for(let d=1;d<=n;d++){
+    const k=`${calMonth}-${String(d).padStart(2,'0')}`;
+    cells+=`<button class="cd${k===V.today?' td':''}${k===pick?' on':''}" data-day="${k}"${k<V.today?' disabled':''}>${d}</button>`;
+  }
+  const name=new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'long',year:'numeric'}).format(Date.UTC(y,m-1,1));
+  return `<div class="cal"><div class="cal-h"><button class="cal-n" data-cm="-1"${calMonth<=V.today.slice(0,7)?' disabled':''} aria-label="Previous month">‹</button>
+    <b>${name}</b><button class="cal-n" data-cm="1" aria-label="Next month">›</button></div>
+    <div class="cal-g">${['S','M','T','W','T','F','S'].map(c=>`<i>${c}</i>`).join('')}${cells}</div></div>`;
+}
+const addDays=(s,n)=>new Date(dUtc(s)+n*864e5).toISOString().slice(0,10);
+function paintCal(){ const w=$('cal-w'); if(w) w.innerHTML=calHTML(); }
 function addBarHTML(){
   const cl=V.classes||[];
   if(addCls&&!cl.some(c=>c.id===addCls)) addCls=null;
+  if(isDay(addDue)&&addDue<V.today) addDue='today';
   return `<div class="add"><input id="add-t" maxlength="200" placeholder="Add a task…" autocomplete="off" aria-label="New task"><button class="add-go" id="add-go" disabled>Add</button></div>
-    <div class="add-o" id="add-o">${[['today','Today'],['tomorrow','Tomorrow'],['','No date']].map(([k,l])=>`<button class="opt${addDue===k?' on':''}" data-due="${k}">${l}</button>`).join('')}
+    <div class="add-o" id="add-o">${[['today','Today'],['tomorrow','Tomorrow']].map(dueBtn).join('')}
+    <button class="opt${isDay(addDue)?' on':''}" id="add-d" title="Pick a date">${isDay(addDue)?esc(fDue(addDue)):'Pick a date…'}</button>
+    ${dueBtn(['','No date'])}<div class="cal-w" id="cal-w">${calHTML()}</div>
     ${cl.length?`<span class="opt-br"></span><button class="opt${!addCls?' on':''}" data-cls="">No class</button>${cl.map(c=>`<button class="opt${addCls===c.id?' on':''}" data-cls="${esc(c.id)}" style="--c:${esc(c.color)}" title="${esc(c.name)}"><i></i><span>${esc(short(c.name,18))}</span></button>`).join('')}`:''}</div>`;
 }
 function paintAddOpts(){
   document.querySelectorAll('#add-o [data-due]').forEach(b=>b.classList.toggle('on',b.dataset.due===addDue));
+  const d=$('add-d'); if(d){ d.classList.toggle('on',isDay(addDue)); d.textContent=isDay(addDue)?fDue(addDue):'Pick a date…'; }
   document.querySelectorAll('#add-o [data-cls]').forEach(b=>b.classList.toggle('on',(b.dataset.cls||null)===addCls));
 }
 async function addTask(){
@@ -198,8 +240,10 @@ async function addTask(){
   if(res&&res.why==='reload'){ say(RELOAD); return; }
   if(!res||!res.ok) return;
   el.value=''; $('add-go').disabled=true; el.focus();
-  if(addDue==='tomorrow') showSoon=true;
-  const where=addDue==='today'?'':addDue==='tomorrow'?'Added for tomorrow · under Coming up':'Added with no date · it’s in the app’s Tasks';
+  const soonish=addDue==='tomorrow'||(isDay(addDue)&&daysOff(addDue)<=3);
+  if(soonish) showSoon=true;
+  const where=addDue==='today'?'':addDue==='tomorrow'?'Added for tomorrow · under Coming up'
+    :isDay(addDue)?`Added for ${fDue(addDue)} · ${soonish?'under Coming up':'it’s in the app’s Tasks'}`:'Added with no date · it’s in the app’s Tasks';
   /* where it went, in the empty field: nothing below moves when it goes */
   if(where){ el.placeholder=where; clearTimeout(addedT); addedT=setTimeout(()=>{ const x=$('add-t'); if(x) x.placeholder='Add a task…'; },4000); }
   window.pet.send('react',{kind:'done'});
@@ -348,6 +392,8 @@ function settingsHTML(){
     <div class="grid9">${TOADS.map(t=>`<button class="${t===NAME?'on':''}" data-toad="${t}"><span class="fig">${art(t,64)}</span><b>${esc(NAMES[t])}</b><span>${esc(shortTitle(t))}</span></button>`).join('')}</div>
     <div class="sec"><b>Size</b></div>
     <div class="seg">${[['s','Small'],['m','Medium'],['l','Large']].map(([k,l])=>`<button class="${SIZE===k?'on':''}" data-size="${k}">${l}</button>`).join('')}</div>
+    <div class="sec"><b>Reminders</b><span>between sessions, 8 AM – 10 PM</span></div>
+    <div class="seg">${REMIND_OPTS.map(m=>`<button class="${REMIND===m?'on':''}" data-remind="${m}">${m?m<60?m+'m':m/60+'h':'Off'}</button>`).join('')}</div>
     <label class="row"><input type="checkbox" id="login" ${LOGIN?'checked':''}> Start with Windows</label>
     <button class="wide" data-act="open-app">Open Catching Days</button>
     <button class="wide quiet" data-act="quit">Put the toad away (quit)</button>`;
@@ -392,10 +438,18 @@ function go(m){
 async function op(o){ try{ return await window.pet.op(o); }catch(e){ return {ok:false}; } }
 const bar=$('bar');
 /* the options stay put while you click them: they never take the focus from the field */
-bar.addEventListener('mousedown',e=>{ if(e.target.closest('.opt,.add-go,[data-jc],.jot-go')) e.preventDefault(); });
+bar.addEventListener('mousedown',e=>{ if(e.target.closest('.opt,.add-go,.cal,[data-jc],.jot-go')) e.preventDefault(); });
 bar.addEventListener('click',e=>{
-  const d=e.target.closest('[data-due]'); if(d){ addDue=d.dataset.due; paintAddOpts(); return; }
+  const d=e.target.closest('[data-due]'); if(d){ addDue=d.dataset.due; calOpen=false; paintCal(); paintAddOpts(); return; }
   const c=e.target.closest('[data-cls]'); if(c){ addCls=c.dataset.cls||null; paintAddOpts(); return; }
+  if(e.target.closest('#add-d')){
+    calOpen=!calOpen; calMonth=(isDay(addDue)?addDue:V.today).slice(0,7); paintCal(); return;
+  }
+  const cm=e.target.closest('[data-cm]');
+  if(cm){ calMonth=new Date(Date.UTC(+calMonth.slice(0,4),+calMonth.slice(5,7)-1+(+cm.dataset.cm),1)).toISOString().slice(0,7); paintCal(); return; }
+  /* a day from the calendar: today and tomorrow light their own buttons */
+  const dy=e.target.closest('[data-day]');
+  if(dy){ const n=daysOff(dy.dataset.day); addDue=n===0?'today':n===1?'tomorrow':dy.dataset.day; calOpen=false; paintCal(); paintAddOpts(); return; }
   if(e.target.closest('#add-go')){ addTask(); return; }
   const j=e.target.closest('[data-jc]');
   if(j){ jotColor=j.dataset.jc; bar.querySelectorAll('[data-jc]').forEach(b=>b.classList.toggle('on',b===j)); const w=bar.querySelector('.jot'); if(w) w.style.setProperty('--nc',nhex(jotColor)); return; }
@@ -404,8 +458,7 @@ bar.addEventListener('click',e=>{
 bar.addEventListener('input',e=>{
   if(e.target.id==='add-t'){ $('add-go').disabled=!e.target.value.trim(); bar.classList.add('open'); }
   if(e.target.id==='jot') $('jot-go').disabled=!e.target.value.trim();
-});
-bar.addEventListener('focusin',e=>{ if(e.target.id==='add-t') bar.classList.add('open'); });
+});bar.addEventListener('focusin',e=>{ if(e.target.id==='add-t') bar.classList.add('open'); });
 bar.addEventListener('focusout',e=>{ if(e.target.id==='add-t'&&!e.target.value.trim()) bar.classList.remove('open'); });
 bar.addEventListener('keydown',e=>{
   if(e.target.id==='add-t'&&e.key==='Enter'){ e.preventDefault(); addTask(); }
@@ -482,6 +535,8 @@ $('body').addEventListener('click',async e=>{
   if(td){ window.pet.send('set-toad',td.dataset.toad); return; }
   const sz=t.closest('[data-size]');
   if(sz){ SIZE=sz.dataset.size; window.pet.send('set-size',SIZE); render(true); return; }
+  const rm=t.closest('[data-remind]');
+  if(rm){ REMIND=+rm.dataset.remind; window.pet.send('set-remind',REMIND); render(true); return; }
 });
 $('body').addEventListener('input',e=>{ if(e.target.id==='ck-t'){ $('ck-go').disabled=!e.target.value.trim(); clearTimeout(ckT); } });
 $('body').addEventListener('keydown',e=>{ if(e.target.id==='ck-t'&&e.key==='Enter'){ e.preventDefault(); checkupSend(); } });
@@ -532,7 +587,7 @@ window.pet.on('toad',t=>{ NAME=t.name; paintWho(); say(line('choose')); if(mode=
 window.pet.on('open',o=>{
   peeking=!!o.peeking;
   const m=o.mode||'chat';
-  rateVal=0; barMode=''; addDue='today'; addCls=null; ckSaid=''; ckAway=!!o.away; clearTimeout(ckT);
+  rateVal=0; barMode=''; addDue='today'; addCls=null; calOpen=false; ckSaid=''; ckAway=!!o.away; clearTimeout(ckT);
   go(m);
   if(m==='checkup'){
     setTimeout(()=>{ const i=$('ck-t'); if(i) i.focus(); },60);
@@ -545,7 +600,8 @@ window.pet.on('open',o=>{
   }
   if(o.add&&$('add-t')) setTimeout(()=>{ const i=$('add-t'); if(i) i.focus(); },60);
   if(m==='notes'&&$('jot')) setTimeout(()=>{ const i=$('jot'); if(i) i.focus(); },60);
-  if(o.reason==='bell') say(line('bell'));
+  if(o.reason==='remind') say(remindLine(o.remind));
+  else if(o.reason==='bell') say(line('bell'));
   else if(o.reason==='breakOver') say(line('breakOver'));
   else if(m==='chat') say(chatLine());
   else say(line('hello'));
@@ -553,6 +609,7 @@ window.pet.on('open',o=>{
   const c=$('card'); c.classList.remove('show'); void c.offsetWidth; c.classList.add('show');
 });
 window.pet.on('checkup',d=>{ ckEvery=d.every; if(mode==='settings') render(true); });
+window.pet.on('remind-set',m=>{ REMIND=+m||0; if(mode==='settings') render(true); });
 window.pet.on('closed',()=>{ $('card').classList.remove('show'); clearInterval(sayT); });
 
 setInterval(()=>{ if(V&&V.session&&!document.hidden){ tickRun(); paintTabs(); } },250);

@@ -182,7 +182,14 @@ async function run(){
   window.pet.send('stage-done',{started:true});
 }
 
-window.pet.on('go',()=>run());
+window.pet.on('go',()=>{
+  run().catch(error=>{
+    // A cancelled animation or failed session request must never strand the
+    // fullscreen stage over the desktop and leave the real toad hidden.
+    console.error('Focus ritual interrupted',error);
+    window.pet.send('stage-done',{started:false});
+  });
+});
 /* drawn at the desktop toad's spot: ready to take over from it */
 requestAnimationFrame(()=>requestAnimationFrame(()=>window.pet.send('stage-ready')));
 })();

@@ -56,6 +56,21 @@ input,textarea{font:inherit;color:var(--tx);user-select:text;-webkit-user-select
 .opt i{width:7px;height:7px;border-radius:50%;flex:none;background:var(--c)}
 .opt span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .opt-br{flex-basis:100%;height:0}
+.cal-w{flex-basis:100%}
+.cal-w:empty{display:none}
+.cal{margin:2px 0 0;padding:8px 8px 6px;border:1.5px solid var(--line);border-radius:14px;background:#fff}
+.cal-h{display:flex;align-items:center;justify-content:space-between;margin:0 0 4px}
+.cal-h b{font:600 12.5px/1 var(--sans);color:var(--tx)}
+.cal-n{width:26px;height:26px;border:none;border-radius:8px;background:none;font:500 17px/1 var(--sans);color:var(--label)}
+.cal-n:hover:not(:disabled){background:var(--panel2)}
+.cal-n:disabled{opacity:.3;cursor:default}
+.cal-g{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-g i{font:600 10px/1 var(--sans);font-style:normal;color:var(--faint);text-align:center;padding:3px 0 5px}
+.cd{height:28px;border:1.5px solid transparent;border-radius:8px;background:none;font:500 12px/1 var(--sans);color:var(--tx)}
+.cd:hover:not(:disabled){background:var(--panel2)}
+.cd.td{border-color:var(--focus)}
+.cd.on{background:var(--deep);border-color:var(--deep);color:#fbf8f2}
+.cd:disabled{color:#c9c2b4;cursor:default}
 .jot{margin:12px 0 0}
 .jot textarea{display:block;width:100%;min-height:74px;border:1.5px solid #d8cfbd;border-radius:4px 4px 12px 4px;padding:9px 11px;font:400 13.5px/1.45 var(--sans);
   color:#2f3a44;outline:none;resize:none;background:var(--nc);transition:background .2s}

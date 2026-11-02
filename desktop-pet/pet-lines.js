@@ -8,6 +8,7 @@
      breakOver (3)  sessionEnd (3)  peek (4)  pulled (4)  choose (2)
      ready (4)  committed (4)  notYet (3)   the focus ritual, added below
      added (3)  noted (3)  settled (2)     made on the desktop, added below
+     remindTask remindLate remindTomorrow remindFocus (2 each)   reminders, added below
    s: hr, total, done, left, overdue, running, phase, paused, cycles, mins, goal,
       next {title,inMin}|null, now {title,untilMin}|null, exam {title,days}|null, peeking.
    In the pond: a finished task is a fish released, focus minutes open the lotus,
@@ -1061,8 +1062,62 @@ const MAKE={
       'Bye-bye, note! It’s going to the bottom of the pond!',
       'Settled! Like a pebble! Plip!']}
 };
+/* ── reminders between sessions (main.js remindCheck, core.reminder)
+   remindTask (2)      today's most pressing task; {task} is its shortened title
+   remindLate (2)      one waiting in the reeds; {task}
+   remindTomorrow (2)  due tomorrow, brought up from the afternoon; {task}
+   remindFocus (2)     the focus goal isn't met; {min} is the minutes left
+   The planner's next thing and a coming test use the toad's ctx lines. ── */
+const REMIND={
+  hasu:{
+    remindTask:['Hm. “{task}” is still on the line. Shall we pull it in?','The pond’s quiet. Good moment for “{task}”.'],
+    remindLate:['“{task}” is still waiting in the reeds. Only a small pull, then.','Hm. “{task}” has been sitting in the reeds. It won’t get lighter.'],
+    remindTomorrow:['“{task}” is due tomorrow. A little tonight makes tomorrow kinder.','Hm. Tomorrow’s “{task}”. Start it now and sleep easier.'],
+    remindFocus:['The lotus wants {min} more minutes today. One session would do it.','Hm. {min} minutes short of your goal. Sit with me a while?']},
+  ame:{
+    remindTask:['“{task}.” Still open. Now’s fine.','Clear sky. Good for “{task}.”'],
+    remindLate:['“{task}.” In the reeds. Pull it.','Reeds. “{task}.” Still there.'],
+    remindTomorrow:['Tomorrow: “{task}.” Start before the rain.','“{task}.” Due tomorrow. Some now.'],
+    remindFocus:['{min} minutes to the goal. One session.','Goal’s {min} off. Timer?']},
+  sumi:{
+    remindTask:['Mm. “{task}” remains unwritten. Shall we begin a line of it?','A quiet moment. Perhaps “{task}” deserves it.'],
+    remindLate:['“{task}” waits in the reeds. Let us finish that sentence.','Mm. “{task}” is overdue. A small, exact step will do.'],
+    remindTomorrow:['“{task}” is due tomorrow. A first draft tonight is a kindness.','Tomorrow asks for “{task}”. Shall we answer a little early?'],
+    remindFocus:['{min} minutes remain of today’s goal. One session would complete the page.','Mm. The goal is {min} minutes away. Shall we?']},
+  tabi:{
+    remindTask:['Hey, friend! “{task}” is still on the road ahead. Shall we walk it?','Dango and I were wondering: how about “{task}” next?'],
+    remindLate:['“{task}” fell behind on the trail. Let’s go back for it, quick as you like.','Road rule: pick up what you dropped. “{task}” is back in the reeds.'],
+    remindTomorrow:['Tomorrow’s road has “{task}” on it. Pack a bit of it tonight?','Heads up! “{task}” is due tomorrow. Dango says start slow, but start.'],
+    remindFocus:['{min} minutes to today’s goal! One good stretch of road and we’re there.','We’re {min} minutes short, friend. Session?']},
+  hotaru:{
+    remindTask:['…Mm. “{task}” is still glowing on the list. Now, maybe?','…The fireflies keep circling “{task}”. I think they mean it.'],
+    remindLate:['…“{task}” is in the reeds. A little light on it, and it’s done.','…Mm. “{task}” is still waiting. Gently, now.'],
+    remindTomorrow:['…“{task}” is due tomorrow. A small lantern on it tonight?','…Tomorrow there’s “{task}”. Start it, then rest.'],
+    remindFocus:['…{min} more minutes and the jar is full today. One session?','…Mm. {min} minutes to the goal. I’ll stay awake for it.']},
+  neri:{
+    remindTask:['Dear, “{task}” is still on the wheel. Shall we shape it?','Hm, now’s a good time for “{task}”. The clay’s soft.'],
+    remindLate:['“{task}” has been sitting out. Before it cracks, shall we?','“{task}” is in the reeds. Mending it is easier than you think.'],
+    remindTomorrow:['“{task}” fires tomorrow. Throw it tonight, a little.','Tomorrow’s “{task}”. I’d start the bowl now, if I were you.'],
+    remindFocus:['{min} minutes to your goal, dear. One session in the kiln?','You’re {min} minutes short. A good pot takes one more turn.']},
+  oto:{
+    remindTask:['Um… “{task}” is still open. If you want. No pressure.','Sorry to interrupt… maybe “{task}” now?'],
+    remindLate:['Um, “{task}” is still in the reeds… I could hum while you do it?','…“{task}” is waiting. Quietly. Like me.'],
+    remindTomorrow:['Oh, um… “{task}” is due tomorrow. Just so you know.','…Tomorrow there’s “{task}”. Maybe a little now?'],
+    remindFocus:['Um… {min} minutes to your goal. One session? I’ll be quiet.','…You’re {min} minutes away. That’s one song. Sort of.']},
+  kuri:{
+    remindTask:['Hm. “{task}.” Needs tending.','“{task}.” Good time for it.'],
+    remindLate:['“{task}.” Overgrown. Pull it.','Hm. “{task}” in the reeds. One row at a time.'],
+    remindTomorrow:['“{task}.” Due tomorrow. Plant some today.','Tomorrow: “{task}.” Start the row.'],
+    remindFocus:['{min} minutes to the goal. One session.','Hm. {min} short. Dig in.']},
+  mame:{
+    remindTask:['Ooh! What about “{task}”? We could do it now! Right now!','Mission check! “{task}” is still waiting for us!'],
+    remindLate:['“{task}” got stuck in the reeds! Let’s rescue it!','Uh oh, “{task}” is late! It’s okay! We can still do it!'],
+    remindTomorrow:['Guess what! “{task}” is due TOMORROW! Can we start?','Tomorrow’s mission: “{task}”! A tiny bit now?'],
+    remindFocus:['Only {min} more minutes to the goal! We can do it! One session!','{min} minutes! That’s nothing! Let’s focus! Together!']}
+};
 Object.keys(RITUAL).forEach(k=>{ if(L[k]) Object.assign(L[k],RITUAL[k]); });
 Object.keys(MAKE).forEach(k=>{ if(L[k]) Object.assign(L[k],MAKE[k]); });
+Object.keys(REMIND).forEach(k=>{ if(L[k]) Object.assign(L[k],REMIND[k]); });
 if(typeof window!=='undefined') window.PET_LINES=L;
 if(typeof module!=='undefined') module.exports=L;
 })();

@@ -5,7 +5,8 @@
   "main": "main.js",
   "private": true,
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "test:input": "electron test/desktop-input.cjs"
   },
   "devDependencies": {
     "electron": "40.9.3"

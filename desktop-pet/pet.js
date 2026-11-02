@@ -155,7 +155,10 @@ function step(){
   }
 }
 /* hidden (during the focus ritual): nothing to draw, so nothing to step */
-document.addEventListener('visibilitychange',()=>{ if(document.hidden) stop(); else setAwake(); });
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){ finishPress(false); stop(); }
+  else setAwake();
+});
 window.__stepMs=ms=>{ stop(); stepMs=0; pace(ms); };
 
 /* ── reactions: a hop, a face, a sound ── */
@@ -197,6 +200,18 @@ function chime(up){
       o.connect(g); g.connect(a.destination); o.start(a.currentTime+d); o.stop(a.currentTime+d+.38); });
   }catch(e){}
 }
+/* a reminder: one soft note, quieter than the bell */
+function ping(){
+  try{
+    actx=actx||new AudioContext();
+    const a=actx, o=a.createOscillator(), g=a.createGain();
+    o.type='sine'; o.frequency.value=659;
+    g.gain.setValueAtTime(.0001,a.currentTime);
+    g.gain.exponentialRampToValueAtTime(.09,a.currentTime+.03);
+    g.gain.exponentialRampToValueAtTime(.0001,a.currentTime+.6);
+    o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime+.62);
+  }catch(e){}
+}
 function react(r){
   const k=r&&r.kind;
   if(k==='done'){ hop(); face('done'); }
@@ -210,6 +225,7 @@ function react(r){
     if(r.sound){ chime(k==='breakOver'); setTimeout(()=>chime(k==='breakOver'),900); }
   }
   else if(k==='peek'){ wake(3000); face('peek',2600); }
+  else if(k==='remind'){ hop(); face('peek',3600); if(r.sound) ping(); }
   else if(k==='talk'){ const a=$('art'); wake(r.ms||1500); a.classList.add('td-talking'); setTimeout(()=>a.classList.remove('td-talking'),r.ms||1500); }
   else if(k==='pulled'){ hop(); }
 }
@@ -234,23 +250,28 @@ setInterval(()=>{ if(VIEW&&VIEW.session) paintPill(); },500);
 
 /* ── the window lets clicks through everywhere but the toad ── */
 let ignoring=true;
-function setIgnore(on){ if(on===ignoring) return; ignoring=on; window.pet.send('ignore',on); }
+function setIgnore(on,force=false){ if(!force&&on===ignoring) return; ignoring=on; window.pet.send('ignore',on); }
 function overToad(x,y){
   const el=document.elementFromPoint(x,y);
   if(!el) return false;
   if(el.closest('#pill')) return true;
-  const svg=el.closest('#art svg');
-  return !!svg&&el!==svg;
+  // Grab the whole art box, including gaps between SVG shapes. This stays
+  // stable as any of the nine toads breathes, blinks, changes size or peeks.
+  return !!el.closest('#art');
 }
-function hover(over){
-  setIgnore(!over);
+function hover(over,force=false){
+  setIgnore(!over,force);
   if(over!==hovering){ hovering=over; setAwake(); if(!over) wake(2500); }
 }
-document.addEventListener('mousemove',e=>{ if(!held) hover(overToad(e.clientX,e.clientY)); });
+document.addEventListener('mousemove',e=>{ if(!held&&!down) hover(overToad(e.clientX,e.clientY)); });
 /* the main process reads the cursor too (Windows can stop forwarding moves to a
    click-through window), and asks: is that point on the toad? */
-window.pet.on('probe',p=>{ if(held||down) return; hover(!!p.inside&&overToad(p.x,p.y)); });
-window.pet.on('hit-reset',()=>{ ignoring=true; hovering=false; held=false; down=null; $('toad').classList.remove('held'); setAwake(); });
+window.pet.on('probe',p=>{ if(held||down) return; hover(!!p.inside&&overToad(p.x,p.y),true); });
+window.pet.on('hit-reset',()=>{
+  finishPress(false); ignoring=null; hovering=false;
+  held=false; $('toad').classList.remove('held'); $('sway').style.transform='';
+  setAwake();
+});
 /* no 'mouseleave' here: Windows sends the page a burst of them after every forwarded
    move, even with the cursor still on the toad, and each one made it click-through
    again, so a quick press fell straight through it. Leaving is seen anyway: by the
@@ -261,27 +282,36 @@ let down=null;
 $('stage').addEventListener('pointerdown',e=>{
   if(e.button!==0) return;
   if(!overToad(e.clientX,e.clientY)) return;
+  finishPress(false);
   down={x:e.screenX,y:e.screenY,pill:!!e.target.closest('#pill'),dragging:false,id:e.pointerId};
+  setIgnore(false,true);
   try{ $('stage').setPointerCapture(e.pointerId); }catch(_){}
 });
 $('stage').addEventListener('pointermove',e=>{
-  if(!down||down.dragging) return;
+  if(!down||e.pointerId!==down.id) return;
+  if(!(e.buttons&1)){ finishPress(false); return; }
+  if(down.dragging) return;
   if(Math.hypot(e.screenX-down.x,e.screenY-down.y)>4){
     down.dragging=true; held=true; setIgnore(false); $('toad').classList.add('held'); setAwake();
-    window.pet.send('drag-start');
+    window.pet.send('drag-start',{x:down.x,y:down.y});
   }
 });
-function up(e){
+function finishPress(click){
   if(!down) return;
   const d=down; down=null;
   try{ $('stage').releasePointerCapture(d.id); }catch(_){}
+  held=false; $('toad').classList.remove('held'); $('sway').style.transform=''; setAwake();
   if(d.dragging){ window.pet.send('drag-end'); return; }
+  if(!click) return;
   if(d.pill) window.pet.send('panel-open','focus');
   else { window.pet.send('toad-click'); hop(); if(PEEK.edge&&PEEK.p>.5) face('peek',2400); }
 }
-$('stage').addEventListener('pointerup',up);
-$('stage').addEventListener('lostpointercapture',e=>{ if(down&&down.dragging) up(e); });
-$('stage').addEventListener('contextmenu',e=>{ e.preventDefault(); if(overToad(e.clientX,e.clientY)) window.pet.send('toad-menu'); });
+$('stage').addEventListener('pointerup',e=>{ if(down&&e.pointerId===down.id&&e.button===0) finishPress(true); });
+for(const event of ['pointercancel','lostpointercapture']){
+  $('stage').addEventListener(event,e=>{ if(down&&e.pointerId===down.id) finishPress(false); });
+}
+window.addEventListener('blur',()=>finishPress(false));
+$('stage').addEventListener('contextmenu',e=>{ e.preventDefault(); finishPress(false); if(overToad(e.clientX,e.clientY)) window.pet.send('toad-menu'); });
 
 /* ── messages ── */
 window.pet.on('peek',p=>{
@@ -305,4 +335,5 @@ window.pet.on('react',react);
 window.pet.on('panel',p=>{ panelOpen=!!p.open; setAwake(); });
 
 sizeStage(); drawToad(); applyPeek(false); paintPill(); wake(6000);
+window.pet.send('pet-ready');
 })();
