@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; media-src file:; img-src 'self' data:">
+<title>Sara · player</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Outfit:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="player.css">
+<body>
+<div id="card" class="card" role="dialog" aria-label="Sara's player">
+  <header class="hd">
+    <div class="pt" id="pt"></div>
+    <div class="who"><span class="ey">Your music, no feed</span><span class="nm">Sara</span></div>
+    <button class="ic" id="close" aria-label="Close the player (the music keeps going)" title="Close (the music keeps going)">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
+  </header>
+
+  <section class="now">
+    <div class="slot" id="slot"><i class="disc"></i></div>
+    <div class="np"><b id="np-t">Nothing on yet</b><span id="np-s">Drop songs on Sara, or find one on YouTube</span></div>
+  </section>
+  <div class="seek"><span id="t0">0:00</span><input type="range" id="seek" min="0" max="1000" value="0" aria-label="Position in the song" disabled><span id="t1">0:00</span></div>
+  <div class="ctl">
+    <button class="ic sm" id="shuffle" aria-label="Shuffle" aria-pressed="false" title="Shuffle">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4.5h2.5c3 0 4 7 7 7H14M2 11.5h2.5c1.2 0 2-1 2.6-2.2M9 6.7c.6-1.2 1.4-2.2 2.5-2.2H14M12 2.5l2 2-2 2M12 9.5l2 2-2 2"/></svg></button>
+    <button class="ic" id="prev" aria-label="Previous song">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path class="f" d="M12.5 3.2v9.6L5.6 8z"/><path d="M3.5 3.5v9"/></svg></button>
+    <button class="play" id="play" aria-label="Play">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path class="f i-play" d="M5 2.8v10.4L13.2 8z"/><path class="f i-pause" d="M4 3h3v10H4zM9 3h3v10H9z"/></svg></button>
+    <button class="ic" id="next" aria-label="Next song">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path class="f" d="M3.5 3.2v9.6L10.4 8z"/><path d="M12.5 3.5v9"/></svg></button>
+    <button class="ic sm" id="repeat" aria-label="Repeat: all" title="Repeat: all">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7V6a2 2 0 0 1 2-2h7.5M11 2l2 2-2 2M13 9v1a2 2 0 0 1-2 2H3.5M5 14l-2-2 2-2"/></svg><b id="rep1">1</b></button>
+  </div>
+  <div class="vol"><svg viewBox="0 0 16 16" aria-hidden="true"><path class="f" d="M2.5 6h2.5l3.5-3v10l-3.5-3h-2.5z"/><path d="M11 5.5c1.2 1.3 1.2 3.7 0 5"/></svg>
+    <input type="range" id="vol" min="0" max="100" value="80" aria-label="Volume"></div>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" id="tab-lib" aria-selected="true">Library</button>
+    <button role="tab" id="tab-yt" aria-selected="false">YouTube</button>
+  </nav>
+
+  <section class="pane" id="pane-lib">
+    <div class="chips" id="chips"></div>
+    <div class="list" id="list"></div>
+    <footer class="foot"><button class="lk" id="add">Add music…</button><button class="lk" id="folder">Open Sara’s folder</button></footer>
+  </section>
+
+  <section class="pane" id="pane-yt" hidden>
+    <form class="find" id="find"><input id="q" type="search" placeholder="Search YouTube, or paste a link" aria-label="Search YouTube, or paste a link" autocomplete="off">
+      <button class="go" aria-label="Search"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.2"/><path d="M10.2 10.2L14 14"/></svg></button></form>
+    <div class="list" id="results"></div>
+    <p class="note">Only the song: YouTube’s own player, held to the one video. Close this and the music keeps going.</p>
+  </section>
+  <div class="dropzone" id="dropzone"><b>Let go to give Sara these songs</b></div>
+</div>
+<script src="sara-art.js"></script>
+<script src="player.js"></script>
+</body>
+</html>

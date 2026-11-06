@@ -1,0 +1,15 @@
+{
+  "name": "catching-days-sara",
+  "version": "1.0.0",
+  "description": "Sara, a music kappa for your desktop: drop songs on her, make playlists, and listen to YouTube without the feed.",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "test": "node test/library.test.js"
+  },
+  "devDependencies": {
+    "electron": "40.9.3"
+  },
+  "license": "UNLICENSED"
+}

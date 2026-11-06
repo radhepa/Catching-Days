@@ -1,0 +1,123 @@
+/* player.css · Sara's player, in the app's paper-and-pond look (same palette as the toad's talk box) */
+:root{--panel:#fbf8f2;--panel2:#f1ebdf;--line:#e4dccd;--tx:#1f2e2c;--label:#5f6b67;--dim:#5f6b67;--faint:#7d867f;
+  --focus:#2f7a74;--koi:#ec7a45;--deep:#0f3b41;--over:#b0524a;--serif:'Young Serif',Georgia,serif;--sans:'Outfit','Segoe UI',sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:transparent;overflow:hidden;font:400 14px/1.4 var(--sans);color:var(--tx);user-select:none;-webkit-user-select:none}
+button{font:inherit;color:inherit;cursor:pointer;border:none;background:none;padding:0}
+input{font:inherit;color:var(--tx);user-select:text;-webkit-user-select:text}
+button:focus-visible,input:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+svg .f{fill:currentColor;stroke:none}
+[hidden]{display:none!important}
+
+.card{position:relative;margin:24px;width:340px;height:calc(100% - 48px);display:flex;flex-direction:column;background:var(--panel);
+  border:1px solid var(--line);border-radius:22px;overflow:hidden;
+  /* kept inside the 24px round the card: the window's edge would cut a wider one off square */
+  box-shadow:0 8px 20px -6px rgba(31,46,44,.34),0 2px 6px rgba(31,46,44,.12)}
+
+/* header: her portrait, the name, close (the header is the handle for moving the player) */
+.hd{display:flex;align-items:center;gap:12px;padding:14px 12px 0 14px;-webkit-app-region:drag}
+.hd button{-webkit-app-region:no-drag}
+.pt{position:relative;width:52px;height:52px;flex:none;border-radius:50%;overflow:hidden;
+  background:radial-gradient(ellipse at 60% 45%,#2a7d78 0%,#1a5c60 50%,#0f3b41 100%);box-shadow:inset 0 0 12px #07252a}
+.pt svg{position:absolute;left:-14%;top:-4%;width:128%;height:128%;stroke:none}
+.who{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.ey{font:600 10.5px/1.2 var(--sans);letter-spacing:.09em;text-transform:uppercase;color:#3f7d6f}
+.nm{font:400 20px/1.1 var(--serif)}
+.ic{color:var(--label);width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex:none;position:relative}
+.ic:hover{background:var(--panel2);color:var(--tx)}
+.ic.sm svg{width:15px;height:15px}
+.ic[aria-pressed="true"],.ic.on{color:var(--focus);background:#e3efeb}
+#close{align-self:flex-start}
+
+/* now playing: the record (or YouTube's small player, which sits over this same box) */
+.now{display:flex;gap:12px;align-items:center;margin:14px 14px 0}
+.slot{width:128px;height:72px;flex:none;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at 50% 40%,#1f6a68,#0f3b41 75%);box-shadow:inset 0 0 10px #07252a}
+.disc{width:58px;height:58px;border-radius:50%;
+  background:radial-gradient(circle,#1f2e2c 0 2px,#cfe6c8 2.5px 8px,#8fc49a 8.5px 11px,transparent 11.5px),
+    repeating-radial-gradient(circle,#22302e 0 1.6px,#2c3b39 1.8px 3.2px);box-shadow:0 2px 6px #0007}
+.playing .disc{animation:spin 1.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.slot.yt .disc{display:none}
+.np{min-width:0;display:flex;flex-direction:column;gap:3px}
+.np b{font:600 15px/1.25 var(--sans);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-wrap:pretty}
+.np span{font-size:12.5px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* the bar under it */
+.seek{display:flex;align-items:center;gap:8px;margin:10px 14px 0;font:500 11.5px/1 var(--sans);color:var(--dim);font-variant-numeric:tabular-nums}
+.seek input{flex:1}
+input[type=range]{-webkit-appearance:none;appearance:none;height:18px;background:transparent;margin:0;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:2px;
+  background:linear-gradient(90deg,var(--focus) calc(var(--p,0)*100%),#e2dacb 0)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;margin-top:-5px;border-radius:50%;background:var(--deep);border:2px solid var(--panel)}
+input[type=range]:disabled{cursor:default}
+input[type=range]:disabled::-webkit-slider-thumb{background:#c9c0b0}
+.ctl{display:flex;align-items:center;justify-content:center;gap:10px;margin:6px 0 0}
+.play{width:48px;height:48px;border-radius:50%;background:var(--deep);color:#fbf8f2;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 10px -3px rgba(15,59,65,.55);transition:transform .12s}
+.play:hover{background:#15505a}
+.play:active{transform:scale(.94)}
+.play svg{width:20px;height:20px}
+.play .i-pause,.playing .play .i-play{display:none}
+.playing .play .i-pause{display:inline}
+#rep1{position:absolute;right:5px;bottom:5px;font:700 8.5px/1 var(--sans);display:none}
+#repeat.one #rep1{display:block}
+#repeat.off{color:var(--label);background:none}
+.vol{display:flex;align-items:center;gap:8px;margin:4px 24px 0;color:var(--label)}
+.vol svg{width:15px;height:15px;flex:none}
+.vol input{flex:1}
+
+/* Library / YouTube */
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:12px 12px 0;padding:4px;background:var(--panel2);border-radius:14px}
+.tabs button{padding:7px 0;border-radius:10px;font:600 13px/1 var(--sans);color:var(--label)}
+.tabs button[aria-selected="true"]{background:var(--panel);color:var(--tx);box-shadow:0 1px 3px rgba(31,46,44,.14)}
+.pane{flex:1;min-height:0;display:flex;flex-direction:column}
+
+.chips{display:flex;gap:6px;padding:10px 12px 4px;overflow-x:auto;scrollbar-width:none;flex:none}
+.chip{flex:none;padding:6px 11px;border-radius:999px;background:var(--panel2);font:500 12.5px/1 var(--sans);color:var(--tx);white-space:nowrap}
+.chip:hover{background:#ebe3d4}
+.chip.on{background:var(--deep);color:#fbf8f2}
+.chip i{font-style:normal;opacity:.6;margin-left:5px}
+.chip.new{background:none;border:1.5px dashed #cdc3b1;color:var(--label)}
+.chip input{width:120px;border:none;outline:none;background:transparent;padding:0;font:500 12.5px/1 var(--sans)}
+
+.list{flex:1;min-height:0;overflow-y:auto;padding:4px 8px 8px}
+.list::-webkit-scrollbar{width:8px}
+.list::-webkit-scrollbar-thumb{background:#ddd4c4;border-radius:4px;border:2px solid var(--panel)}
+.row{display:flex;align-items:center;gap:6px;border-radius:12px}
+.row:hover{background:var(--panel2)}
+.row .main{flex:1;min-width:0;display:flex;align-items:center;gap:10px;padding:8px 4px 8px 8px;text-align:left}
+.row .tx{min-width:0;display:flex;flex-direction:column;gap:2px}
+.row b{font:500 13.5px/1.25 var(--sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row span{font-size:11.5px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .ic{width:30px;height:30px;opacity:.75}
+.row:hover .ic{opacity:1}
+.row.bad b{color:var(--faint);text-decoration:line-through}
+.row.cur b{color:var(--focus);font-weight:600}
+.mark{width:16px;height:16px;flex:none;display:flex;align-items:flex-end;justify-content:center;gap:2px;color:var(--faint);font:600 11px/16px var(--sans)}
+.mark i{width:3px;background:var(--focus);border-radius:1px;height:5px}
+.playing .row.cur .mark i{animation:eq .86s ease-in-out infinite alternate}
+.row.cur .mark i:nth-child(2){height:11px;animation-delay:-.3s}.row.cur .mark i:nth-child(3){height:8px;animation-delay:-.6s}
+@keyframes eq{from{transform:scaleY(.35)}to{transform:scaleY(1)}}
+.mark i{transform-origin:bottom}
+.added{color:var(--focus)!important}
+
+.empty{margin:18px 14px;padding:18px 16px;border:1.5px dashed #d8cfbe;border-radius:16px;color:var(--label);font-size:13.5px;line-height:1.5;text-wrap:pretty}
+.empty b{display:block;color:var(--tx);font:400 16px/1.3 var(--serif);margin-bottom:4px}
+.foot{display:flex;justify-content:space-between;padding:8px 14px 12px;border-top:1px solid var(--line);flex:none}
+.lk{font:600 12.5px/1 var(--sans);color:var(--focus);padding:6px 4px;border-radius:8px}
+.lk:hover{background:#e3efeb}
+
+.find{display:flex;gap:6px;margin:12px 12px 4px;flex:none}
+.find input{flex:1;min-width:0;height:36px;border:1.5px solid var(--line);border-radius:12px;background:#fff;padding:0 12px;outline:none}
+.find input:focus{border-color:var(--focus)}
+.go{width:36px;height:36px;border-radius:12px;background:var(--deep);color:#fbf8f2;display:flex;align-items:center;justify-content:center;flex:none}
+.note{margin:0;padding:8px 16px 12px;font-size:11.5px;color:var(--dim);border-top:1px solid var(--line);flex:none;text-wrap:pretty}
+.msg{padding:16px 14px;color:var(--label);font-size:13px}
+
+/* music held over the player */
+.dropzone{position:absolute;inset:8px;border-radius:16px;border:2px dashed var(--focus);background:#fbf8f2e8;display:none;
+  align-items:center;justify-content:center;text-align:center;padding:20px;font:400 17px/1.3 var(--serif);color:var(--deep);pointer-events:none}
+.card.over .dropzone{display:flex}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
