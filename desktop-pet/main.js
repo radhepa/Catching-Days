@@ -840,7 +840,8 @@ if(TEST) global.__toadTest={dragStart,dragEnd,dragTick,setCursor:(x,y)=>{ fakeCu
   place,showToad,keepToadOnTop,openPanel,closePanel,setToad,setSize,startRitual,remindCheck,setRemind,touchAgo:ms=>{ lastTouch=Date.now()-ms; },stage:()=>stageWin,newNote,notes:()=>[...noteWins.keys()],noteWin:id=>noteWins.get(id),settings:()=>S};
 
 /* ════════════════════ start up, shut down ════════════════════ */
-app.on('second-instance',()=>{ if(toadWin&&!toadWin.isDestroyed()){ showToad(); openPanel('chat'); } });
+const wakeToad=()=>{ if(toadWin&&!toadWin.isDestroyed()){ showToad(); openPanel('chat'); } };
+app.on('second-instance',wakeToad);
 app.whenReady().then(async()=>{
   loadSettings();
   if(process.argv.includes('--start-at-login')) S.startAtLogin=true;
@@ -850,6 +851,7 @@ app.whenReady().then(async()=>{
   readDb(); watchData();
   createToad(); createPanel();
   restoreNotes();
+  require('./hotkeys')('catching-days-desktop-toad',wakeToad);   // Ctrl+\ for the toad, Ctrl+] for Music Buddies
   tray=new Tray(trayIcon()); tray.setToolTip('Catching Days toad'); rebuildTray();
   tray.on('click',()=>{ showToad(); openPanel('chat'); });
   if(S.startAtLogin) setLogin(true);
