@@ -1,33 +1,7 @@
-/* sara-art.js · Sara the kappa, drawn in the toads' grammar (see ../toad-art.js)
-   One shared box, viewBox "-68 -118 136 136", ground at y=0. Put the class
-   "playing" on any ancestor and the record turns, the tonearm drops and she rocks.
-   Built from music-pet/concepts.html (concept 4); edit the art there or here, not both. */
+/* pets/sara.js · Sara, the kappa with the spinning dish */
 'use strict';
 (function(){
-const r2=n=>+n.toFixed(2);
-function pad(ID){
-  const ring=(c,cls)=>`<g transform="translate(0 6)"><g class="${cls}"><ellipse rx="70" ry="13" fill="none" stroke="${c}" stroke-width=".9" opacity=".32"/></g></g>`;
-  const p='M0 3.5 L30.4 13.5 A62 11.5 0 1 0 12.6 14.75 Z';
-  const veins=[200,225,250,275,300,325,350,15,40,140,165].map(a=>{ const t=a*Math.PI/180;
-    return `M0 3.5 L${r2(57*Math.cos(t))} ${r2(3.5+10.6*Math.sin(t))}`; }).join(' ');
-  return `<linearGradient id="${ID}pad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8db58a"/><stop offset=".55" stop-color="#6f9e7a"/><stop offset="1" stop-color="#5a8d69"/></linearGradient>
-    ${ring('#cfe9e3','mp-ring')}${ring('#cfe9e3','mp-ring two')}
-    <path d="${p}" transform="translate(0 1.7)" fill="#3a6a51"/>
-    <path d="${p}" fill="url(#${ID}pad)"/>
-    <path d="${veins}" stroke="#a9c795" stroke-width=".5" opacity=".45" fill="none"/>
-    <path d="M-61.4 2.2 C-50 -6 50 -6 61.4 2.2" fill="none" stroke="#b9d29f" stroke-width=".7" opacity=".7"/>
-    <ellipse cx="0" cy="1.6" rx="47" ry="4.4" fill="#173a3b" opacity=".32"/>
-    <ellipse cx="0" cy="1" rx="34" ry="2.4" fill="#173a3b" opacity=".2"/>`;
-}
-
-const vinylDef=ID=>`<radialGradient id="${ID}vinyl" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#3d4c49"/><stop offset=".7" stop-color="#22302e"/><stop offset="1" stop-color="#141d1c"/></radialGradient>`;
-
-function notes(x,y,c='#2f7a74'){
-  const n=(dx,dy,cls,s)=>`<g transform="translate(${x+dx} ${y+dy})"><g class="mp-note ${cls}"><g transform="scale(${s})">
-    <ellipse cx="0" cy="0" rx="3" ry="2.2" transform="rotate(-20)" fill="${c}"/><path d="M2.6 -.6 L2.6 -10 Q5.6 -8.6 7 -6" fill="none" stroke="${c}" stroke-width="1.1" stroke-linecap="round"/></g></g></g>`;
-  return `<g class="mp-notes">${n(0,0,'',1)}${n(8,6,'n2',.8)}${n(-6,8,'n3',.9)}</g>`;
-}
-
+const {r2,pad,notes,vinylDef,zz}=PetKit;
 /* ═══════════ 4 · Sara, the kappa with the spinning dish (folklore) ═══════════
    A kappa keeps a dish of water on the crown of its head, ringed by wet hair.
    Sara floats a record in hers. The label is a slice of cucumber (a kappa's
@@ -51,7 +25,7 @@ function kEye(cx,cy,o,ID){
   const lid=`M${cx-R-1} ${yl} L${cx-R-1} ${cy-R-1} L${cx+R+1} ${cy-R-1} L${cx+R+1} ${yr} C${r2(cx+5.4)} ${r2(cy-5.5)} ${r2(cx-5.4)} ${r2(cy-5.5)} ${cx-R-1} ${yl}Z`;
   return `<clipPath id="${ID}${c}"><circle cx="${cx}" cy="${cy}" r="${R}"/></clipPath>
     <ellipse cx="${cx}" cy="${r2(cy+1.2)}" rx="${R+.5}" ry="${R}" fill="#173a3b" opacity=".09"/>
-    <circle cx="${cx}" cy="${cy}" r="${R}" fill="#fff8e9"/>
+    <circle class="pk-look" cx="${cx}" cy="${cy}" r="${R}" fill="#fff8e9"/>
     <g clip-path="url(#${ID}${c})">
       <g class="kp-open">
         <circle cx="${cx}" cy="${r2(cy+.4)}" r="6.9" fill="url(#${ID}iris)"/>
@@ -145,7 +119,7 @@ function sara(ID){
     <clipPath id="${ID}sc"><path d="${K_SHELL}"/></clipPath>
   </defs>
   ${pad(ID)}
-  <g class="mp-breathe"><g class="kp-bob">
+  <g class="pk-body"><g class="mp-breathe"><g class="kp-bob">
     <!-- her shell, a warm dome behind her, rimmed with scutes -->
     <path d="${K_SHELL}" fill="url(#${ID}shell)" stroke="#4a3424" stroke-width=".6"/>
     <g clip-path="url(#${ID}sc)">
@@ -243,28 +217,11 @@ function sara(ID){
       <!-- drops jump the rim when the music's on -->
       <g class="kp-drops"><g transform="translate(29 -92)"><g class="kp-drop">${drop}</g></g><g transform="translate(-29 -92) scale(-1 1)"><g class="kp-drop d2">${drop}</g></g></g>
     </g></g></g>
-  </g></g>
-  ${notes(47,-99,'#ec7a45')}`;
+  </g></g></g>
+  ${notes(47,-99,'#ec7a45')}
+  ${zz(40,-70)}`;
 }
-const CSS=`svg *{transform-box:view-box;transform-origin:0 0}
-.mp-breathe{animation:mp-breathe 4.6s ease-in-out infinite}
-
-.mp-ring{animation:mp-ring 5.2s ease-out infinite}.mp-ring.two{animation-delay:-2.6s}
-
-.mp-notes{opacity:0}
-@keyframes mp-breathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.012,1.024)}}
-
-@keyframes mp-ring{0%{transform:scale(.82);opacity:0}25%{opacity:1}100%{transform:scale(1.22);opacity:0}}
-
-.playing .mp-spin{animation:mp-spin 1.8s linear infinite}
-.playing .mp-notes{opacity:1}
-.playing .mp-note{animation:mp-note 2.6s ease-out infinite}
-.playing .mp-note.n2{animation-delay:-.9s}.playing .mp-note.n3{animation-delay:-1.75s}
-
-@keyframes mp-spin{to{transform:rotate(360deg)}}
-@keyframes mp-note{0%{transform:translate(0,0) scale(.6);opacity:0}15%{opacity:.9}100%{transform:translate(10px,-34px) scale(1);opacity:0}}
-
-/* the kappa: blink and glance while she waits; record, rock, baton and drops while it plays */
+PetKit.register({id:'sara',name:'Sara',kind:'kappa',blurb:'Floats a record in the dish on her head.',art:sara,css:`/* the kappa: blink and glance while she waits; record, rock, baton and drops while it plays */
 .kp-blink{animation:kp-blink 6.8s ease-in-out infinite}
 .kp-gaze{animation:kp-gaze 12s ease-in-out infinite}
 .kp-arm{transform:rotate(-33deg);transition:transform .55s cubic-bezier(.3,1.3,.5,1)}
@@ -288,10 +245,12 @@ const CSS=`svg *{transform-box:view-box;transform-origin:0 0}
 @keyframes kp-baton{0%,100%{transform:rotate(-9deg)}50%{transform:rotate(7deg)}}
 @keyframes kp-ripple{0%{transform:scale(.9);opacity:0}30%{opacity:1}100%{transform:scale(1.06);opacity:0}}
 @keyframes kp-drop{0%{transform:translate(0,0) scale(.4);opacity:0}20%{opacity:.95}55%{transform:translate(4px,-9px) scale(1)}100%{transform:translate(8px,4px) scale(.7);opacity:0}}
-@media (prefers-reduced-motion:reduce){svg *{animation:none!important}}`;
-let n=0;
-window.SaraArt={
-  svg(){ const ID='sa'+(++n)+'_'; return `<svg class="sa-art" viewBox="-68 -118 136 136" aria-hidden="true">${sara(ID)}</svg>`; },
-  injectCSS(){ if(document.getElementById('sara-css')) return; const s=document.createElement('style'); s.id='sara-css'; s.textContent=CSS; document.head.appendChild(s); }
-};
+/* now and then: a bite of the cucumber */
+.fidget .kp-baton{animation:kp-bite 2.4s ease-in-out}
+@keyframes kp-bite{0%,100%{transform:rotate(0)}28%,62%{transform:rotate(36deg)}40%{transform:rotate(31deg)}50%{transform:rotate(37deg)}}
+/* paused a long while: she dozes, head dipped, eyes shut */
+.sleepy .kp-open{opacity:0}
+.sleepy .kp-closed{opacity:1}
+.sleepy .kp-rock{transform:rotate(3deg) translateY(1.2px);transition:transform 1.2s ease-in-out}
+.sleepy .kp-arm{transform:rotate(-38deg)}`});
 })();

@@ -23,6 +23,22 @@ mp3, m4a, aac, wav, ogg, opus, flac and webm all play.
 playlist is open go into it. Use ⋯ on a song to add it to a playlist, take it
 out, or remove it from Sara. Right-click a playlist to delete it (the songs stay).
 
+## Three yokai
+
+Sara has two friends, both yokai, and any of them can be out:
+
+- **Sara**, a kappa who floats a record in the dish on her head
+- **Kon**, a kitsune with a shamisen and foxfire
+- **Kasa**, a one-eyed paper umbrella who hops to the beat
+
+Right-click the pet, then *Pet*, to pick the one who is out every day. A
+playlist can have its own: right-click the playlist, then *Pet for this
+playlist*. While a song from that playlist plays, its pet comes out.
+
+Each pet breathes and blinks. It dances while music plays, fidgets now and
+then, and dozes off after five minutes of quiet. It hops when you tap it or
+when a new song comes on, and wiggles when you drop songs on it.
+
 ## YouTube, without YouTube
 
 The YouTube tab searches YouTube, or takes a pasted link. Tap a result to play
@@ -33,8 +49,13 @@ Sara sits there with her record turning.
 
 ## Controls
 
-- Tap Sara: open or close the player. Drag her to move her.
-- Right-click Sara: play/pause, next, add music, her folder, size, quit.
+- Tap the pet: open or close the player. Drag it to move it.
+- **Hide it in an edge:** drag it past the left, right or bottom of the screen.
+  On a side it leans in from behind the edge; at the bottom it sinks till only
+  its eyes show. Drag it out again whenever you like.
+- Clicks go straight through the empty space round the pet.
+- Right-click the pet: play/pause, next, add music, the folder, which pet, size
+  (tiny to huge), quit.
 - Media keys (play/pause, next, previous) work from anywhere.
 - In the player: Space plays or pauses, Esc closes it.
 
@@ -44,6 +65,8 @@ Removing a song never deletes the file.
 ## For the curious
 
 `main.js` runs the windows, reads folders, searches YouTube; `player.js` is
-the player and the music engine; `pet.js` is Sara herself; `sara-art.js` is
-her drawing (built from concept 4 in `concepts.html`); `library.js` holds the
+the player and the music engine; `pet.js` is the pet's window (peeking,
+dragging, moods). The drawings are in `pets/`: `kit.js` is what they share,
+and each pet has its own file. `pets/preview.html?pets=sara,kon` shows them in
+every mood. `library.js` holds the
 plain rules (names, links, what plays next), checked by `npm test`.

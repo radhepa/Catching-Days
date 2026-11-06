@@ -9,7 +9,7 @@
 <div id="card" class="card" role="dialog" aria-label="Sara's player">
   <header class="hd">
     <div class="pt" id="pt"></div>
-    <div class="who"><span class="ey">Your music, no feed</span><span class="nm">Sara</span></div>
+    <div class="who"><span class="ey">Your music, no feed</span><span class="nm" id="nm">Sara</span></div>
     <button class="ic" id="close" aria-label="Close the player (the music keeps going)" title="Close (the music keeps going)">
       <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
   </header>
@@ -51,9 +51,12 @@
     <div class="list" id="results"></div>
     <p class="note">Only the song: YouTube’s own player, held to the one video. Close this and the music keeps going.</p>
   </section>
-  <div class="dropzone" id="dropzone"><b>Let go to give Sara these songs</b></div>
+  <div class="dropzone" id="dropzone"><b id="drop-b">Let go to give Sara these songs</b></div>
 </div>
-<script src="sara-art.js"></script>
+<script src="pets/kit.js"></script>
+<script src="pets/sara.js"></script>
+<script src="pets/kon.js"></script>
+<script src="pets/kasa.js"></script>
 <script src="player.js"></script>
 </body>
 </html>

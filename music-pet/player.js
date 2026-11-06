@@ -6,7 +6,7 @@ const $=id=>document.getElementById(id);
 const audio=new Audio();
 let L={tracks:[],playlists:[],gone:[]};          // gone: songs taken out, so Sara's folder doesn't bring them back
 let view='all', vol=.8, shuffle=false, repeat='all', tab='lib';
-let cur=null;                                    // {id, queue:[ids]}
+let cur=null;                                    // {id, queue:[ids], from: the list it was started from}
 let playing=false, pos=0, dur=0, seeking=false, ytLoadAt=0, ytDone=false, errRun=0;
 let results=[];                                  // the last YouTube search, as songs not (yet) in the library
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
@@ -39,13 +39,13 @@ function add(tracks,{play=false,toView=false,quiet=false}={}){
   if(pl) ids.forEach(id=>{ if(!pl.ids.includes(id)) pl.ids.push(id); });
   if(!ids.length) return;
   save(); render();
-  if(play) playId(ids[0],idsOf(pl?view:'all'));
+  if(play) playId(ids[0],idsOf(pl?view:'all'),pl?view:'all');
 }
 
 /* ── playing ── */
-function playId(id,queue){
+function playId(id,queue,from){
   const t=byId(id); if(!t) return;
-  cur={id,queue:queue&&queue.includes(id)?queue:[id]};
+  cur={id,queue:queue&&queue.includes(id)?queue:[id],from:from===undefined?cur&&cur.from:from};   // next/prev keep the list
   pos=0; dur=0;
   if(t.kind==='yt'){
     audio.pause(); audio.removeAttribute('src'); audio.load();
@@ -59,7 +59,7 @@ function playId(id,queue){
   drawNow(); render();
 }
 function toggle(){
-  if(!cur){ const q=idsOf(view).filter(id=>!byId(id).bad); if(q.length) playId(shuffle?q[Math.floor(Math.random()*q.length)]:q[0],q); return; }
+  if(!cur){ const q=idsOf(view).filter(id=>!byId(id).bad); if(q.length) playId(shuffle?q[Math.floor(Math.random()*q.length)]:q[0],q,view); return; }
   const t=byId(cur.id);
   if(!t) return;
   if(t.kind==='yt'){ playing=!playing; sara.send('yt',{cmd:playing?'play':'pause'}); drawNow(); }
@@ -131,7 +131,9 @@ function drawNow(){
   $('np-s').textContent=t?(t.kind==='yt'?'YouTube'+(t.channel?' · '+t.channel:''):t.sub||'On your computer'):'Drop songs on Sara, or find one on YouTube';
   $('slot').classList.toggle('yt',!!t&&t.kind==='yt');
   $('seek').disabled=!t;
-  const st=JSON.stringify({playing,title:t?t.title:''});
+  /* a playlist with its own pet sends that pet out while one of its songs plays */
+  const from=cur&&plOf(cur.from);
+  const st=JSON.stringify({playing,title:t?t.title:'',pet:t&&from&&from.pet||''});
   if(st!==lastState){ lastState=st; sara.send('state',JSON.parse(st)); }
   drawTime();
 }
@@ -208,10 +210,14 @@ $('chips').addEventListener('click',e=>{
 $('chips').addEventListener('contextmenu',async e=>{
   const b=e.target.closest('[data-view]'); if(!b||b.dataset.view==='all') return;
   e.preventDefault();
-  const p=plOf(b.dataset.view);
-  if(await sara.ask('menu',[{id:'del',label:`Delete “${p.name}” (the songs stay in your library)`}])==='del'){
-    L.playlists=L.playlists.filter(x=>x!==p); if(view===p.id) view='all'; save(); render();
-  }
+  const p=plOf(b.dataset.view), tick=on=>on?'  ✓':'';
+  const pick=await sara.ask('menu',[
+    {label:'Pet for this playlist',items:[{id:'pet:',label:'Same as everywhere else'+tick(!p.pet)},{sep:true}]
+      .concat(PetKit.list().map(d=>({id:'pet:'+d.id,label:`${d.name} · ${d.kind}`+tick(p.pet===d.id)})))},
+    {sep:true},
+    {id:'del',label:`Delete “${p.name}” (the songs stay in your library)`}]);
+  if(pick==='del'){ L.playlists=L.playlists.filter(x=>x!==p); if(view===p.id) view='all'; save(); render(); drawNow(); }
+  else if(pick&&pick.startsWith('pet:')){ const id=pick.slice(4); if(id) p.pet=id; else delete p.pet; save(); drawNow(); }
 });
 
 /* a song row: tap to play from this list; ⋯ for playlists and removing */
@@ -239,7 +245,7 @@ async function more(id){
   save(); render();
 }
 $('list').addEventListener('click',e=>{
-  const p=e.target.closest('[data-play]'); if(p){ const t=byId(p.dataset.play); if(t.bad) delete t.bad; errRun=0; playId(t.id,idsOf(view)); return; }
+  const p=e.target.closest('[data-play]'); if(p){ const t=byId(p.dataset.play); if(t.bad) delete t.bad; errRun=0; playId(t.id,idsOf(view),view); return; }
   const m=e.target.closest('[data-more]'); if(m) more(m.dataset.more);
 });
 $('list').addEventListener('contextmenu',e=>{ const r=e.target.closest('.row'); const m=r&&r.querySelector('[data-more]'); if(m){ e.preventDefault(); more(m.dataset.more); } });
@@ -256,10 +262,10 @@ $('find').addEventListener('submit',async e=>{
   if(!found.length){ box.innerHTML='<p class="msg">Nothing came up for that. Try other words, or paste the video’s link.</p>'; return; }
   results=found.map(r=>Object.assign({kind:'yt',id:'r:'+r.yt},r));
   render();
-  if(one) playId(results[0].id,[results[0].id]);
+  if(one) playId(results[0].id,[results[0].id],'yt');
 });
 $('results').addEventListener('click',e=>{
-  const p=e.target.closest('[data-play]'); if(p){ errRun=0; playId(p.dataset.play,results.map(t=>t.id)); return; }
+  const p=e.target.closest('[data-play]'); if(p){ errRun=0; playId(p.dataset.play,results.map(t=>t.id),'yt'); return; }
   const a=e.target.closest('[data-add]');
   if(a){ const t=results.find(x=>x.id===a.dataset.add); const {id,...n}=t; add([n],{toView:true}); }
 });
@@ -289,12 +295,15 @@ sara.on('add-tracks',o=>add(o.tracks,{play:!!o.play,quiet:!o.drop}));   // the f
 sara.on('cmd',c=>({toggle,next:()=>step(1,false),prev})[c]?.());
 const sendSlot=()=>{ const r=$('slot').getBoundingClientRect(); sara.send('yt-slot',{x:r.left,y:r.top,w:r.width,h:r.height}); };
 sara.on('open',()=>{ sendSlot(); });
+/* the header shows whichever pet is out */
+function portrait(id){ const d=PetKit.get(id); $('pt').innerHTML=PetKit.svg(d.id); $('nm').textContent=d.name; $('drop-b').textContent=`Let go to give ${d.name} these songs`; }
+sara.on('pet',p=>portrait(p&&p.id));
 window.addEventListener('resize',sendSlot);
 
 (async()=>{
-  SaraArt.injectCSS();
-  $('pt').innerHTML=SaraArt.svg();
+  PetKit.injectCSS();
   const o=await sara.ask('init');
+  portrait(o.pet);
   L=Object.assign({tracks:[],playlists:[],gone:[]},o.library);
   if(!Array.isArray(L.gone)) L.gone=[];
   vol=typeof o.volume==='number'?o.volume:.8; shuffle=!!o.shuffle; repeat=['all','one','off'].includes(o.repeat)?o.repeat:'all';
