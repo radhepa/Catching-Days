@@ -143,6 +143,7 @@ function refresh(){
   VIEW.toad=S.toad; VIEW.size=S.size;
   VIEW.desk=[...noteWins.keys()];
   send(toadWin,'view',VIEW); send(panelWin,'view',VIEW);
+  if(EXT) EXT.onView(VIEW,DB);
   syncNotes();
   if(!notesRestored&&toadWin) restoreNotes();
   bellCheck();
@@ -575,6 +576,16 @@ function endRitual(d){
   if(d&&d.started) setTimeout(()=>send(toadWin,'react',{kind:'focusStart'}),200);
 }
 
+/* ════════════════════ an optional add-on ════════════════════
+   A studymon folder beside this file (its own project, not part of Catching Days) is loaded
+   if it's there: it sees each view, answers its own windows' 'ext' requests, and can add a
+   place to the talk box (panel.js: window.petExt). The toad is whole without it. */
+let EXT=null;
+function loadExt(){
+  if(!fs.existsSync(path.join(__dirname,'studymon','main.js'))) return;
+  EXT=require('./studymon/main.js')({preload:path.join(__dirname,'preload.js'),toads:TOADS,toad:()=>S.toad,openPanel,closePanel});
+}
+
 /* ════════════════════ the bell: focus time up, break over ════════════════════ */
 function bellCheck(){
   const s=VIEW&&VIEW.session;
@@ -732,7 +743,7 @@ function trayIcon(){
 ipcMain.handle('init',e=>{
   const nw=noteFor(e.sender);
   const who=e.sender===toadWin?.webContents?'toad':e.sender===stageWin?.webContents?'stage':nw?'note':'panel';
-  return {who, view:VIEW, note:nw?{id:nw.__note.id,draft:nw.__note.draft,color:nw.__note.color,top:!!(S.notes[nw.__note.id]&&S.notes[nw.__note.id].top),data:noteOf(nw.__note.id)}:null, ritual:who==='stage'&&ritual?ritual.params:null, toad:S.toad, size:S.size, geo:geo(), peek, mem:S.mem, login:!!S.startAtLogin, checkEvery:S.checkEvery, checkOpts:CHECK_EVERY, remind:S.remind, remindOpts:REMIND_OPTS,
+  return {who, view:VIEW, note:nw?{id:nw.__note.id,draft:nw.__note.draft,color:nw.__note.color,top:!!(S.notes[nw.__note.id]&&S.notes[nw.__note.id].top),data:noteOf(nw.__note.id)}:null, ritual:who==='stage'&&ritual?ritual.params:null, toad:S.toad, size:S.size, geo:geo(), peek, mem:S.mem, login:!!S.startAtLogin, checkEvery:S.checkEvery, checkOpts:CHECK_EVERY, remind:S.remind, remindOpts:REMIND_OPTS, ext:EXT?EXT.panel:null,
     artBase:require('url').pathToFileURL(S.appDir+path.sep).href, names:NAMES, toads:TOADS};
 });
 ipcMain.on('pet-ready',e=>{
@@ -848,6 +859,7 @@ app.whenReady().then(async()=>{
   const dir=await resolveAppDir(); if(!dir){ app.quit(); return; }
   PORT=await startServer();
   readInbox(); running=true; writeInbox();
+  loadExt();
   readDb(); watchData();
   createToad(); createPanel();
   restoreNotes();

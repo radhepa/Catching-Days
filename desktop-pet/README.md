@@ -62,6 +62,7 @@ checkin.js       reads a check-up answer: what you did, what you skipped or put 
 checkin-lines/   each toad's check-up questions, replies and topic lines, one file per toad
 preload.js       the bridge between the windows and the rest
 test/            node tests for core.js and checkin.js; voice-shape.js checks a toad's lines file
+studymon/        not part of Catching Days: an optional add-on of its own, loaded only if the folder is there
 ```
 
 `desktop-pet-link.js` lives in the app folder, beside `catching-days.html`, which loads it. Without the toad it does nothing.

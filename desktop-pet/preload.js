@@ -8,6 +8,7 @@ const ON=['view','peek','drag','react','toad','geo','panel','open','closed','sid
 contextBridge.exposeInMainWorld('pet',{
   init:()=>ipcRenderer.invoke('init'),
   op:o=>ipcRenderer.invoke('op',o),
+  ext:o=>ipcRenderer.invoke('ext',o),      // an optional add-on's own requests (main.js: EXT)
   send:(ch,data)=>{ if(SEND.includes(ch)) ipcRenderer.send(ch,data); },
   on:(ch,fn)=>{ if(ON.includes(ch)) ipcRenderer.on(ch,(e,d)=>fn(d)); }
 });

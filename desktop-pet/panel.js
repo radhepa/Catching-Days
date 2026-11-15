@@ -113,6 +113,9 @@ $('say').addEventListener('click',()=>{ clearInterval(sayT); $('say').querySelec
 
 /* ════════════════ the places ════════════════ */
 let mode='chat';
+/* an optional add-on (main.js loads it when its folder is there) can put a place of its own in the box */
+const EXT={};
+window.petExt={place:(m,html)=>{ EXT[m]=html; },go:m=>go(m),mode:()=>mode,redraw:()=>render(true),say,esc};
 const CHECK='<svg width="12" height="12" viewBox="0 0 12 12"><path d="M2.5 6.2l2.3 2.3L9.6 3.7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 function clock(ms){ const n=ms<0; ms=Math.abs(ms); const t=Math.floor(ms/1000), h=Math.floor(t/3600);
   return (n?'+':'')+(h?h+':'+String(Math.floor(t/60)%60).padStart(2,'0'):String(Math.floor(t/60)).padStart(2,'0'))+':'+String(t%60).padStart(2,'0'); }
@@ -412,6 +415,7 @@ function render(force){
   else if(mode==='break-over') h=V.session?breakOverHTML():'';
   else if(mode==='settings') h=settingsHTML();
   else if(mode==='checkup') h=checkupHTML();
+  else if(EXT[mode]) h=EXT[mode]();
   /* redraw only when it changed (keeps your scroll, your hover, anything typed) */
   const sig=mode+'|'+h.replace(/id="(r-clk|r-sub|r-ph)"[^<]*/g,'');
   if(!force&&sig===bodySig) { tickRun(); return; }
@@ -614,4 +618,5 @@ window.pet.on('closed',()=>{ $('card').classList.remove('show'); clearInterval(s
 
 setInterval(()=>{ if(V&&V.session&&!document.hidden){ tickRun(); paintTabs(); } },250);
 paintWho(); render(true); paintFoot();
+if(init.ext) await load(init.ext);
 })();
