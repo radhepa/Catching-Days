@@ -73,7 +73,7 @@ each other up to date.
 **When it syncs.** A few seconds after you change something, when you open or switch back to the app, when the
 connection returns, and once a minute while the app is open. **Settings → Cloud sync → Sync now** does it on demand.
 
-**What is synced.** Classes, tasks, exams, sessions, journeys, journal, sticky notes, bio, settings — everything you
+**What is synced.** Classes, tasks, exams, sessions, journeys, journal, sticky notes, the Bio add-on if you use it, settings — everything you
 create. **What is not:** a focus timer that is currently running (it belongs to the device it was started on), and
 per-device counters.
 

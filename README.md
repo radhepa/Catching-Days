@@ -84,9 +84,9 @@ A few small mechanics keep the day honest:
 | **Calendar** | Plan a day, three days or a week: drag tasks and exam study onto the timeline around your classes, let **Plan my day** fill the gaps, and connect Google Calendar (or any `.ics` calendar). |
 | **Focus** | Bring tasks into a session, choose a focus and break rhythm, track cycles, bank earned rest, and rate or reflect on the work. Optional rain sets the atmosphere. |
 | **Plan** | Organize assignments by class, add estimates and subtasks, track quizzes and exams, build recurring habits in Journeys, and keep projects moving. |
-| **Journal** | Write entries with moods, tags, photos, and reusable prompts. Browse the calendar or connect recurring themes in the Vault. |
+| **Journal** | Write entries with moods, tags, photos, and reusable prompts. Tap activity categories (sleep, feelings, hobbies, weather, or your own) so you can see what your good days had in common. Browse the calendar or connect recurring themes in the Vault. |
 | **Sticky notes** | Give a passing thought a place to land. |
-| **You** | Keep a structured bio, review your focus statistics and history, and explore the encyclopedia of fish, bugs and toads. |
+| **You** | Review your focus statistics and history, and explore the encyclopedia of fish, bugs and toads. |
 
 <p align="center"><img src="docs/images/divider.svg" width="640" alt=""></p>
 
@@ -294,6 +294,10 @@ For your first day, add a class and a few tasks in **Plan**, choose what belongs
 | Changes do not survive reopening | Open through the server and check **Settings → Permanent memory** for storage status. |
 | Artwork or styles are missing | Extract the whole download and keep the supporting folders beside the HTML file. |
 | The Calendar says to restart Catching Days | The server window was started before calendars could be read. Close it and start the app again. |
+
+## Bio (optional)
+
+The **addons/bio** folder adds a structured profile page under **You**: career, projects, skills, hobbies and the people in your life, ready to export for applications. It is off by default. Turn it on in **Settings → Add-ons**, then switch off any sections you don't want, such as People. Delete the folder and the app runs without it.
 
 ## A toad on your desktop (optional)
 
